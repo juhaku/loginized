@@ -1,0 +1,59 @@
+{
+  "name": "loginized",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test": "vue-cli-service test",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "^2.5.13",
+    "vue-class-component": "^6.0.0",
+    "vue-property-decorator": "^6.0.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.0.1",
+    "@vue/cli-plugin-typescript": "^3.0.0-beta.1",
+    "@vue/cli-plugin-unit-jest": "^3.0.0-beta.1",
+    "@vue/cli-service": "^3.0.0-beta.1",
+    "@vue/test-utils": "^1.0.0-beta.10",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
+    "ts-jest": "^22.0.1",
+    "vue-template-compiler": "^2.5.13"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.vue$": "vue-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "snapshotSerializers": [
+      "jest-serializer-vue"
+    ],
+    "mapCoverage": true
+  }
+}
