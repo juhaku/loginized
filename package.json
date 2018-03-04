@@ -2,16 +2,45 @@
   "name": "loginized",
   "version": "0.1.0",
   "private": true,
+  "main": "./electron/main.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test": "vue-cli-service test",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "erun": "electron-forge start"
+  },
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": "test"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {}
+    }
   },
   "dependencies": {
+    "electron-compile": "^6.4.2",
+    "electron-forge": "^5.1.1",
+    "iview": "^2.9.2",
     "vue": "^2.5.13",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^6.0.0",
+    "vueify": "^9.4.1",
+    "vuetify": "^1.0.4",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -19,7 +48,9 @@
     "@vue/cli-plugin-typescript": "^3.0.0-beta.1",
     "@vue/cli-plugin-unit-jest": "^3.0.0-beta.1",
     "@vue/cli-service": "^3.0.0-beta.1",
+    "@vue/devtools": "^1.0.2",
     "@vue/test-utils": "^1.0.0-beta.10",
+    "electron-prebuilt-compile": "1.8.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "ts-jest": "^22.0.1",
