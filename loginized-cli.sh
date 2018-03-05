@@ -11,7 +11,7 @@ executionPath=`pwd`
 workDir=/tmp/shell
 
 # Determine this dynamically later
-installPath=/home/juha/loginized
+installPath=""
 
 function notRecognized {
     echo "action $1 was not recogninzed, use ?, -h, --help flags for help" && exit 1
@@ -93,6 +93,7 @@ function install {
         
         cd $workDir/theme
         cp $installPath/$gs.xml .
+        cp $installPath/$image .
         
         sed -i "s/$defaultBackground/$image/" $gs.xml
         
@@ -117,11 +118,14 @@ function list {
 
 # On start functionality
 function onStart {
+    installPath=${HOME}/.config/loginized
+    test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $installPath/default/$gs.bak ]; then
         test ! -d $installPath/default && mkdir -p $installPath/default
         cp /usr/share/gnome-shell/$gs $installPath/default/$gs
     fi
+    echo $installPath
 }
 
 function reboot {
@@ -149,9 +153,13 @@ case $1 in
         fastReboot
     ;;
     install)
-        install $2 $3
-        # Only offer reboot option if this was executed from GUI, non GUI application will reboot
-        test ${#4} -gt 0 && reboot
+        if [ "$2" == "gui" ]; then
+            install $3 $4
+        else
+            install $2 $3
+            # Only offer reboot option if this was executed non GUI
+            reboot
+        fi;
     ;;
     list)
         list

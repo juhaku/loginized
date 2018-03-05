@@ -33,9 +33,11 @@
     }
   },
   "dependencies": {
+    "@types/lodash": "^4.14.104",
     "electron-compile": "^6.4.2",
     "electron-forge": "^5.1.1",
     "iview": "^2.9.2",
+    "lodash": "^4.17.5",
     "vue": "^2.5.13",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^6.0.0",

@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import FileEntry from '../model/FileEntry.ts';
 
 @Component
 export default class ImageFile extends Vue {
@@ -27,13 +28,21 @@ export default class ImageFile extends Vue {
     }
 
     private update(event: any) {
+        let name = '';
+        let file: File = {} as File;
         if (event.target.files.length > 0) {
-            this.img = URL.createObjectURL(event.target.files[0]);
+            file = event.target.files[0];
+            name = file.name;
+            this.img = URL.createObjectURL(file);
         } else {
             this.img = '';
         }
 
-        this.$emit('img-change', this.img);
+        const entry = new FileEntry();
+        entry.url = this.img;
+        entry.file = file;
+        entry.name = name;
+        this.$emit('img-change', entry);
     }
 
 }
