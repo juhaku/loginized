@@ -1,6 +1,6 @@
 import * as Vue from 'vue';
 import * as App from './App.vue';
-import * as store from './store';
+import store from './store';
 import './plugins/shell.ts';
 // import * as iView from 'iview';
 // import locale from 'iview/dist/locale/en-US';
