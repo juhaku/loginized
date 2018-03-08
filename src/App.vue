@@ -1,21 +1,32 @@
 <template>
   <div>
     <v-app>
+    <v-dialog v-model="rebootDialog" persistent max-width="40em">
+        <v-card>
+            <v-card-title class="headline">Reboot Computer</v-card-title>
+            <v-card-text>Changes will take affect after reboot, Reboot now?</v-card-text>
+            <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat @click="rebootDialog = false">No</v-btn>
+            <v-btn color="primary" flat @click="reboot()">Yes</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
       <v-container grid-list-md>
         <v-layout justify-space-around row style="height: 500px;">
             <v-flex xs6>
-                <h1>Select theme:</h1>
-                <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo></v-select>
+                <h3>Select theme:</h3>
+                <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
             </v-flex>
             <v-flex xs6>
-                <h1>Select background image:</h1>
+                <h3>Select background image:</h3>
                 <ImageFile image="img" v-on:img-change="setSelectedImage($event)" />
             </v-flex>
         </v-layout>
 
         <v-layout row justify-end align-content-end>
             <v-flex xs6 text-xs-right>
-                <v-btn outline color="primary"><v-icon>save</v-icon>Save</v-btn>
+                <v-btn outline color="primary" :disabled="selectedTheme === '' ? true: false" @click="save()"><v-icon>save</v-icon>Save</v-btn>
             </v-flex>
         </v-layout>
     </v-container>
@@ -43,6 +54,7 @@ export default class App extends Vue {
 
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
+    private rebootDialog: boolean = false;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
@@ -51,8 +63,8 @@ export default class App extends Vue {
 
     @Mutation private updateThemes: ({ }) => {};
     @Mutation private setConfigLocation: ({ }) => {};
-    @Mutation private setImg: ({}) => {};
-    @Mutation private setTheme: ({}) => {};
+    @Mutation private setImg: ({ }) => {};
+    @Mutation private setTheme: ({ }) => {};
 
     private created() {
         this.cliExec('start', false, (error: Error, stdout: any, stderr: any) => {
@@ -72,21 +84,30 @@ export default class App extends Vue {
     }
 
     private save() {
-        this.cliExec(`install gui ${this.selectedTheme} ${this.selectedImage.getFileName()}`, true,
+        if (this.selectedTheme === '') {
+            return;
+        }
+
+        this.cliExec(`install gui ${this.selectedTheme} ${this.selectedImage.getFileName()} ${this.configLocation}`, true,
             (error: Error, stdout: any, stderr: any) => {
+                console.log(stdout);
+                console.log(stderr);
                 if (!error) {
                     const state = _.cloneDeep(this.$store.state);
                     fs.writeFile(`${this.configLocation}/config.json`,
                         JSON.stringify(state), (nerr: NodeJS.ErrnoException) => {
-                        if (nerr) {
-                            throw nerr;
-                        }
-                        console.log(`saved config file`);
-                    });
-                    // TODO ask question whether to reboot or not
-                    // this.cliExec('reboot');
+                            if (nerr) {
+                                throw nerr;
+                            }
+                            this.rebootDialog = true;
+                        });
                 }
             });
+    }
+
+    private reboot() {
+        this.rebootDialog = false;
+        this.exec('gnome-session-quit --reboot');
     }
 
     private setSelectedImage(file: FileEntry) {

@@ -9,6 +9,7 @@ defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
 executionPath=`pwd`
 workDir=/tmp/shell
+gdm3=/etc/alternatives/gdm3.css
 
 # Determine this dynamically later
 installPath=""
@@ -57,17 +58,27 @@ function extract {
     done
 }
 
+# Install gdm3 css file if it is being used by the operating system. Ubuntu newer than 16.10 uses it.
+function installGdm3Css {
+    from=$1
+    if [ -f $gdm3 ]; then 
+        cp $from $gdm3
+    fi;
+}
+
 # Install specific theme with defaults as login theme
 function installThemeWithDefaults {
     theme=$1
     test ! -d /usr/share/themes/$theme && echo "Theme not found (/usr/share/themes/$theme), cannot perform install" && exit 1;
     cp /usr/share/themes/$theme/gnome-shell/$gs $/usr/share/gnome-shell/$gs
+    installGdm3Css /usr/share/themes/$theme/gnome-shell/gnome-shell.css
 }
 
 # Install default theme what has been backed up during initial startup
 function installDefault {
     test ! -f $installPath/default/$gs && echo "Default theme not found ($installPath/default/$gs), cannot perform install" && exit 1;
-    cp $installPath/default/$gs /usr/share-gnome-shell/$gs
+    cp $installPath/default/$gs.bak /usr/share/gnome-shell/$gs
+    installGdm3Css $installPath/default/gdm3.css.bak
 }
 
 # Install theme $1=theme, $2=image
@@ -85,29 +96,27 @@ function install {
         test ${#image} -eq 0 && echo "Image is not defined $image, cannot continue installation" && exit 1;
         extract $theme
 
-        dialogCss="#lockDialogGroup { 
-    background: #2e3436 url(\"$image\"); background-repeat: none; 
-    background-size: cover; }"
+        dialogCss="#lockDialogGroup { background: #2e3436 url(\"$image\"); background-repeat: none; background-size: cover; }"
 
         location=/usr/share/gnome-shell
+        workLocation=$workDir/theme
         
-        cd $workDir/theme
-        cp $installPath/$gs.xml .
-        cp $installPath/$image .
+        # cd $workDir/theme
+        cp $installPath/$gs.xml $workLocation/.
+        cp $installPath/$image $workLocation/.
         
-        sed -i "s/$defaultBackground/$image/" $gs.xml
+        sed -i "s/$defaultBackground/$image/" $workLocation/$gs.xml
+
+        sed -i "/#lockDialogGroup/,/}/ { /#lockDialogGroup/ { s/.*// }; /}/ ! { s/.*// }; /}/ { s/.*/$dialogCss/ }; }" $workLocation/gnome-shell.css
         
-        sed -i "/#lockDialogGroup/,/}/ {
-            /#lockDialogGroup/ { s/.*// }
-            /}/ ! { s/.*// }
-            /}/ { s/.*/$dialogCss/ }
-        }" gnome-shell.css
+        glib-compile-resources $workLocation/$gs.xml
         
-        glib-compile-resources $gs.xml
+        cp $workLocation/$gs $location/$gs
+        installGdm3Css $workLocation/gnome-shell.css
         
-        cp $gs $location/$gs
-        
-        rm $gs
+        #rm $gs
+        #cd -
+        #rm -r $workDir
     fi
 }
 
@@ -123,28 +132,35 @@ function onStart {
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $installPath/default/$gs.bak ]; then
         test ! -d $installPath/default && mkdir -p $installPath/default
-        cp /usr/share/gnome-shell/$gs $installPath/default/$gs
+        cp /usr/share/gnome-shell/$gs $installPath/default/$gs.bak
     fi
-    echo $installPath
-}
 
-function reboot {
-    read -p "Changes will take affect after reboot, Reboot now? [Y/n]: " decision
-    if [ "$decision" == "" || "$decision" == "y" || "$decision" == "Y" ]; then 
-        reboot now
-    fi
+    if [[ -f $gdm3 &&  ! -f $installPath/default/gdm3.css ]]; then
+        cp $gdm3 $installPath/default/gdm3.css.bak
+    fi;
+
+    echo $installPath
 }
 
 # Reboots system no questions asked
 function fastReboot {
-    reboot now
+    rebootBin=$(which reboot)
+    $rebootBin now
+}
+
+function reboot {
+    read -p "Changes will take affect after reboot, Reboot now? [Y/n]: " decision
+    echo $decision
+    if [[ "$decision" == "" || "$decision" == "y" || "$decision" == "Y" ]]; then 
+        fastReboot
+    fi;
 }
 
 # Determine whether we need help
 if [[  "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
 # Main functions
-# $1 = option, $2 = theme, $3 = image, $4 = gui
+# $1 = option, $2 = gui, $3 = installPath, $4 = theme, $5 = image
 case $1 in
     extract)
         extract $2
@@ -154,9 +170,11 @@ case $1 in
     ;;
     install)
         if [ "$2" == "gui" ]; then
-            install $3 $4
+            installPath=$3
+            install $4 $5
         else
-            install $2 $3
+            installPath=$2
+            install $3 $4
             # Only offer reboot option if this was executed non GUI
             reboot
         fi;
