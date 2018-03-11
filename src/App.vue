@@ -20,7 +20,7 @@
             </v-flex>
             <v-flex xs6>
                 <h3>Select background image:</h3>
-                <ImageFile image="img" v-on:img-change="setSelectedImage($event)" />
+                <ImageFile v-on:img-change="selectedImage=$event" />
             </v-flex>
         </v-layout>
 
@@ -58,7 +58,6 @@ export default class App extends Vue {
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
-    @State('img') private img: string;
     @State('theme') private theme: string;
 
     @Mutation private updateThemes: ({ }) => {};
@@ -69,6 +68,8 @@ export default class App extends Vue {
     private created() {
         this.cliExec('start', false, (error: Error, stdout: any, stderr: any) => {
             const path = `${stdout.trim()}/config.json`;
+            console.log(`status: ${stdout}`);
+            console.log(`statuseerr: ${stderr}`);
 
             if (fs.existsSync(path)) {
                 const state = fs.readFileSync(path, 'utf8');
@@ -88,8 +89,8 @@ export default class App extends Vue {
             return;
         }
 
-        this.cliExec(`install gui ${this.selectedTheme} ${this.selectedImage.getFileName()} ${this.configLocation}`, true,
-            (error: Error, stdout: any, stderr: any) => {
+        this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
+            true, (error: Error, stdout: any, stderr: any) => {
                 console.log(stdout);
                 console.log(stderr);
                 if (!error) {
@@ -110,17 +111,6 @@ export default class App extends Vue {
         this.exec('gnome-session-quit --reboot');
     }
 
-    private setSelectedImage(file: FileEntry) {
-        this.selectedImage = file;
-        if (file.url !== '') {
-            const path = `${this.configLocation}/${file.getFileName()}`;
-            this.setImg(path);
-            this.writeFile(path, file.file);
-        } else {
-            this.setImg('');
-        }
-    }
-
     @Watch('selectedTheme') private updateThemeChanges(theme: string, oldTheme: string) {
         this.setTheme(theme);
     }
@@ -133,18 +123,18 @@ export default class App extends Vue {
         this.$shell.exec(command, callback);
     }
 
-    private writeFile(name: string, file: any) {
-        const reader = new FileReader();
-        reader.onload = (event: any) => {
-            fs.writeFile(name, Buffer.from(event.target.result), (error: NodeJS.ErrnoException) => {
-                if (error) {
-                    throw error;
-                }
-                // Saved file
-            });
-        };
-        reader.readAsArrayBuffer(file);
-    }
+    // private writeUploadFile(name: string, file: any) {
+    //     const reader = new FileReader();
+    //     reader.onload = (event: any) => {
+    //         fs.writeFile(name, Buffer.from(event.target.result), (error: NodeJS.ErrnoException) => {
+    //             if (error) {
+    //                 throw error;
+    //             }
+    //             // Saved file
+    //         });
+    //     };
+    //     reader.readAsArrayBuffer(file);
+    // }
 
 }
 </script>

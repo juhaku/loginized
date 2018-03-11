@@ -2,6 +2,7 @@ export default class FileEntry {
   name: string;
   file: File;
   url: string;
+  path: string;
 
   /**
    * Get name of this file without path if there is such defined.

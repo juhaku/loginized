@@ -5,7 +5,7 @@
 # environment. 
 
 # Global variables
-defaultBackground=noise-texture.png
+# defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
 executionPath=`pwd`
 workDir=/tmp/shell
@@ -44,7 +44,11 @@ Examples.
 
 function extract {
     theme=$1
-    location=/usr/share/themes/$theme/gnome-shell
+    if [ "$theme" == "Default" ]; then
+        location=$installPath/default
+    else
+        location=/usr/share/themes/$theme/gnome-shell
+    fi;
     gsl=$location/$gs
     
     test ! -d $workDir/theme/assets/dot && mkdir -p $workDir/theme/assets/dot
@@ -70,22 +74,22 @@ function installGdm3Css {
 function installThemeWithDefaults {
     theme=$1
     test ! -d /usr/share/themes/$theme && echo "Theme not found (/usr/share/themes/$theme), cannot perform install" && exit 1;
-    cp /usr/share/themes/$theme/gnome-shell/$gs $/usr/share/gnome-shell/$gs
+    cp /usr/share/themes/$theme/gnome-shell/$gs /usr/share/gnome-shell/$gs
     installGdm3Css /usr/share/themes/$theme/gnome-shell/gnome-shell.css
 }
 
 # Install default theme what has been backed up during initial startup
 function installDefault {
     test ! -f $installPath/default/$gs && echo "Default theme not found ($installPath/default/$gs), cannot perform install" && exit 1;
-    cp $installPath/default/$gs.bak /usr/share/gnome-shell/$gs
-    installGdm3Css $installPath/default/gdm3.css.bak
+    cp $installPath/default/$gs /usr/share/gnome-shell/$gs
+    installGdm3Css $installPath/default/gdm3.css
 }
 
 # Install theme $1=theme, $2=image
 function install {
     theme=$1
     image=$2
-    if [ "$theme" == "Default" ]; then 
+    if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
     
     elif [ "$image" == "" ]; then 
@@ -96,27 +100,32 @@ function install {
         test ${#image} -eq 0 && echo "Image is not defined $image, cannot continue installation" && exit 1;
         extract $theme
 
-        dialogCss="#lockDialogGroup { background: #2e3436 url(\"$image\"); background-repeat: none; background-size: cover; }"
+        dialogCss="#lockDialogGroup { background: #2e3436 url(\"resource:\/\/\/org\/gnome\/shell\/theme\/$image\"); background-repeat: none; background-size: cover; }"
 
         location=/usr/share/gnome-shell
         workLocation=$workDir/theme
         
-        # cd $workDir/theme
-        cp $installPath/$gs.xml $workLocation/.
         cp $installPath/$image $workLocation/.
-        
-        sed -i "s/$defaultBackground/$image/" $workLocation/$gs.xml
 
         sed -i "/#lockDialogGroup/,/}/ { /#lockDialogGroup/ { s/.*// }; /}/ ! { s/.*// }; /}/ { s/.*/$dialogCss/ }; }" $workLocation/gnome-shell.css
         
-        glib-compile-resources $workLocation/$gs.xml
+        #Generate gresource xml file for current theme
+        resourceFiles=$(for file in $(find $workLocation -type f | sed "s|$workLocation||" | cut -c 2-); do echo "<file>$file</file>"; done)
+        gresourceXml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<gresources>
+  <gresource prefix=\"/org/gnome/shell/theme\">
+    $resourceFiles
+  </gresource>
+</gresources>"
+        echo $gresourceXml > $workLocation/$gs.xml
+
+        glib-compile-resources --sourcedir=$workLocation $workLocation/$gs.xml
         
-        cp $workLocation/$gs $location/$gs
+        cp $workLocation/$gs "$location/$gs"
         installGdm3Css $workLocation/gnome-shell.css
         
         #rm $gs
-        #cd -
-        #rm -r $workDir
+        # rm -r $workDir
     fi
 }
 
@@ -130,13 +139,13 @@ function onStart {
     installPath=${HOME}/.config/loginized
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
-    if [ ! -f $installPath/default/$gs.bak ]; then
+    if [ ! -f $installPath/default/$gs ]; then
         test ! -d $installPath/default && mkdir -p $installPath/default
-        cp /usr/share/gnome-shell/$gs $installPath/default/$gs.bak
+        cp /usr/share/gnome-shell/$gs $installPath/default/$gs
     fi
 
     if [[ -f $gdm3 &&  ! -f $installPath/default/gdm3.css ]]; then
-        cp $gdm3 $installPath/default/gdm3.css.bak
+        cp $gdm3 $installPath/default/gdm3.css
     fi;
 
     echo $installPath
