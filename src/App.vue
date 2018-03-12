@@ -1,37 +1,64 @@
 <template>
-  <div>
-    <v-app>
-        <v-dialog v-model="rebootDialog" persistent max-width="40em">
-            <v-card>
-                <v-card-title class="headline">Reboot Computer</v-card-title>
-                <v-card-text>Changes will take affect after reboot, Reboot now?</v-card-text>
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat @click="rebootDialog = false">No</v-btn>
-                <v-btn color="primary" flat @click="reboot()">Yes</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-      <v-container grid-list-md>
-        <v-layout justify-space-around row style="height: 500px;">
-            <v-flex xs6>
-                <h3>Select theme:</h3>
-                <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
-            </v-flex>
-            <v-flex xs6>
-                <h3>Select background image:</h3>
-                <ImageFile v-on:img-change="selectedImage=$event" />
-            </v-flex>
-        </v-layout>
+    <div>
+        <v-app>
+            <v-dialog v-model="rebootDialog" persistent max-width="40em">
+                <v-card>
+                    <v-card-title class="headline">Reboot Computer</v-card-title>
+                    <v-card-text>Changes will take affect after reboot, Reboot now?</v-card-text>
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat @click="rebootDialog = false">No</v-btn>
+                    <v-btn color="primary" flat @click="reboot()">Yes</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="settingsDialog" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
+                <v-card tile>
+                    <v-toolbar card dark color="primary">
+                        <v-toolbar-title>Settings</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-toolbar-items>
+                        <v-btn dark flat @click.native="settingsDialog = false">Save</v-btn>
+                        </v-toolbar-items>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-divider></v-divider>
+                        <v-list three-line subheader>
+                            <v-subheader>General</v-subheader>
+                            <v-list-tile avatar>
+                                <v-list-tile-action>
+                                    <v-checkbox v-model="notifications"></v-checkbox>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>Notifications</v-list-tile-title>
+                                    <v-list-tile-sub-title>Notify me about updates to apps or games that I downloaded</v-list-tile-sub-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </v-list>
+                    </v-card-text>
+                    <div style="flex: 1 1 auto;"/>
+                </v-card>
+            </v-dialog>
+            <v-container grid-list-md>
+                <v-layout justify-space-around row style="height: 500px;">
+                    <v-flex xs6>
+                        <h3>Select theme:</h3>
+                        <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
+                    </v-flex>
+                    <v-flex xs6>
+                        <h3>Select background image:</h3>
+                        <ImageFile v-on:img-change="selectedImage=$event" />
+                    </v-flex>
+                </v-layout>
 
-        <v-layout row justify-end align-content-end>
-            <v-flex xs6 text-xs-right>
-                <v-btn outline color="primary" :disabled="selectedTheme === '' ? true: false" @click="save()"><v-icon>save</v-icon>Save</v-btn>
-            </v-flex>
-        </v-layout>
-    </v-container>
-  </v-app>
-  </div>
+                <v-layout row justify-end align-content-end>
+                    <v-flex xs6 text-xs-right>
+                        <v-btn outline color="primary" :disabled="selectedTheme === '' ? true: false" @click="save()"><v-icon>save</v-icon>Save</v-btn>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </v-app>
+    </div>
 </template>
 
 <script lang="ts">
@@ -56,6 +83,7 @@ export default class App extends Vue {
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
     private rebootDialog: boolean = false;
+    private settingsDialog: boolean = false;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
