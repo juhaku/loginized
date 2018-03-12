@@ -23,9 +23,7 @@ function help {
 Provides functionality to alternate login gnome shell theme. Theme must be found under /usr/share/themes in order to
 list as option.
 Definition of arguments.
- -h ............ Shows help
- --help ........ Shows help
- ? ............. Shows help
+ -h | --help | ? Shows help
  install ....... Install action. This needs two additional parameters such as theme and image
  list .......... Lists themes available in /usr/share/themes folder
  start ......... This is startup action, usually there is no need to call this manually
@@ -52,10 +50,6 @@ function extract {
     gsl=$location/$gs
     
     test ! -d $workDir/theme/assets/dot && mkdir -p $workDir/theme/assets/dot
-    # test ! -d $workDir && mkdir $workDir
-    # test ! -d $workDir/theme && mkdir $workDir/theme
-    # test ! -d $workDir/theme/assets && mkdir $workDir/theme/assets
-    # test ! -d $workDir/theme/assets/dot && mkdir $workDir/theme/assets/dot
     test ! -d $workDir/theme/icons && mkdir -p $workDir/theme/icons
     for r in $(gresource list $gsl); do
         gresource extract $gsl $r > $workDir${r/#\/org\/gnome\/shell}

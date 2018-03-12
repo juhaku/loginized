@@ -1,17 +1,17 @@
 <template>
   <div>
     <v-app>
-    <v-dialog v-model="rebootDialog" persistent max-width="40em">
-        <v-card>
-            <v-card-title class="headline">Reboot Computer</v-card-title>
-            <v-card-text>Changes will take affect after reboot, Reboot now?</v-card-text>
-            <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat @click="rebootDialog = false">No</v-btn>
-            <v-btn color="primary" flat @click="reboot()">Yes</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+        <v-dialog v-model="rebootDialog" persistent max-width="40em">
+            <v-card>
+                <v-card-title class="headline">Reboot Computer</v-card-title>
+                <v-card-text>Changes will take affect after reboot, Reboot now?</v-card-text>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn flat @click="rebootDialog = false">No</v-btn>
+                <v-btn color="primary" flat @click="reboot()">Yes</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
       <v-container grid-list-md>
         <v-layout justify-space-around row style="height: 500px;">
             <v-flex xs6>
@@ -43,6 +43,7 @@ import * as fs from 'fs';
 import { throws } from 'assert';
 import * as _ from 'lodash';
 import { exists } from 'fs';
+import * as PerfectScrollbar from 'perfect-scrollbar';
 
 @Component({
     components: {
@@ -82,6 +83,13 @@ export default class App extends Vue {
         });
         this.cliExec('list', false, (error: Error, sdtout: string, stderr: string) =>
             this.updateThemes([...sdtout.split(/\s/).filter((item: string) => item !== '')]));
+    }
+
+    private mounted() {
+        // menu__content menu__content--select  menu__content--dropdown menu__content--autocomplete
+        const contentMenu = this.$el.querySelector('.menu__content');
+        contentMenu.style.overflow = 'hidden';
+        const ps = new PerfectScrollbar('.menu__content');
     }
 
     private save() {
