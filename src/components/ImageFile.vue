@@ -2,11 +2,11 @@
     <div>
         <input type="file" accept="image/*" style="display: none;" @change="update($event)" ref="imageFile" />
         <v-card>
-            <div @click="browseImage($event)" class="pointer">
+            <div @click="browseImage($event)" class="pointer" @dragenter.prevent @dragover.prevent @dragleave.prevent @drop.prevent="dropFiles($event)">
                 <v-card-media :src="imgBlob" height="200px" v-if="imgBlob != ''">
                 </v-card-media>
-                <v-card-title v-else>
-                    <div class="grey-label">No picture selected</div>
+                <v-card-title style="height: 250px !important;" v-else>
+                    <div class="grey-label">Drag and drop or click to select image</div>
                 </v-card-title>
             </div>
             <v-card-actions v-show="imgBlob != ''" >
@@ -20,12 +20,14 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { mixins } from 'vue-class-component';
 import * as fs from 'fs';
 import FileEntry from '../model/FileEntry.ts';
+import * as AbstractFile from './AbstractFile';
 import { State, Mutation } from 'vuex-class';
 
 @Component
-export default class ImageFile extends Vue {
+export default class ImageFile extends mixins(AbstractFile) {
 
     @State('configLocation') private configLocation: string;
     @State('img') private img: string;
@@ -48,44 +50,37 @@ export default class ImageFile extends Vue {
         return this.$refs.imageFile.click();
     }
 
-    private update(event: any) {
-        let name = '';
-        let file: File = {} as File;
-        if (event.target.files.length > 0) {
-            file = event.target.files[0];
-            name = file.name;
-            this.imgBlob = URL.createObjectURL(file);
-
-            const entry = new FileEntry();
-            entry.url = this.imgBlob;
-            entry.file = file;
-            entry.name = name;
-
-            const path = `${this.configLocation}/${entry.getFileName()}`;
-            entry.path = path;
-
-            this.setImg(path);
-            this.$emit('img-change', entry);
-
-            this.writeUploadFile(path, entry);
+    private dropFiles(event: any) {
+        if (event.dataTransfer.files.length === 1) {
+            this.updateFile(event.dataTransfer.files[0]);
         }
+    }
+
+    private update(event: any) {
+        if (event.target.files.length === 1) {
+            this.updateFile(event.target.files[0]);
+        }
+    }
+
+    private updateFile(file: any) {
+        this.imgBlob = URL.createObjectURL(file);
+
+        const entry = new FileEntry();
+        entry.url = this.imgBlob;
+        entry.file = file;
+        entry.name = file.name;
+
+        const path = `${this.configLocation}/${entry.getFileName()}`;
+        entry.path = path;
+
+        this.setImg(path);
+
+        this.writeUploadFile(path, entry).then((retVal: any) => this.$emit('img-change', entry));
     }
 
     private clear() {
         this.setImg('');
         this.$emit('img-change', new FileEntry());
-    }
-
-    private writeUploadFile(name: string, entry: FileEntry) {
-        const reader = new FileReader();
-        reader.onload = (event: any) => {
-            fs.writeFile(name, Buffer.from(event.target.result), (error: NodeJS.ErrnoException) => {
-                if (error) {
-                    throw error;
-                }
-            });
-        };
-        reader.readAsArrayBuffer(entry.file);
     }
 
 }

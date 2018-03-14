@@ -128,6 +128,15 @@ function list {
     ls /usr/share/themes
 }
 
+function updateDefaultTheme {
+    extract Default
+    # Basically update gdm3 css if needed
+    if [[ -f $gdm3 &&  ! -f $installPath/default/gdm3.css ]]; then
+        cp $workDir/theme/gnome-shell.css installPath/default/gdm3.css
+    fi;
+    rm $workDir
+}
+
 # On start functionality
 function onStart {
     installPath=${HOME}/.config/loginized
@@ -187,6 +196,10 @@ case $1 in
     ;;
     start)
         onStart
+    ;;
+    updateDefault)
+        installPath=$2
+        updateDefaultTheme
     ;;
     *)
         notRecognized $1
