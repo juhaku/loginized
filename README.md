@@ -11,11 +11,11 @@ Currently under development. But once available the binaries will be available t
 
 ## Screenshots
 
-[Main Screen](https://github.com/juhaku/loginized/blob/master/screen_1.png)
+![Main Screen](https://github.com/juhaku/loginized/blob/master/screen_1.png)
 
-[Main screen with selections](https://github.com/juhaku/loginized/blob/master/screen_2.png)
+![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screen_2.png)
 
-[Settings](https://github.com/juhaku/loginized/blob/master/screen_3.png)
+![Settings](https://github.com/juhaku/loginized/blob/master/screen_3.png)
 
 ## Things to consider
 
