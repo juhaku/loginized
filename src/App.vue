@@ -12,6 +12,25 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <v-dialog v-model="welcomeDialog" persistent max-width="40em">
+                <v-card>
+                    <v-card-title>
+                        <div style="width: 100% !important;" class="headline">Hello! Choose setup you wish to continue with.</div>          
+                        <!-- <div style="padding-top: 1em !important;">
+                            Welcome, choose setup you wish to continue with.
+                        </div> -->
+                    </v-card-title>
+                    <v-card-text>
+                        
+                        <v-checkbox label="Install .desktop file to /usr/share/applications" v-model="installDesktop"></v-checkbox>
+                        <v-checkbox label="Install cli for loginized to /usr/sbin" v-model="installCli"></v-checkbox>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" flat @click="setup()">Ok</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <v-dialog v-model="errorDialog" persistent>
                 <v-card>
                     <v-card-title color="error" class="headline">
@@ -98,8 +117,9 @@ import { throws } from 'assert';
 import * as _ from 'lodash';
 import { exists } from 'fs';
 import * as PerfectScrollbar from 'perfect-scrollbar';
-import * as opn from 'opn';
 import * as Promise from 'promise';
+import * as opn from 'opn';
+import * as path from 'path';
 
 @Component({
     components: {
@@ -108,7 +128,7 @@ import * as Promise from 'promise';
     },
 })
 export default class App extends Vue {
-    private static BASE_PATH = `${__dirname}/../`;
+    private static BASE_PATH = `${__dirname}/..`;
 
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
@@ -116,16 +136,20 @@ export default class App extends Vue {
     private settingsDialog: boolean = false;
     private defaultTheme: FileEntry | null = null;
     private errorDialog: boolean = false;
-    private error: string | null = 'errror failed to execute /bin/foo.sh, returned 1;';
+    private error: string | null = null;
+    private installDesktop = true;
+    private installCli = false;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
     @State('theme') private theme: string;
+    @State('welcomeSetup') private welcomeDialog: boolean;
 
     @Mutation private updateThemes: ({ }) => {};
     @Mutation private setConfigLocation: ({ }) => {};
     @Mutation private setImg: ({ }) => {};
     @Mutation private setTheme: ({ }) => {};
+    @Mutation private setWelcomeDialog: ({ }) => {};
 
     private created() {
         this.cliExec('start', false).then((stdout: any) => {
@@ -138,17 +162,20 @@ export default class App extends Vue {
             }
 
             this.setConfigLocation(stdout.trim());
-        }).catch((error: any) => this.showError(error));
+        }, (error: any) => this.showError(error));
 
         this.cliExec('list', false).then((stdout: string) =>
-            this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]))
-            .catch((error: any) => this.showError(error));
+            this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
+                (error: any) => this.showError(error));
     }
 
     private mounted() {
         const contentMenu = this.$el.querySelector('.menu__content');
         contentMenu.style.overflow = 'hidden';
         const ps = new PerfectScrollbar('.menu__content');
+        if (this.welcomeDialog === undefined) {
+            this.setWelcomeDialog(true);
+        }
     }
 
     private save() {
@@ -158,20 +185,19 @@ export default class App extends Vue {
 
         this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
             true).then((stdout: any) => {
-                const state = _.cloneDeep(this.$store.state);
-                fs.writeFile(`${this.configLocation}/config.json`,
-                    JSON.stringify(state), (nerr: NodeJS.ErrnoException) => {
-                        if (nerr) {
-                            throw nerr;
-                        }
-                        this.rebootDialog = true;
-                    });
-            }).catch((error: any) => this.showError(error));
+                this.writeConfig().then((status: any) => {
+                    this.rebootDialog = true;
+                }, (error: any) => this.showError(error));
+            }, (error: any) => this.showError(error));
     }
 
     private reboot() {
         this.rebootDialog = false;
-        this.exec('gnome-session-quit --reboot').catch((error: any) => this.showError(error));
+        this.exec('gnome-session-quit --reboot').catch((error: any) => {
+            if (!error.includes('Operation was cancelled')) {
+                this.showError(error);
+            }
+        });
     }
 
     @Watch('selectedTheme') private updateThemeChanges(theme: string, oldTheme: string) {
@@ -179,7 +205,7 @@ export default class App extends Vue {
     }
 
     private cliExec(command: string, sudo: boolean): Promise<any> {
-        return this.exec(`${sudo ? 'pkexec ' : ''}${App.BASE_PATH}loginized-cli.sh ${command}`);
+        return this.exec(`${sudo ? 'pkexec ' : ''}${App.BASE_PATH}/loginized-cli.sh ${command}`);
     }
 
     private exec(command: string): Promise<any> {
@@ -197,8 +223,8 @@ export default class App extends Vue {
         // We want to explicitly name the default theme to gnome-shell-theme.gresource
         const nameWithPath = `${this.configLocation}/default/gnome-shell-theme.gresource`;
         this.$refs.defaultThemeFile.writeUploadFile(nameWithPath, file).then((retVal: any) =>
-            this.cliExec('updateDefault', false).then((stdout: any) => this.$refs.defaultThemeFile.clear())
-                .catch((error: any) => this.showError(error)));
+            this.cliExec('updateDefault', false)
+            .then((stdout: any) => this.$refs.defaultThemeFile.clear(), (error: any) => this.showError(error)));
     }
 
     private openLink(link: string) {
@@ -213,6 +239,37 @@ export default class App extends Vue {
     private closeError(error: any) {
         this.errorDialog = false;
         this.error = null;
+    }
+
+    private setup() {
+        this.setWelcomeDialog(false);
+
+        let command = ``;
+        if (this.installCli) {
+            command += `${App.BASE_PATH}/loginized.desktop,`;
+        }
+        if (this.installDesktop) {
+            command += `${App.BASE_PATH}/loginized-cli.sh,`;
+        }
+        command += `${path.resolve(App.BASE_PATH, '../../')}`;
+
+        this.cliExec(`setupApp ${command}`, true)
+            .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
+            .catch((error) => this.showError(error));
+    }
+
+    private writeConfig(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const state = _.cloneDeep(this.$store.state);
+
+            fs.writeFile(`${this.configLocation}/config.json`,
+                JSON.stringify(state), (nerr: NodeJS.ErrnoException) => {
+                    if (nerr) {
+                        reject(nerr);
+                    }
+                    resolve('OK');
+                });
+        });
     }
 
 }

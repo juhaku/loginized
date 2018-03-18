@@ -9,6 +9,7 @@ export default new Vuex.Store({
     configLocation: '',
     img: '',
     theme: '',
+    welcomeSetup: undefined,
   },
   mutations: {
     updateThemes(state: any, themes: []) {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     setTheme(state: any, theme: string) {
       state.theme = theme;
+    },
+    setWelcomeDialog(state: any, welcome: boolean) {
+      state.welcomeSetup = welcome;
     },
   },
   actions: {

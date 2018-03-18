@@ -168,6 +168,24 @@ function reboot {
     fi;
 }
 
+function setupApplication {
+    cli=$(echo $1 | cut -d ',' -f 1)
+    desktop=$(echo $1 | cut -d ',' -f 2)
+    appFolder=$(echo $1 | cut -d ',' -f 3)
+
+    if [ "$cli" != "" ]; then
+        cp $cli /usr/bin/loginized-cli    
+    fi;
+
+    # TODO missing icon
+
+    if [ "$desktop" != "" ]; then
+        cp $desktop /usr/share/applications/loginized.desktop
+        cp -r $appFolder /usr/lib/loginized
+        ln -s /usr/bin/loginized /usr/lib/loginized/loginized
+    fi;
+}
+
 # Determine whether we need help
 if [[  "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
@@ -200,6 +218,9 @@ case $1 in
     updateDefault)
         installPath=$2
         updateDefaultTheme
+    ;;
+    setupApp)
+        setupApplication $2
     ;;
     *)
         notRecognized $1

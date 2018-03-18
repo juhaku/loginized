@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Loginized
+Comment=Loginized Dekstop
+GenericName=Loginized GDM Login theme manager.
+Exec=/usr/bin/lognized
+Icon=/usr/share/pixmaps/slack.png
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;GMD;Settings;
+MimeType=x-scheme-handler/loginized;
