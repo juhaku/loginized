@@ -179,10 +179,10 @@ function setupApplication {
     fi;
 
     if [ "$desktop" != "" ]; then
-        cp $desktop /usr/share/applications/loginized.desktop
+        cp $desktop /usr/share/applications/Loginized.desktop
         cp -r $appFolder /usr/lib/loginized
         cp $icon /usr/share/pixmaps/loginized.png
-        ln -s /usr/lib/loginized/loginized /usr/bin/loginized
+        ln -s /usr/lib/loginized/Loginized /usr/bin/loginized
     fi;
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "loginized",
+  "name": "Loginized",
   "description": "Loginized Gnome GDM Login Theme Manager",
   "version": "0.1.0",
   "private": true,
@@ -20,27 +20,26 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": [
-          "zip"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "zip",
-          "deb",
-          "rpm"
-        ]
+        "win32": ["zip"],
+        "darwin": ["zip"],
+        "linux": ["zip", "deb", "rpm"]
       },
       "electronPackagerConfig": {
-        "packageManager": "yarn"
+        "packageManager": "yarn",
+        "icon": "./src/assets/icon_3@3x.png"
       },
       "electronRebuildConfig": {},
       "electronWinstallerConfig": {},
       "electronInstallerDMG": {},
       "electronInstallerFlatpak": {},
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
+      "electronInstallerDebian": {
+        "icon": "./src/assets/icon_3@3x.png",
+        "categories": ["Utility"]
+      },
+      "electronInstallerRedhat": {
+        "icon": "./src/assets/icon_3@3x.png",
+        "categories": ["Utility"]
+      },
       "electronInstallerSnap": {}
     }
   },
@@ -80,20 +79,9 @@
       "autoprefixer": {}
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
+  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"],
   "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "vue"
-    ],
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "vue"],
     "transform": {
       "^.+\\.vue$": "vue-jest",
       "^.+\\.tsx?$": "ts-jest"
@@ -101,9 +89,7 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
+    "snapshotSerializers": ["jest-serializer-vue"],
     "mapCoverage": true
   }
 }

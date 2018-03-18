@@ -2,7 +2,7 @@
 Name=Loginized
 Comment=Loginized Dekstop
 GenericName=Loginized GDM Login theme manager
-Exec=loginized
+Exec=Loginized
 Icon=loginized
 Type=Application
 StartupNotify=true

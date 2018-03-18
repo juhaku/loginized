@@ -18,8 +18,7 @@
                         <div style="width: 100% !important;" class="headline">Hello! Choose setup you wish to continue with.</div>
                     </v-card-title>
                     <v-card-text>
-                        
-                        <v-checkbox label="Install .desktop file to /usr/share/applications" v-model="installDesktop"></v-checkbox>
+                        <v-checkbox label="Install .desktop file to /usr/share/applications" v-model="installDesktop" :disabled="desktopDisabled"></v-checkbox>
                         <v-checkbox label="Install cli for loginized to /usr/bin" v-model="installCli"></v-checkbox>
                     </v-card-text>
                     <v-card-actions>
@@ -136,6 +135,7 @@ export default class App extends Vue {
     private error: string | null = null;
     private installDesktop = true;
     private installCli = false;
+    private desktopDisabled = false;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
@@ -171,6 +171,11 @@ export default class App extends Vue {
         contentMenu.style.overflow = 'hidden';
         const ps = new PerfectScrollbar('.menu__content');
         if (this.welcomeDialog === undefined) {
+            // If desktop file is already installed do not offer installation.
+            if (fs.existsSync('/usr/share/applications/Loginized.desktop')) {
+                this.installDesktop = false;
+                this.desktopDisabled = true;
+            }
             this.setWelcomeDialog(true);
         }
     }
@@ -247,12 +252,13 @@ export default class App extends Vue {
 
         let command = ``;
         if (this.installCli) {
-            command += `${App.BASE_PATH}/loginized-cli.sh,`;
+            command += `${App.BASE_PATH}/loginized-cli.sh`;
         }
+        command += ',';
         if (this.installDesktop) {
-            command += `${App.BASE_PATH}/loginized.desktop,`;
+            command += `${App.BASE_PATH}/Loginized.desktop`;
         }
-        command += `${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
+        command += `,${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
 
         this.cliExec(`setupApp ${command}`, true)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
