@@ -23,7 +23,7 @@
                     <v-card-text>
                         
                         <v-checkbox label="Install .desktop file to /usr/share/applications" v-model="installDesktop"></v-checkbox>
-                        <v-checkbox label="Install cli for loginized to /usr/sbin" v-model="installCli"></v-checkbox>
+                        <v-checkbox label="Install cli for loginized to /usr/bin" v-model="installCli"></v-checkbox>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
