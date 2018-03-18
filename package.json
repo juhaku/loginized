@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "./electron/main.js",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "author": {
     "name": "Juha Kukkonen",
     "email": "juha7kukkonen@gmail.com",
