@@ -11,7 +11,7 @@ Currently under development. But once available the binaries will be available t
 
 # License
 
-This product is distrubuted under GPL-3.0 licence and all the files outcluding thrid parties are subsequent to the license. [LICENSE](https://github.com/juhaku/loginized/blob/master/LICENSE)
+This product is distrubuted under GPL-3.0 license and all files outcluding thrid parties are subsequent to the license. [LICENSE](https://github.com/juhaku/loginized/blob/master/LICENSE)
 
 ## Things to consider
 
