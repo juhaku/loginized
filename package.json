@@ -1,8 +1,15 @@
 {
   "name": "loginized",
+  "description": "Loginized Gnome GDM Login Theme Manager",
   "version": "0.1.0",
   "private": true,
   "main": "./electron/main.js",
+  "license": "MIT",
+  "author": {
+    "name": "Juha Kukkonen",
+    "email": "juha7kukkonen@gmail.com",
+    "url": "https://github.com/juhaku/loginized"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -20,10 +27,14 @@
           "zip"
         ],
         "linux": [
-          "zip"
+          "zip",
+          "deb",
+          "rpm"
         ]
       },
-      "electronPackagerConfig": {},
+      "electronPackagerConfig": {
+        "packageManager": "yarn"
+      },
       "electronRebuildConfig": {},
       "electronWinstallerConfig": {},
       "electronInstallerDMG": {},
@@ -37,7 +48,6 @@
     "@types/lodash": "^4.14.104",
     "@types/opn": "^5.1.0",
     "electron-compile": "^6.4.2",
-    "electron-forge": "^5.1.1",
     "iview": "^2.9.2",
     "lodash": "^4.17.5",
     "opn": "^5.3.0",
@@ -58,6 +68,7 @@
     "@vue/cli-service": "^3.0.0-beta.1",
     "@vue/devtools": "^1.0.2",
     "@vue/test-utils": "^1.0.0-beta.10",
+    "electron-forge": "^5.1.1",
     "electron-prebuilt-compile": "1.8.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",

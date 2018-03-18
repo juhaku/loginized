@@ -15,10 +15,7 @@
             <v-dialog v-model="welcomeDialog" persistent max-width="40em">
                 <v-card>
                     <v-card-title>
-                        <div style="width: 100% !important;" class="headline">Hello! Choose setup you wish to continue with.</div>          
-                        <!-- <div style="padding-top: 1em !important;">
-                            Welcome, choose setup you wish to continue with.
-                        </div> -->
+                        <div style="width: 100% !important;" class="headline">Hello! Choose setup you wish to continue with.</div>
                     </v-card-title>
                     <v-card-text>
                         
@@ -188,7 +185,11 @@ export default class App extends Vue {
                 this.writeConfig().then((status: any) => {
                     this.rebootDialog = true;
                 }, (error: any) => this.showError(error));
-            }, (error: any) => this.showError(error));
+            }, (error: any) => {
+                if (!error.includes('Command failed: pkexec')) {
+                    this.showError(error);
+                }
+            });
     }
 
     private reboot() {
@@ -255,7 +256,11 @@ export default class App extends Vue {
 
         this.cliExec(`setupApp ${command}`, true)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
-            .catch((error) => this.showError(error));
+            .catch((error) => {
+                if (!error.includes('Command failed: pkexec')) {
+                    this.showError(error);
+                }
+            });
     }
 
     private writeConfig(): Promise<any> {
