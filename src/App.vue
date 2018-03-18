@@ -246,12 +246,12 @@ export default class App extends Vue {
 
         let command = ``;
         if (this.installCli) {
-            command += `${App.BASE_PATH}/loginized.desktop,`;
-        }
-        if (this.installDesktop) {
             command += `${App.BASE_PATH}/loginized-cli.sh,`;
         }
-        command += `${path.resolve(App.BASE_PATH, '../../')}`;
+        if (this.installDesktop) {
+            command += `${App.BASE_PATH}/loginized.desktop,`;
+        }
+        command += `${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
 
         this.cliExec(`setupApp ${command}`, true)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))

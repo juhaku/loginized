@@ -17,7 +17,9 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  const icon = electron.nativeImage.createFromPath(path.resolve(__dirname, '../src/assets/icon_3.png'))
+  mainWindow = new BrowserWindow({width: 800, height: 600, icon: icon, title: 'Loginized'})
+
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -27,7 +29,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-   mainWindow.webContents.openDevTools()
+  //  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

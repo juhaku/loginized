@@ -172,17 +172,17 @@ function setupApplication {
     cli=$(echo $1 | cut -d ',' -f 1)
     desktop=$(echo $1 | cut -d ',' -f 2)
     appFolder=$(echo $1 | cut -d ',' -f 3)
+    icon=$(echo $1 | cut -d ',' -f 4)
 
     if [ "$cli" != "" ]; then
         cp $cli /usr/bin/loginized-cli    
     fi;
 
-    # TODO missing icon
-
     if [ "$desktop" != "" ]; then
         cp $desktop /usr/share/applications/loginized.desktop
         cp -r $appFolder /usr/lib/loginized
-        ln -s /usr/bin/loginized /usr/lib/loginized/loginized
+        cp $icon /usr/share/pixmaps/loginized.png
+        ln -s /usr/lib/loginized/loginized /usr/bin/loginized
     fi;
 }
 
