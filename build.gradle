@@ -90,6 +90,7 @@ uploadArchives {
 }
 
 task revert(type: Exec) {
+    restoreRollbackVersion()
     commandLine './integrity.sh', 'rollback'
 }
 revert.description = 'Rollback commit on release failure'
@@ -118,28 +119,18 @@ commitNewVersion
 commitNewVersion.dependsOn updateAppVersion
 
 def released = false
-boolean failure = false
 gradle.taskGraph.beforeTask { Task task ->
     if (task.name == 'release' && !released) {
         released = true
+        revert.enabled = false
         project.ext['rollbackVersion'] = project.version
     }
 }
 
 gradle.taskGraph.afterTask { Task task, TaskState state ->
     if (state.failure && released) {
-        failure = true
         // revert();
-    }
-}
-
-tasks.addRule("Failure revert") { String taskName ->
-    println taskName
-    if (failure) {
-        restoreRollbackVersion()
-        task('rollback', type: Exec) {
-            commandLine './integrity.sh', 'rollback'
-        }
+        revert.enabled = true
     }
 }
 
@@ -151,6 +142,9 @@ void restoreRollbackVersion() {
         }
     }
 }
+
+project.tasks.release.dependsOn revert
+revert.mustRunAfter project.tasks.release
 
 void revert() {
     restoreRollbackVersion()
