@@ -36,8 +36,12 @@ release {
     }
 }
 
+def debFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_amd64.deb")
+def rpmFile = file("./out/make/${rootProject.name}-${project.version.replace("-SNAPSHOT", "")}.x86_64.rpm")
+def zipFile = file("./out/make/${rootProject.name}-linux-x64-${project.version.replace("-SNAPSHOT", "")}.zip") 
+
 artifacts {
-    archives file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_amd64.deb") file("./out/make/${rootProject.name}-${project.version.replace("-SNAPSHOT", "")}.x86_64.rpm") file("./out/make/${rootProject.name}-linux-x64-${project.version.replace("-SNAPSHOT", "")}.zip")
+    archives debFile, rpmFile, zipFile
 }
 
 signing {
