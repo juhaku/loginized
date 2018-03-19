@@ -8,7 +8,7 @@ function updateVersion {
 }
 
 function revert {
-    git commit -am 'auto revert commit for rollbacking release changes from memory' && git push
+    git commit -am 'Gradle Release: Automatic revert commit for rollbacking release changes from memory' && git push
 }
 
 currentVersion=$(grep version gradle.properties | sed s/.*=//)
@@ -16,6 +16,7 @@ currentVersion=$(grep version gradle.properties | sed s/.*=//)
 if [ "$1" == "release" ]; then
     updateVersion $(echo $currentVersion | sed "s/-SNAPSHOT//")
     yarn electron-forge make
+    git commit -am 'Gradle Release: Automatic version upgrade' && git push
 elif [ "$1" == "rollback" ]; then
     updateVersion $currentVersion
     revert
