@@ -15,7 +15,7 @@ currentVersion=$(grep version gradle.properties | sed s/.*=//)
 
 if [ "$1" == "release" ]; then
     v=$(echo $currentVersion | sed "s/-SNAPSHOT//")
-    updateVersion
+    updateVersion $v
     rm -rf out/make
     rm -rf build
     yarn electron-forge make
