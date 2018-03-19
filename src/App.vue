@@ -55,7 +55,7 @@
                                 <File :max-files="1" accept=".gresource" v-on:file-upload="defaultTheme = $event[0]" ref="defaultThemeFile" />
                             </div>
                             <div class="box__100">
-                                <p style="margin: 0 !important;">&copy; Juha Kukkonen - All Rights Reserved - <a href="https://github.com/juhaku/loginized" @click.prevent="openLink($event.currentTarget.href)">https://github.com/juhaku/loginized</a> - v x.x.x</p>
+                                <p style="margin: 0 !important;">&copy; Juha Kukkonen - All Rights Reserved - <a href="https://github.com/juhaku/loginized" @click.prevent="openLink($event.currentTarget.href)">https://github.com/juhaku/loginized</a> - v {{getVersion()}}</p>
                             </div>
                         </div>
                     </v-card-text>
@@ -148,6 +148,10 @@ export default class App extends Vue {
     @Mutation private setImg: ({ }) => {};
     @Mutation private setTheme: ({ }) => {};
     @Mutation private setWelcomeDialog: ({ }) => {};
+
+    private getVersion() {
+        return App.VERSION;
+    }
 
     private created() {
         this.cliExec('start', false).then((stdout: any) => {
