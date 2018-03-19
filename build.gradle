@@ -55,12 +55,6 @@ uploadArchives {
         repository(url: repositoryURL) { //repositoryURL
             authentication(userName: gradleArtifactoryUser, password: gradleArtifactoryPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
         }
-        addFilter('deb') {artifact, file ->
-            artifact.name.endsWith('deb')
-        }
-        addFilter('rpm') {artifact, file ->
-            artifact.name.endsWith('rpm')
-        }
 
         pom.project {
             name rootProject.name
