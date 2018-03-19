@@ -104,14 +104,14 @@ createReleaseTag.dependsOn uploadArchives
 preTagCommit.dependsOn updatePomVersion
 
 task releaseBuild(type: Exec) {
-    commandLine "/usr/bin/yarn electron-forge make"
+    commandLine './integrity.sh', 'release'
 }
 releaseBuild.description = "Builds distribution versions of app"
 
 project.tasks.release.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
-    commandLine './integrity.sh', 'release'
+    commandLine './integrity.sh', 'update-version'
 }
 updateAppVersion.description = "Updates current version to application"
 

@@ -14,8 +14,10 @@ function revert {
 currentVersion=$(grep version gradle.properties | sed s/.*=//)
 
 if [ "$1" == "release" ]; then
-    updateVersion $currentVersion
+    yarn electron-forge make
 elif [ "$1" == "rollback"]; then
     updateVersion $currentVersion
     revert
+elif [ "$1" == "update-version" ]; then
+    updateVersion $currentVersion
 fi;
