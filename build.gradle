@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.researchgate:gradle-release:2.6.0'
+        classpath 'net.researchgate:gradle-release:2.4.0'
     }
 }
 
@@ -15,7 +15,7 @@ allprojects {
 
 apply plugin: 'net.researchgate.release'
 apply plugin: 'maven'
-apply plugin: 'signing'
+// apply plugin: 'signing'
 
 repositories {
     mavenCentral()
@@ -44,13 +44,13 @@ artifacts {
     archives debFile, rpmFile, zipFile
 }
 
-signing {
-    sign configurations.archives
-}
+// signing {
+//     sign configurations.archives
+// }
 
 uploadArchives {
     repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        // beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
         repository(url: repositoryURL) { //repositoryURL
             authentication(userName: gradleArtifactoryUser, password: gradleArtifactoryPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
@@ -60,7 +60,6 @@ uploadArchives {
             name rootProject.name
             groupId 'juhaku.gnome'
             artifactId 'loginized'
-            packaging 'zip'
             version = project.version
             description 'Gnome GDM Login Theme Manager'
             url repositoryURL
@@ -94,7 +93,7 @@ task revert(type: Exec) {
 revert.description = 'Rollback commit on release failure'
 
 task ('updatePomVersion') {
-    release.tagTemplate = "${rootProject.name}-$version".replace("-SNAPSHOT", "")
+    release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
 
