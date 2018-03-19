@@ -36,13 +36,8 @@ release {
     }
 }
 
-task makeDists(type: Zip) {
-    from './out/make'
-    into './out/'
-}
-
 artifacts {
-    archives makeDists
+    archives file('./out/distributions.zip')
 }
 
 signing {
