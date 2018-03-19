@@ -14,10 +14,14 @@ function revert {
 currentVersion=$(grep version gradle.properties | sed s/.*=//)
 
 if [ "$1" == "release" ]; then
-    updateVersion $(echo $currentVersion | sed "s/-SNAPSHOT//")
+    v=$(echo $currentVersion | sed "s/-SNAPSHOT//")
+    updateVersion
     rm -rf out/make
     rm -rf build
     yarn electron-forge make
+    mv out/make/*.deb Loginized_$v_x64.deb    
+    mv out/make/*.rpm Loginized_$v_x64.rpm
+    mv out/make/*.zip Loginized_$v_x64.zip
     git commit -am 'Gradle Release: Automatic version upgrade' && git push
 elif [ "$1" == "rollback" ]; then
     updateVersion $currentVersion
