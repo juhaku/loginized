@@ -104,7 +104,7 @@ createReleaseTag.dependsOn uploadArchives
 preTagCommit.dependsOn updatePomVersion
 
 task releaseBuild(type: Exec) {
-    commandLine "$projectDir/node_modules/yarn electron-forge", "make"
+    commandLine "$projectDir/node_modules/yarn electron-forge make"
 }
 releaseBuild.description = "Builds distribution versions of app"
 
