@@ -107,7 +107,7 @@ task releaseBuild(type: Exec) {
 }
 releaseBuild.description = "Builds distribution versions of app"
 
-project.tasks.release.dependsOn releaseBuild
+project.tasks.runBuildTasks.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
     commandLine './integrity.sh', 'update-version'
