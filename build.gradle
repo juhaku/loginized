@@ -135,9 +135,6 @@ gradle.taskGraph.afterTask { Task task, TaskState state ->
     }
 }
 
-revert.dependsOn failure
-revert.shouldRunAfter failure
-
 void restoreRollbackVersion() {
     if (project.ext.has('rollbackVersion')) {
         version = project.ext['rollbackVersion']
