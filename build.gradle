@@ -37,7 +37,7 @@ release {
 }
 
 artifacts {
-    archives file('./out/distributions.zip')
+    archives file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_amd64.deb") file("./out/make/${rootProject.name}-${project.version.replace("-SNAPSHOT", "")}.x86_64.rpm") file("./out/make/${rootProject.name}-linux-x64-${project.version.replace("-SNAPSHOT", "")}.zip")
 }
 
 signing {

@@ -18,7 +18,6 @@ if [ "$1" == "release" ]; then
     rm -rf out/make
     rm -rf build
     yarn electron-forge make
-    zip -r out/distributions.zip out/make
     git commit -am 'Gradle Release: Automatic version upgrade' && git push
 elif [ "$1" == "rollback" ]; then
     updateVersion $currentVersion
