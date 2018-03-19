@@ -16,6 +16,7 @@ currentVersion=$(grep version gradle.properties | sed s/.*=//)
 if [ "$1" == "release" ]; then
     updateVersion $(echo $currentVersion | sed "s/-SNAPSHOT//")
     rm -rf out/make
+    rm -rf build
     yarn electron-forge make
     git commit -am 'Gradle Release: Automatic version upgrade' && git push
 elif [ "$1" == "rollback" ]; then
