@@ -1,0 +1,147 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'net.researchgate:gradle-release:2.6.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+apply plugin: 'net.researchgate.release'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url repositoryURL
+        credentials {
+            username = gradleArtifactoryUser
+            password = gradleArtifactoryPassword
+        }
+    }
+}
+
+release {
+    tagTemplate = "v$version".replace("-SNAPSHOT", "")
+    git {
+        requireBranch = 'master'
+    }
+}
+
+task makeDists(type: Zip) {
+    from './out/make'
+    into './out/'
+}
+
+artifacts {
+    archives makeDists
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: repositoryURL) { //repositoryURL
+            authentication(userName: gradleArtifactoryUser, password: gradleArtifactoryPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
+        }
+
+        pom.project {
+            name rootProject.name
+            groupId 'juhaku.gnome'
+            artifactId 'loginized'
+            packaging 'zip'
+            version = project.version
+            description 'Gnome GDM Login Theme Manager'
+            url repositoryURL
+
+            scm {
+                connection repositoryURL
+                developerConnection repositoryURL
+                url repositoryURL
+            }
+
+            licenses {
+                license {
+                    name 'GNU General Public License v3.0'
+                    url 'https://opensource.org/licenses/GPL-3.0'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'juhaku'
+                    name 'Juha Kukkonen'
+                }
+            }
+        }
+    }
+}
+
+task revert(type: Exec) {
+    commandLine './integrity.sh', 'rollback'
+}
+revert.description = 'Rollback commit on release failure'
+
+task ('updatePomVersion') {
+    release.tagTemplate = "${rootProject.name}-$version".replace("-SNAPSHOT", "")
+    uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
+}
+
+createReleaseTag.dependsOn uploadArchives
+preTagCommit.dependsOn updatePomVersion
+
+task releaseBuild(type: Exec) {
+    commandLine 'yarn electron-forge', 'make'
+}
+releaseBuild.description = "Builds distribution versions of app"
+
+project.tasks.release.dependsOn releaseBuild
+
+task updateAppVersion(type: Exec) {
+    commandLine './integrity.sh', 'release'
+}
+updateAppVersion.description = "Updates current version to application"
+
+commitNewVersion
+commitNewVersion.dependsOn updateAppVersion
+
+def released = false
+gradle.taskGraph.beforeTask { Task task ->
+    if (task.name == 'release' && !released) {
+        released = true
+        project.ext['rollbackVersion'] = project.version
+    }
+}
+
+gradle.taskGraph.afterTask { Task task, TaskState state ->
+    if (state.failure && released) {
+        revert();
+    }
+}
+
+void restoreRollbackVersion() {
+    if (project.ext.has('rollbackVersion')) {
+        version = project.ext['rollbackVersion']
+        ant.propertyfile(file: 'gradle.properties') {
+            entry(key: 'version', value: project.ext['rollbackVersion'])
+        }
+    }
+}
+
+void revert() {
+    restoreRollbackVersion()
+    revert.execute()
+}

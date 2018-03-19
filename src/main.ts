@@ -2,10 +2,7 @@ import * as Vue from 'vue';
 import * as App from './App.vue';
 import store from './store';
 import './plugins/shell.ts';
-// import * as iView from 'iview';
-// import locale from 'iview/dist/locale/en-US';
 
-// import './less/iview-custom.less';
 import * as Vuetify from 'vuetify';
 
 Vue.use(Vuetify, {
@@ -19,7 +16,6 @@ Vue.use(Vuetify, {
     success: "#4caf50"
   }
 });
-// Vue.use(iView, { locale });
 
 Vue.config.productionTip = false;
 
