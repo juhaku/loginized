@@ -4,6 +4,7 @@ node_modules
 gradle
 .gradle
 gradlew
+build
 
 # local env files
 .env.local
