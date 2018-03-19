@@ -143,7 +143,6 @@ void restoreRollbackVersion() {
     }
 }
 
-project.tasks.release.dependsOn revert
 revert.mustRunAfter project.tasks.release
 
 void revert() {
