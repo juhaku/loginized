@@ -209,7 +209,7 @@ function updateDefaultTheme {
 # On start functionality
 function onStart {
     gui=$1
-    installPath=${HOME}/.config/loginized
+    installPath=${HOME}/.config/Loginized
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $installPath/default/$gs ]; then
