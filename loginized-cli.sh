@@ -7,7 +7,7 @@
 # Global variables
 # defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
-executionPath=`pwd`
+executionPath=$(pwd)
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 
@@ -20,28 +20,59 @@ function notRecognized {
 
 function help {
     echo "Usage: loginized-cli.sh [-h | --help | ?] | [action] [theme] [image]
-Provides functionality to alternate login gnome shell theme. Theme must be found under /usr/share/themes in order to
-list as option.
+Provides functionality to alternate login gnome shell theme. Theme must be found under 
+/usr/share/themes in order to list as option.
 Definition of arguments.
- -h | --help | ? Shows help
- install ....... Install action. This needs two additional parameters such as theme and image
- list .......... Lists themes available in /usr/share/themes folder
- start ......... This is startup action, usually there is no need to call this manually
- reboot ........ Reboots system no questions asked, there is no need to call this manually
+ -h | --help | ? .... Shows help
+ install ............ Install theme. First parameter is the theme itself that is being installed and
+                      the second and parameter is additional background image with path to it
+                      if installed via cli. 
+ list ............... Lists themes available in /usr/share/themes folder. Note all themes that are 
+                      located there is not available this is due missing gnome-shell-theme.gresource
+                      for one reason or another. In such scenario you could manually compile the theme
+                      using compile option of this tool and place it under gnome-shell folder of
+                      the theme. This would make the theme available for this tool.
+ start .............. This is startup action, usually there is no need to call this manually
+ reboot ............. Reboots system no questions asked, there is no need to call this manually
+ extract ............ Extracts theme to /tmp/shell/theme folder. Additionally target folder 
+                      may be provided where to extract content.
+ compile ............ Compiles theme and places it to provided folder.
  
 Examples.
- loginized-cli.sh list    This example will list available themes
+ loginized-cli.sh list    This will list available themes. These themes are available for this tool.
  
- loginized-cli.sh install Adapta my-background.png    This example will install Adapta theme from /usr/share/themes with 
-                                                      my-bakcground.png as background image
+ loginized-cli.sh install /home/user/.config/loginized Adapta my-background.png    
+    This example will install Adapta theme from /usr/share/themes with my-bakcground.png as 
+    background image
  
- loginized-cli.sh install Default    This example will install default theme as login theme
+ loginized-cli.sh install /home/user/.config/loginized Default
+    This example will install default theme as login theme
  
- loginized-cli.sh install Adapta    This example will install Adapta theme as login theme without any modifications"
+ loginized-cli.sh install /home/user/.config/loginized Adapta
+    This example will install Adapta theme as login theme without any modifications
+        
+ loginized-cli.sh extract Adapta-Eta
+    This will extract Adata-Eta theme from /usr/share/themes to extract folder. If folder is not 
+    found it will be created
+ 
+ loginized-cli.sh extract Adapta-Nokto /path/to/my/custom/location
+    This will extract Adapta-Nokto theme from /usr/share/themes place extracted content to provided
+    custom location. Custom location must be a folder. This will also create a folder like name of 
+    the theme + extracted e.g Adapta-Nokto-extracted to provided custom location
+
+ loginized-cli.sh compile /path/to/theme/root/folder /path/to/target/folder
+    This will compile theme sources to .gresource file in given source path. Theme root folder
+    must containt the gnome-shell.css file and rest of sources accordingly. Target folder must be a 
+    valid location and it is used to place the compiled .gresource file."
 }
 
+# Extracts theme (.gresource)
 function extract {
     theme=$1
+    
+    # Clear existing theme content from work dir so there wont be any funny collisions
+    test -d $workDir/theme && rm -r $workDir/theme
+    
     if [ "$theme" == "Default" ]; then
         location=$installPath/default
     else
@@ -54,9 +85,46 @@ function extract {
     for r in $(gresource list $gsl); do
         gresource extract $gsl $r > $workDir${r/#\/org\/gnome\/shell}
     done
+
+    if [ -d "$2" ]; then
+        mkdir $2/"$theme"-extracted
+        cp -r /tmp/shell/theme $2/"$theme"-extracted 
+    fi;
 }
 
-# Install gdm3 css file if it is being used by the operating system. Ubuntu newer than 16.10 uses it.
+trimmed=""
+# Trims last slash from provider parameter
+function trimLastSlash {
+    if [ "$(echo $1 | rev | cut -c 1)" == "/" ]; then
+        trimmed=$(echo $1 | rev | cut -c 2- | rev)
+    else 
+        trimmed=$1
+    fi;
+}
+
+# Compiles theme in source location and places compiled theme to target location
+function compile {
+    trimLastSlash $1
+    source=$trimmed
+    trimLastSlash $2
+    target=$trimmed
+
+    #Generate gresource xml file for current theme
+    resourceFiles=$(for file in $(find $source -type f | sed "s|$source||" | cut -c 2-); do echo "<file>$file</file>"; done)
+    gresourceXml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<gresources>
+  <gresource prefix=\"/org/gnome/shell/theme\">
+    $resourceFiles
+  </gresource>
+</gresources>"
+    echo $gresourceXml > $source/$gs.xml
+
+    glib-compile-resources --sourcedir=$source $source/$gs.xml
+    
+    cp $source/$gs "$target/$gs"
+}
+
+# Install gdm3 css file if it is being used by the operating system. Ubuntu newer than 16.10 uses it
 function installGdm3Css {
     from=$1
     if [ -f $gdm3 ]; then 
@@ -79,10 +147,11 @@ function installDefault {
     installGdm3Css $installPath/default/gdm3.css
 }
 
-# Install theme $1=theme, $2=image
+# Install theme $1=theme, $2=image, $3=gui
 function install {
     theme=$1
     image=$2
+    gui=$3
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
     
@@ -94,40 +163,37 @@ function install {
         test ${#image} -eq 0 && echo "Image is not defined $image, cannot continue installation" && exit 1;
         extract $theme
 
-        dialogCss="#lockDialogGroup { background: #2e3436 url(\"resource:\/\/\/org\/gnome\/shell\/theme\/$image\"); background-repeat: none; background-size: cover; }"
+        tempImage=$(basename $image)
+        dialogCss="#lockDialogGroup { background: #2e3436 url(\"resource:\/\/\/org\/gnome\/shell\/theme\/$tempImage\"); background-repeat: none; background-size: cover; }"
 
         location=/usr/share/gnome-shell
         workLocation=$workDir/theme
         
-        cp $installPath/$image $workLocation/.
+        # When processed from gui image is saved to $installPath
+        if [ "$gui" == "gui" ]; then
+            cp $installPath/$image $workLocation/.
+        else 
+            cp $image $workLocation/.        
+        fi;
 
         sed -i "/#lockDialogGroup/,/}/ { /#lockDialogGroup/ { s/.*// }; /}/ ! { s/.*// }; /}/ { s/.*/$dialogCss/ }; }" $workLocation/gnome-shell.css
         
-        #Generate gresource xml file for current theme
-        resourceFiles=$(for file in $(find $workLocation -type f | sed "s|$workLocation||" | cut -c 2-); do echo "<file>$file</file>"; done)
-        gresourceXml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<gresources>
-  <gresource prefix=\"/org/gnome/shell/theme\">
-    $resourceFiles
-  </gresource>
-</gresources>"
-        echo $gresourceXml > $workLocation/$gs.xml
-
-        glib-compile-resources --sourcedir=$workLocation $workLocation/$gs.xml
+        # Compile the modified theme and install it
+        compile $workLocation "$location"
         
-        cp $workLocation/$gs "$location/$gs"
         installGdm3Css $workLocation/gnome-shell.css
         
-        #rm $gs
-        # rm -r $workDir
+        # Clear work dir after installation
+        rm -r $workDir
     fi
 }
 
-# List themes available
+# List themes available. Themes must have .gresource file in order it to be available for install. Default will be always available.
 function list {
-    ls /usr/share/themes
+    echo $(for theme in $(ls /usr/share/themes); do test -f /usr/share/themes/$theme/gnome-shell/gnome-shell-theme.gresource && echo $theme; done) Default
 }
 
+# Used to update default themes gdm3.css if system is using one
 function updateDefaultTheme {
     extract Default
     # Basically update gdm3 css if needed
@@ -139,6 +205,7 @@ function updateDefaultTheme {
 
 # On start functionality
 function onStart {
+    gui=$1
     installPath=${HOME}/.config/loginized
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
@@ -151,7 +218,8 @@ function onStart {
         cp $gdm3 $installPath/default/gdm3.css
     fi;
 
-    echo $installPath
+    # By default only gui application needs information of config path
+    [ "$gui" != "" ] && echo $installPath
 }
 
 # Reboots system no questions asked
@@ -175,7 +243,8 @@ function setupApplication {
     icon=$(echo $1 | cut -d ',' -f 4)
 
     if [ "$cli" != "" ]; then
-        cp $cli /usr/bin/loginized-cli    
+        cp $cli /usr/bin/loginized-cli
+        loginized-cli start
     fi;
 
     if [ "$desktop" != "" ]; then
@@ -187,13 +256,17 @@ function setupApplication {
 }
 
 # Determine whether we need help
-if [[  "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
+if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
+args="$@"
 # Main functions
 # $1 = option, $2 = gui, $3 = installPath, $4 = theme, $5 = image
 case $1 in
     extract)
-        extract $2
+        extract $2 $3
+    ;;
+    compile)
+        compile $2 $3
     ;;
     reboot)
         fastReboot
@@ -201,19 +274,25 @@ case $1 in
     install)
         if [ "$2" == "gui" ]; then
             installPath=$3
-            install $4 $5
+            install $4 $5 $2
         else
-            installPath=$2
-            install $3 $4
-            # Only offer reboot option if this was executed non GUI
-            reboot
+            # Startup configuration in order to enable all functionalities correctly
+            onStart
+            user=$(whoami)
+            # On cli version we make sure that command is executed with correct rights.
+            [ "$user" == "root" ] || exec sudo bash -c "$0 $args"
+            if [ "$user" == "root" ]; then
+                install $2 $3
+                # Only offer reboot option if this was executed non GUI
+                reboot
+            fi;
         fi;
     ;;
     list)
         list
     ;;
     start)
-        onStart
+        onStart "gui"
     ;;
     updateDefault)
         installPath=$2

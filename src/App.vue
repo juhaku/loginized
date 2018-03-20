@@ -80,11 +80,11 @@
                     <v-container fluid justify-space-between grid-list-md>
                         <v-layout row>
                             <v-flex xs6>
-                                <h3>Select theme:</h3>
+                                <h3>Theme:</h3>
                                 <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
                             </v-flex>
                             <v-flex xs6>
-                                <h3>Select background image:</h3>
+                                <h3>Background image:</h3>
                                 <ImageFile v-on:img-change="selectedImage=$event" />
                             </v-flex>
                         </v-layout>
