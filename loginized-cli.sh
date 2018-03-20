@@ -63,7 +63,10 @@ Examples.
  loginized-cli.sh compile /path/to/theme/root/folder /path/to/target/folder
     This will compile theme sources to .gresource file in given source path. Theme root folder
     must containt the gnome-shell.css file and rest of sources accordingly. Target folder must be a 
-    valid location and it is used to place the compiled .gresource file."
+    valid location and it is used to place the compiled .gresource file.
+    
+Copyright (C) 2018 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
+This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY"
 }
 
 # Extracts theme (.gresource)

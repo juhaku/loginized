@@ -36,8 +36,8 @@ release {
     }
 }
 
-def debFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64_deb.deb")
-def rpmFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64_rpm.rpm")
+def debFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64.deb")
+def rpmFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64.rpm")
 def zipFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64_all.zip")
 
 artifacts {

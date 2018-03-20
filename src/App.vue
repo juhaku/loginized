@@ -55,7 +55,10 @@
                                 <File :max-files="1" accept=".gresource" v-on:file-upload="defaultTheme = $event[0]" ref="defaultThemeFile" />
                             </div>
                             <div class="box__100">
-                                <p style="margin: 0 !important;">&copy; Juha Kukkonen - All Rights Reserved - <a href="https://github.com/juhaku/loginized" @click.prevent="openLink($event.currentTarget.href)">https://github.com/juhaku/loginized</a> - v {{getVersion()}}</p>
+                                <p style="margin: 0 !important;">&copy; 2018 Juha Kukkonen - 
+                                    <a href="https://github.com/juhaku/loginized" @click.prevent="openLink($event.currentTarget.href)">https://github.com/juhaku/loginized</a> - v {{getVersion()}}
+                                     <br>Licensed under: <a @click.prevent="openLink($event.currentTarget.href)" href="https://www.gnu.org/licenses/gpl-3.0.txt">GPL-3.0</a> 
+                                     This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY</p>
                             </div>
                         </div>
                     </v-card-text>

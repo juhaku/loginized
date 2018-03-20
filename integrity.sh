@@ -19,8 +19,8 @@ if [ "$1" == "release" ]; then
     rm -rf out/make
     rm -rf build
     yarn electron-forge make
-    mv out/make/*.deb out/make/Loginized_"$v"_x64_deb.deb    
-    mv out/make/*.rpm out/make/Loginized_"$v"_x64_rpm.rpm
+    mv out/make/*.deb out/make/Loginized_"$v"_x64.deb    
+    mv out/make/*.rpm out/make/Loginized_"$v"_x64.rpm
     mv out/make/*.zip out/make/Loginized_"$v"_x64_all.zip
     git commit -am 'Gradle Release: Automatic version upgrade' && git push
 elif [ "$1" == "rollback" ]; then
