@@ -41,7 +41,7 @@ def rpmFile = file("./out/make/${rootProject.name}_${project.version.replace("-S
 def zipFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64_all.zip")
 
 artifacts {
-    archives debFile
+    archives zipFile
 }
 
 // signing {
