@@ -59,6 +59,7 @@ uploadArchives {
         pom.project {
             name rootProject.name
             groupId 'juhaku.gnome'
+            artifactId 'loginized'
             version = project.version
             description 'Gnome GDM Login Theme Manager'
             url repositoryURL
