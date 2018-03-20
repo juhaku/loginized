@@ -3,7 +3,11 @@ Gnome GDM Login Theme Manager. Easy and Fast Login Theme Manipulation.
 
 Loginized provides easy to use GUI to quickly change login theme of Gnome desktop environment. You can change the theme 
 among all the themes that are installed globally on your system (/usr/share/themes). Also you can additionally change
-login wallpaper.
+login wallpaper. 
+
+As a cherry on top of the cake Loginized comes also with command line application __(loginized-cli)__ and it can be installed if wanted. It is highly recommended as it comes with many useful and awesome features that are not available via the GUI.
+
+__Note!__ If you are not seeing any themes via the application or you cannot see the theme you want to see. It might be because of that theme or those themes does not have gnome-shell theme available as compilied resource. In such case see the wiki for more details.
 
 More features are planned in further releases.
 
