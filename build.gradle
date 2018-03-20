@@ -44,13 +44,13 @@ artifacts {
     archives debFile, rpmFile, zipFile
 }
 
-// signing {
-//     sign configurations.archives
-// }
+signing {
+    sign configurations.archives
+}
 
 uploadArchives {
     repositories.mavenDeployer {
-        // beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
         repository(url: repositoryURL) { //repositoryURL
             authentication(userName: gradleArtifactoryUser, password: gradleArtifactoryPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
