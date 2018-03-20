@@ -7,8 +7,6 @@ login wallpaper.
 
 More features are planned in further releases.
 
-Currently under development. But once available the binaries will be available through releases at this Github repository.
-
 ## Installation
 Download package that suits most for you. Software has built in quick installer for fast setup. Just tick 
 options you want to include and press OK. Installation needs sudo access and it will be asked from you at the installation.
