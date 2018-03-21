@@ -33,7 +33,7 @@ Debian Based | RPM Based | All Distributions
 Download zip archive and extract it where ever. After first run you don't need downloaded content as 
 content will be installed by the installer within the application.
 
-Before your application may run install `libgconf-2-4` package from package manager or by other means.
+For a first run try to run it via terminal and see if any dependency is missing. Like fresh install of Ubuntu nees following package before the application may run `libgconf-2-4`. Other distros might need other package.
 
 ## Things to consider
 Login theme is kind of global theme for the desktop, so you should use same or similar theme as login theme and shell theme since login theme affects to shell as well. If different theme is being used as shell theme and login theme then there might be funny outcomes and some things won't necessarily render correctly.
