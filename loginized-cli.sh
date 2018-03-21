@@ -247,7 +247,6 @@ function setupApplication {
 
     if [ "$cli" != "" ]; then
         cp $cli /usr/bin/loginized-cli
-        loginized-cli start
     fi;
 
     if [ "$desktop" != "" ]; then
