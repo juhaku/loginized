@@ -128,7 +128,7 @@ import * as path from 'path';
 })
 export default class App extends Vue {
     private static BASE_PATH = `${__dirname}/..`;
-    private static readonly VERSION = '0.1.1';
+    private static readonly VERSION = '0.1.2-SNAPSHOT';
 
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
