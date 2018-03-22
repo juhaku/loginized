@@ -12,6 +12,19 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+
+            <v-dialog v-model="updateDialog" persistent max-width="40em">
+                <v-card>
+                    <v-card-title class="headline">Update Configuration?</v-card-title>
+                    <v-card-text>Application version has changed. Update application configuration?</v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn flat @click="updateDialog = false">No</v-btn>
+                        <v-btn color="primary" flat @click="setup()">Yes</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
             <v-dialog v-model="welcomeDialog" persistent max-width="40em">
                 <v-card>
                     <v-card-title>
@@ -27,6 +40,7 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+
             <v-dialog v-model="errorDialog" persistent>
                 <v-card>
                     <v-card-title color="error" class="headline">
@@ -39,6 +53,7 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+
             <v-dialog v-model="settingsDialog" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
                 <v-card tile>
                     <v-toolbar card dark color="primary">
@@ -140,17 +155,22 @@ export default class App extends Vue {
     private installDesktop = true;
     private installCli = false;
     private desktopDisabled = false;
+    private updateDialog = false;
+    private welcomeDialog = false;
+    private release: string | undefined;
+    private setupClicked: boolean = false;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
     @State('theme') private theme: string;
-    @State('welcomeSetup') private welcomeDialog: boolean;
+    @State('defaultDesktop') private defaultDesktop: boolean;
 
     @Mutation private updateThemes: ({ }) => {};
     @Mutation private setConfigLocation: ({ }) => {};
     @Mutation private setImg: ({ }) => {};
     @Mutation private setTheme: ({ }) => {};
-    @Mutation private setWelcomeDialog: ({ }) => {};
+    @Mutation private setRelease: ({ }) => {};
+    @Mutation private setDefaultDesktop: ({ }) => {};
 
     private getVersion() {
         return App.VERSION;
@@ -158,11 +178,13 @@ export default class App extends Vue {
 
     private created() {
         this.cliExec('start', false).then((stdout: any) => {
-            const path = `${stdout.trim()}/config.json`;
+            const configPath = `${stdout.trim()}/config.json`;
 
-            if (fs.existsSync(path)) {
-                const state = fs.readFileSync(path, 'utf8');
-                this.$store.replaceState(JSON.parse(state));
+            if (fs.existsSync(configPath)) {
+                const state = fs.readFileSync(configPath, 'utf8');
+                const stateJson = JSON.parse(state);
+                this.release = stateJson.release;
+                this.$store.replaceState(stateJson);
                 this.selectedTheme = this.theme;
             }
 
@@ -172,20 +194,49 @@ export default class App extends Vue {
         this.cliExec('list', false).then((stdout: string) =>
             this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
                 (error: any) => this.showError(error));
+
+        // Apply watcher for store to track release state
+        this.$store.watch((state) => state.release, (newRelease, oldRelease) => {
+            this.openWelcomeOrUpdateSetup(newRelease);
+        });
+    }
+
+    private openWelcomeOrUpdateSetup(release: string) {
+        if (this.setupClicked) {
+            return;
+        }
+
+        // When application is new installation
+        if (release === null) {
+            // If desktop file is already installed in new installation do not allow installation of it
+            if (this.isLoginizedDesktopInstalled()) {
+                this.installDesktop = false;
+                this.desktopDisabled = true;
+                this.setDefaultDesktop(true);
+            }
+            this.welcomeDialog = true;
+
+        // When different release than before offer update
+        } else if (App.VERSION !== this.release) {
+            this.updateDialog = true;
+            this.installCli = this.isCliInstalled();
+            // Only allow update desktop file if it was not default desktop
+            this.installDesktop = this.defaultDesktop;
+        }
     }
 
     private mounted() {
         const contentMenu = this.$el.querySelector('.menu__content');
         contentMenu.style.overflow = 'hidden';
         const ps = new PerfectScrollbar('.menu__content');
-        if (this.welcomeDialog === undefined) {
-            // If desktop file is already installed do not offer installation.
-            if (fs.existsSync('/usr/share/applications/Loginized.desktop')) {
-                this.installDesktop = false;
-                this.desktopDisabled = true;
-            }
-            this.setWelcomeDialog(true);
-        }
+    }
+
+    private isCliInstalled(): boolean {
+        return fs.existsSync('/usr/bin/loginized-cli');
+    }
+
+    private isLoginizedDesktopInstalled(): boolean {
+        return fs.existsSync('/usr/share/applications/Loginized.desktop');
     }
 
     private save() {
@@ -256,7 +307,10 @@ export default class App extends Vue {
     }
 
     private setup() {
-        this.setWelcomeDialog(false);
+        this.setupClicked = true; // Just to prevent opening setup again
+        this.welcomeDialog = false;
+        this.updateDialog = false;
+        this.setRelease(App.VERSION); // Set new release version at setup
 
         let command = ``;
         if (this.installCli) {

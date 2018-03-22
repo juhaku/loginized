@@ -155,6 +155,13 @@ function install {
     theme=$1
     image=$2
     gui=$3
+    
+    # Empty image which is falsely set to gui and fix gui to right variable
+    if [ "$image" == "gui"]; then
+        image=""
+        gui="gui"
+    fi;
+
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
     
@@ -245,15 +252,30 @@ function setupApplication {
     appFolder=$(echo $1 | cut -d ',' -f 3)
     icon=$(echo $1 | cut -d ',' -f 4)
 
+    cliBin=/usr/bin/loginized-cli
+
     if [ "$cli" != "" ]; then
-        cp $cli /usr/bin/loginized-cli
+        # If bin already exists remove it and then update new one
+        [ -f $cli ] && rm $cliBin
+        cp $cli $cliBin
     fi;
 
     if [ "$desktop" != "" ]; then
-        cp $desktop /usr/share/applications/Loginized.desktop
-        cp -r $appFolder /usr/lib/loginized
-        cp $icon /usr/share/pixmaps/loginized.png
-        ln -s /usr/lib/loginized/Loginized /usr/bin/loginized
+        appDesktop=/usr/share/applications/Loginized.desktop
+        app=/usr/lib/Loginized
+        pixmap=/usr/share/pixmaps/loginized.png
+        appBin=/usr/bin/Loginized
+
+        # Remove or unlink existing ones before they are created or recreated.
+        [ -f $appDesktop ] && rm $appDesktop
+        [ -f $app ] && rm -rf $app
+        [ -f $pixmap ] && rm $pixmap
+        [ -h $appBin ] && unlink $appBin
+
+        cp $desktop $appDesktop
+        cp -r $appFolder $app
+        cp $icon $pixmap
+        ln -s $app/Loginized $appBin
     fi;
 }
 

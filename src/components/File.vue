@@ -37,7 +37,7 @@ export default class File extends mixins(AbstractFile) {
     @Prop({default: 0}) private maxFiles: number;
 
     public clear() {
-        this.files = []
+        this.files.splice(0, this.files.length);
         this.$refs.file.value = '';
     }
 

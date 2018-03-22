@@ -9,7 +9,8 @@ export default new Vuex.Store({
     configLocation: '',
     img: '',
     theme: '',
-    welcomeSetup: undefined,
+    release: null,
+    defaultDesktop: false,
   },
   mutations: {
     updateThemes(state: any, themes: []) {
@@ -24,8 +25,11 @@ export default new Vuex.Store({
     setTheme(state: any, theme: string) {
       state.theme = theme;
     },
-    setWelcomeDialog(state: any, welcome: boolean) {
-      state.welcomeSetup = welcome;
+    setRelease(state: any, release: string) {
+      state.release = release;
+    },
+    setDefaultDesktop(state: any, defaultDesktop: boolean) {
+      state.defaultDesktop = defaultDesktop;
     },
   },
   actions: {
