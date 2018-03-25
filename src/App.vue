@@ -195,13 +195,14 @@ export default class App extends Vue {
             this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
                 (error: any) => this.showError(error));
 
-        // Apply watcher for store to track release state
-        this.$store.watch((state) => state.release, (newRelease, oldRelease) => {
-            this.openWelcomeOrUpdateSetup(newRelease);
+        this.$store.subscribe((mutation, state) => {
+            if (mutation.type === 'setConfigLocation' && state.release === null) {
+                this.openWelcomeOrUpdateSetup(state.release);
+            }
         });
     }
 
-    private openWelcomeOrUpdateSetup(release: string) {
+    private openWelcomeOrUpdateSetup(release: string | null) {
         if (this.setupClicked) {
             return;
         }
@@ -314,7 +315,7 @@ export default class App extends Vue {
 
         let command = ``;
         if (this.installCli) {
-            command += `${App.BASE_PATH}/loginized-cli.sh`;
+            command += `${App.BASE_PATH}/loginized-cli.sh,${App.BASE_PATH}/loginized-cli-prompt`;
         }
         command += ',';
         if (this.installDesktop) {

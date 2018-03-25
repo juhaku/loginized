@@ -18,7 +18,9 @@ if [ "$1" == "release" ]; then
     updateVersion $v
     rm -rf out/make
     rm -rf build
-    yarn electron-forge make
+    RUNTIME=DEB NODE_ENV=production yarn electron-forge make --targets=deb
+    RUNTIME=RPM NODE_ENV=production yarn electron-forge make --targets=rpm
+    RUNTIME=ALL NODE_ENV=production yarn electron-forge make --targets=zip
     mv out/make/*.deb out/make/Loginized_"$v"_x64.deb    
     mv out/make/*.rpm out/make/Loginized_"$v"_x64.rpm
     mv out/make/*.zip out/make/Loginized_"$v"_x64_all.zip

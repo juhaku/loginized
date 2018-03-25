@@ -88,7 +88,7 @@ function extract {
     done
 
     if [ -d "$2" ]; then
-        mkdir $2/"$theme"-extracted
+        test ! -d $2/"$theme"-extracted && mkdir $2/"$theme"-extracted
         cp -r /tmp/shell/theme $2/"$theme"-extracted 
     fi;
 }
@@ -155,7 +155,7 @@ function install {
     gui=$3
     
     # Empty image which is falsely set to gui and fix gui to right variable
-    if [ "$image" == "gui"]; then
+    if [ "$image" == "gui" ]; then
         image=""
         gui="gui"
     fi;
@@ -246,16 +246,20 @@ function reboot {
 
 function setupApplication {
     cli=$(echo $1 | cut -d ',' -f 1)
-    desktop=$(echo $1 | cut -d ',' -f 2)
-    appFolder=$(echo $1 | cut -d ',' -f 3)
-    icon=$(echo $1 | cut -d ',' -f 4)
+    cliPrompt=$(echo $1 | cut -d ',' -f 2)
+    desktop=$(echo $1 | cut -d ',' -f 3)
+    appFolder=$(echo $1 | cut -d ',' -f 4)
+    icon=$(echo $1 | cut -d ',' -f 5)
 
     cliBin=/usr/bin/loginized-cli
+    cliCompletion=/etc/bash_completion.d/loginized-cli-prompt
 
     if [ "$cli" != "" ]; then
-        # If bin already exists remove it and then update new one
-        [ -f $cli ] && rm $cliBin
+        # If bin and completion already exists remove them and then update new ones
+        [ -f $cliBin ] && rm $cliBin
+        [ -f $cliCompletion ] && rm $cliCompletion
         cp $cli $cliBin
+        cp $cliPrompt $cliCompletion
     fi;
 
     if [ "$desktop" != "" ]; then
@@ -285,9 +289,11 @@ args="$@"
 # $1 = option, $2 = gui, $3 = installPath, $4 = theme, $5 = image
 case $1 in
     extract)
+        onStart
         extract $2 $3
     ;;
     compile)
+        onStart
         compile $2 $3
     ;;
     reboot)

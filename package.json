@@ -15,7 +15,7 @@
     "build": "vue-cli-service build",
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint",
-    "erun": "electron-forge start"
+    "erun": "RUNTIME=ALL NODE_ENV=development electron-forge start"
   },
   "config": {
     "forge": {
