@@ -1,0 +1,51 @@
+#!/bin/bash
+
+_array_contains() {
+    retval=false
+    for el in $1; do
+        [ "$el" == "$2" ] && retval=true && break;
+    done;
+    echo $retval
+}
+
+_loginized-cli() {
+    COMPREPLY=()
+    local current=${COMP_WORDS[COMP_CWORD]}
+    local previous=${COMP_WORDS[COMP_CWORD-1]}
+    local length=${#COMP_WORDS[@]}
+
+    local options=""
+
+    if [ $length -le 2 ]; then
+        options="install list extract compile --help ? -h"
+    elif [ $length -gt 2 ]; then
+        # Get list of themes
+        themes=$($(which loginized-cli) list)
+        
+        # If current is not related to help then allow extra options
+        if [[ "$previous" != "-h" || "$previous" != "--help" || "$previous" != "?" ]]; then
+            case $previous in
+                install)
+                    options=$themes
+                ;;
+                extract)
+                    options=$themes
+                ;;
+            esac
+        fi;
+
+        # Define when to use default completion.
+        # After theme is complete provide one default completion
+        if [ $(_array_contains "$themes" $previous) == true ]; then
+            compopt -o default
+        
+        # If completion contains compile provide 2 default completions
+        elif [[ $(_array_contains "${COMP_LINE}" "compile") == true && $length -lt 5 ]]; then
+            compopt -o default
+        fi;
+    fi;
+
+    COMPREPLY=( $( compgen -W "$options" -- $current ) )
+}
+
+complete -F _loginized-cli loginized-cli

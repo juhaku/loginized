@@ -32,8 +32,6 @@ Definition of arguments.
                       for one reason or another. In such scenario you could manually compile the theme
                       using compile option of this tool and place it under gnome-shell folder of
                       the theme. This would make the theme available for this tool.
- start .............. This is startup action, usually there is no need to call this manually
- reboot ............. Reboots system no questions asked, there is no need to call this manually
  extract ............ Extracts theme to /tmp/shell/theme folder. Additionally target folder 
                       may be provided where to extract content.
  compile ............ Compiles theme and places it to provided folder.
