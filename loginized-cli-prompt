@@ -17,7 +17,7 @@ _loginized-cli() {
     local options=""
 
     if [ $length -le 2 ]; then
-        options="install list extract compile --help ? -h"
+        options="install list extract compile set --help ? -h"
     elif [ $length -gt 2 ]; then
         # Get list of themes
         themes=$($(which loginized-cli) list)
@@ -30,6 +30,15 @@ _loginized-cli() {
                 ;;
                 extract)
                     options=$themes
+                ;;
+                set)
+                    options="shield user-list"
+                ;;
+                shield)
+                    compopt -o default
+                ;;
+                user-list)
+                    options="true false"                    
                 ;;
             esac
         fi;

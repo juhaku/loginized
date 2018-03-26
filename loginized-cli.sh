@@ -10,6 +10,7 @@ gs=gnome-shell-theme.gresource
 executionPath=$(pwd)
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
+gdmConf=/etc/dconf/db/gdm.d
 
 # Determine this dynamically later
 installPath=""
@@ -19,7 +20,7 @@ function notRecognized {
 }
 
 function help {
-    echo "Usage: loginized-cli.sh [-h | --help | ?] | [action] [theme] [image]
+    echo "Usage: loginized-cli.sh [-h | --help | ?] | [action] [theme] [image] | set [config] [arg]
 Provides functionality to alternate login gnome shell theme. Theme must be found under 
 /usr/share/themes in order to list as option.
 Definition of arguments.
@@ -35,6 +36,8 @@ Definition of arguments.
  extract ............ Extracts theme to /tmp/shell/theme folder. Additionally target folder 
                       may be provided where to extract content.
  compile ............ Compiles theme and places it to provided folder.
+ set ................ Set is configuration command to change GDM configurations. Set can change 
+                      login screen user list configuration or default shield picture for login screen. 
  
 Examples.
  loginized-cli.sh list    This will list available themes. These themes are available for this tool.
@@ -62,6 +65,18 @@ Examples.
     This will compile theme sources to .gresource file in given source path. Theme root folder
     must containt the gnome-shell.css file and rest of sources accordingly. Target folder must be a 
     valid location and it is used to place the compiled .gresource file.
+
+ loginized-cli.sh set shield
+    This will set the default shield in use for login screen. 
+
+ loginized-cli.sh set shield /usr/share/mypic.jpg 
+    This will set mypic.jpg as default shield for login screen.
+
+ loginized-cli.sh set user-list true
+    This will set user list enabled in login screen. This is by default true.
+
+ loginized-cli.sh set user-list false
+    This will set user list disabled in login screen.
     
 Copyright (C) 2018 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
 This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY"
@@ -281,22 +296,47 @@ function setupApplication {
     fi;
 }
 
-
-# function setUserList() {
-#     # TOD
-# }
-
-function setShield() {
+function createGdmProfile() {
     gdmProfile=/etc/dconf/profile
-    gdmConf=/etc/dconf/db/gdm.d
 
     # If gdm profile is not found create one and fill with data.
-    test ! -f $gdmProfile && mkdir -p $gdmProfile
+    test ! -d $gdmProfile && mkdir -p $gdmProfile
     echo -e "user-db:user\nsystem-db:gdm\nfile-db:/usr/share/gdm/greeter-dconf-defaults" > $gdmProfile/gdm
+}
 
-    test ! -f $gdmConf && mkdir -p $gdmConf
+# Sets user list in login screen either enabled or disabled
+function setUserList() {
+    showUserList=$1
+    createGdmProfile
+    
+    # Invert selection for sake of api
+    if [ $showUserList == true ]; then
+        showUserList=false
+    else 
+        showUserList=true
+    fi;
+
+    # If there is no option provided show not recognized message
+    [ "$showUserList" == "" ] && notRecognized
+
+    test ! -d $gdmConf && mkdir -p $gdmConf
+    if [ "$1" != "false" ]; then 
+        echo -e "[org/gnome/login-screen]\ndisable-user-list=$1" > $gdmConf/00-screensaver
+    else 
+        # Set defaults when user list is set to true
+        rm -f $gdmConf/00-screensaver
+    fi;
+    
+    dconf update
+}
+
+# Changes login screen shield picture.
+function setShield() {
+    createGdmProfile
+
+    test ! -d $gdmConf && mkdir -p $gdmConf
     if [ "$1" != "" ]; then 
-        echo -e "[/org/gnome/desktop/screensaver]\npicture-uri='file://$1'" > $gdmConf/01-screensaver
+        echo -e "[org/gnome/desktop/screensaver]\npicture-uri='file://$1'" > $gdmConf/01-screensaver
     else 
         # Set defaults when there is no image provided
         rm -f $gdmConf/01-screensaver
@@ -307,6 +347,19 @@ function setShield() {
 
 # Determine whether we need help
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
+
+user=$(whoami)
+
+# Run as root if current user is not root, $1 = file, $2 = args, $3 = guil
+function runAsRoot() {
+    if [ "$user" != "root" ]; then 
+        if [ "$3" == "gui" ]; then
+            exec pkexec bash -c "$1 "$2""
+        else 
+            exec sudo bash -c "$1 "$2""
+        fi;
+    fi;
+}
 
 args="$@"
 # Main functions
@@ -330,7 +383,6 @@ case $1 in
         else
             # Startup configuration in order to enable all functionalities correctly
             onStart
-            user=$(whoami)
             # On cli version we make sure that command is executed with correct rights.
             [ "$user" == "root" ] || exec sudo bash -c "$0 $args"
             if [ "$user" == "root" ]; then
@@ -356,11 +408,27 @@ case $1 in
     set)
         case $2 in
             shield)
-                setShield $3
+                runAsRoot $0 "$args" $3
+                if [ "$user" == "root" ]; then 
+                    if [ "$3" == "gui" ]; then
+                        setShield $4
+                    else 
+                        setShield $3
+                        reboot
+                    fi;
+                fi;
             ;;
-            # user-list)
-            #     setUserList $3
-            # ;;
+            user-list)
+                runAsRoot $0 "$args" $3
+                if [ "$user" == "root" ]; then 
+                    if [ "$3" == "gui" ]; then
+                        setUserList $4
+                    else 
+                        setUserList $3
+                        reboot
+                    fi;
+                fi;
+            ;;
             *)
             notRecognized $2
             ;;
