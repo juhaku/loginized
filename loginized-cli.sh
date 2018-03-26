@@ -281,6 +281,30 @@ function setupApplication {
     fi;
 }
 
+
+# function setUserList() {
+#     # TOD
+# }
+
+function setShield() {
+    gdmProfile=/etc/dconf/profile
+    gdmConf=/etc/dconf/db/gdm.d
+
+    # If gdm profile is not found create one and fill with data.
+    test ! -f $gdmProfile && mkdir -p $gdmProfile
+    echo -e "user-db:user\nsystem-db:gdm\nfile-db:/usr/share/gdm/greeter-dconf-defaults" > $gdmProfile/gdm
+
+    test ! -f $gdmConf && mkdir -p $gdmConf
+    if [ "$1" != "" ]; then 
+        echo -e "[/org/gnome/desktop/screensaver]\npicture-uri='file://$1'" > $gdmConf/01-screensaver
+    else 
+        # Set defaults when there is no image provided
+        rm -f $gdmConf/01-screensaver
+    fi;
+
+    dconf update
+}
+
 # Determine whether we need help
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
@@ -328,6 +352,19 @@ case $1 in
     ;;
     setupApp)
         setupApplication $2
+    ;;
+    set)
+        case $2 in
+            shield)
+                setShield $3
+            ;;
+            # user-list)
+            #     setUserList $3
+            # ;;
+            *)
+            notRecognized $2
+            ;;
+        esac
     ;;
     *)
         notRecognized $1
