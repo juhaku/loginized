@@ -32,18 +32,20 @@ export default class ImageFile extends mixins(AbstractFile) {
     @State('configLocation') private configLocation: string;
     @State('img') private img: string;
 
-    @Mutation private setImg: ({ }) => {};
+    @Prop() private name: string;
 
     private imgBlob: string = '';
 
-    @Watch('img') private updateBlob(newImg: string, oldImg: string) {
-        if (newImg !== '') {
-            const img = fs.readFileSync(newImg);
-            const blob = new Blob([img], {type: 'application/octet-binary'});
-            this.imgBlob = URL.createObjectURL(blob);
-        } else {
-            this.imgBlob = '';
-        }
+    private created() {
+        this.$store.watch(() => this.$store.state[this.name], (value: any, oldValue: any) => {
+            if (value !== '') {
+                const img = fs.readFileSync(value);
+                const blob = new Blob([img], {type: 'application/octet-binary'});
+                this.imgBlob = URL.createObjectURL(blob);
+            } else {
+                this.imgBlob = '';
+            }
+        });
     }
 
     private browseImage($event: any) {
@@ -51,8 +53,10 @@ export default class ImageFile extends mixins(AbstractFile) {
     }
 
     private dropFiles(event: any) {
-        if (event.dataTransfer.files.length === 1) {
-            this.updateFile(event.dataTransfer.files[0]);
+        const accept = 'image/';
+        const files = this.acceptFilter(event.dataTransfer.files, (file: any) => file.type.includes(accept));
+        if (files.length === 1) {
+            this.updateFile(files[0]);
         }
     }
 
@@ -73,13 +77,14 @@ export default class ImageFile extends mixins(AbstractFile) {
         const path = `${this.configLocation}/${entry.getFileName()}`;
         entry.path = path;
 
-        this.setImg(path);
-
-        this.writeUploadFile(path, entry).then((retVal: any) => this.$emit('img-change', entry));
+        this.writeUploadFile(path, entry).then((retVal: any) => {
+            this.$store.commit(this.name, path);
+            this.$emit('img-change', entry);
+        });
     }
 
     private clear() {
-        this.setImg('');
+        this.$store.commit(this.name, '');
         this.$emit('img-change', new FileEntry());
     }
 

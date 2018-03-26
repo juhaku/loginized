@@ -96,14 +96,32 @@
                 </div>
                 <div class="box__100">
                     <v-container fluid justify-space-between grid-list-md>
-                        <v-layout row>
+                        <v-layout align-baseline row>
                             <v-flex xs6>
                                 <h3>Theme:</h3>
+                            </v-flex>
+                            <v-flex xs6>
                                 <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout align-baseline row>
+                            <v-flex xs6>
+                                <h3>User list enabled:</h3>
+                            </v-flex>
+                            <v-flex style="display: flex; justify-content: flex-end;">
+                                <div style="width: 3em;">
+                                    <v-switch v-model="enableUserList"></v-switch>
+                                </div>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row>
+                            <v-flex xs6>
+                                <h3>Shield:</h3>
+                                <ImageFile name="shield" v-on:img-change="selectedShield=$event" />
                             </v-flex>
                             <v-flex xs6>
                                 <h3>Background image:</h3>
-                                <ImageFile v-on:img-change="selectedImage=$event" />
+                                <ImageFile name="background" v-on:img-change="selectedImage=$event" />
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -134,6 +152,7 @@ import * as PerfectScrollbar from 'perfect-scrollbar';
 import * as Promise from 'promise';
 import * as opn from 'opn';
 import * as path from 'path';
+import FileEntry from '@/model/FileEntry';
 
 @Component({
     components: {
@@ -147,6 +166,7 @@ export default class App extends Vue {
 
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
+    private selectedShield: FileEntry = new FileEntry();
     private rebootDialog: boolean = false;
     private settingsDialog: boolean = false;
     private defaultTheme: FileEntry | null = null;
@@ -159,6 +179,7 @@ export default class App extends Vue {
     private welcomeDialog = false;
     private release: string | undefined;
     private setupClicked: boolean = false;
+    private enableUserList: boolean = true;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
@@ -171,6 +192,7 @@ export default class App extends Vue {
     @Mutation private setTheme: ({ }) => {};
     @Mutation private setRelease: ({ }) => {};
     @Mutation private setDefaultDesktop: ({ }) => {};
+    @Mutation private setUserList: ({ }) => {};
 
     private getVersion() {
         return App.VERSION;
@@ -241,20 +263,26 @@ export default class App extends Vue {
     }
 
     private save() {
-        if (this.selectedTheme === '') {
-            return;
+        if (this.selectedTheme !== '') {
+            this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
+                true).then((stdout: any) => {
+                    this.writeConfig().then((status: any) => {
+                        this.rebootDialog = true;
+                    }, (error: any) => this.showError(error));
+                }, (error: any) => {
+                    if (!error.includes('Command failed: pkexec')) {
+                        this.showError(error);
+                    }
+                });
         }
 
-        this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
-            true).then((stdout: any) => {
-                this.writeConfig().then((status: any) => {
-                    this.rebootDialog = true;
-                }, (error: any) => this.showError(error));
-            }, (error: any) => {
-                if (!error.includes('Command failed: pkexec')) {
-                    this.showError(error);
-                }
-            });
+        // TODO ask sudo only once when saving settings
+        const shieldImage = this.selectedShield && this.selectedShield.name !== undefined ?
+            `${this.configLocation}/${this.selectedShield.getFileName()}` : '';
+        this.cliExec(`set shield ${shieldImage}`, false)
+            .catch((error) => this.showError(error));
+
+        this.cliExec(`set user-list ${this.enableUserList}`, false).catch((error: any) => this.showError(error));
     }
 
     private reboot() {
@@ -270,6 +298,10 @@ export default class App extends Vue {
         this.setTheme(theme);
     }
 
+    @Watch('enableUserList') private updateUserListChanges(userlist: boolean, oldUserList: boolean) {
+        this.setUserList(userlist);
+    }
+
     private cliExec(command: string, sudo: boolean): Promise<any> {
         return this.exec(`${sudo ? 'pkexec ' : ''}${App.BASE_PATH}/loginized-cli.sh ${command}`);
     }
@@ -279,6 +311,7 @@ export default class App extends Vue {
     }
 
     private saveSettings() {
+        this.$refs.defaultThemeFile.clear();
         this.settingsDialog = false;
         if (this.defaultTheme !== null || this.defaultTheme !== undefined) {
             this.updateDefaultTheme(this.defaultTheme);
@@ -289,8 +322,8 @@ export default class App extends Vue {
         // We want to explicitly name the default theme to gnome-shell-theme.gresource
         const nameWithPath = `${this.configLocation}/default/gnome-shell-theme.gresource`;
         this.$refs.defaultThemeFile.writeUploadFile(nameWithPath, file).then((retVal: any) =>
-            this.cliExec('updateDefault', false)
-            .then((stdout: any) => this.$refs.defaultThemeFile.clear(), (error: any) => this.showError(error)));
+            this.cliExec(`updateDefault ${this.configLocation}`, false)
+            .then((stdout: any) => { }, (error: any) => this.showError(error)));
     }
 
     private openLink(link: string) {
