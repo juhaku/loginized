@@ -44,3 +44,7 @@ Login theme is kind of global theme for the desktop, so you should use same or s
 ![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screen_2.png)
 
 ![Settings](https://github.com/juhaku/loginized/blob/master/screen_3.png)
+
+# License
+
+This project is lincensed under GPL-3.0 license. See more details at [LICENSE](https://github.com/juhaku/loginized/blob/master/LICENSE)
