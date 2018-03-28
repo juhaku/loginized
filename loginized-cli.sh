@@ -364,6 +364,16 @@ function setShield() {
     dconf update
 }
 
+function save() {
+    installArgs=$(echo $1 | cut -d ',' -f 1)
+    setShieldArgs=$(echo $1 | cut -d ',' -f 2)
+    setUserListArgs=$(echo $1 | cut -d ',' -f 3)
+
+    [ $installArgs != "" ] && main $installArgs
+    [ $setShieldArgs != "" ] && main $setShieldArgs
+    [ $setUserListArgs != "" ] && main $setUserListArgs
+}
+
 # Determine whether we need help
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
@@ -429,6 +439,11 @@ function main() {
                 # $2 = comman separated config list
                 setupApplication $2
             fi;
+        ;;
+        save)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            [ "$user" == "root" ] && save "$@"
         ;;
         set)
         # $2 = config, $3 = value

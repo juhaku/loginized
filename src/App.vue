@@ -199,7 +199,7 @@ export default class App extends Vue {
     }
 
     private created() {
-        this.cliExec('start', false).then((stdout: any) => {
+        this.cliExec('start').then((stdout: any) => {
             const configPath = `${stdout.trim()}/config.json`;
 
             if (fs.existsSync(configPath)) {
@@ -213,7 +213,7 @@ export default class App extends Vue {
             this.setConfigLocation(stdout.trim());
         }, (error: any) => this.showError(error));
 
-        this.cliExec('list', false).then((stdout: string) =>
+        this.cliExec('list').then((stdout: string) =>
             this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
                 (error: any) => this.showError(error));
 
@@ -263,26 +263,23 @@ export default class App extends Vue {
     }
 
     private save() {
+        let themeArgs = '';
         if (this.selectedTheme !== '') {
-            this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
-                true).then((stdout: any) => {
-                    this.writeConfig().then((status: any) => {
-                        this.rebootDialog = true;
-                    }, (error: any) => this.showError(error));
-                }, (error: any) => {
-                    if (!error.includes('Command failed: pkexec')) {
-                        this.showError(error);
-                    }
-                });
+            themeArgs = `install ${this.selectedTheme} ${this.selectedImage.getFileName()}`;
         }
 
-        // TODO ask sudo only once when saving settings
         const shieldImage = this.selectedShield && this.selectedShield.name !== undefined ?
             `${this.configLocation}/${this.selectedShield.getFileName()}` : '';
-        this.cliExec(`set shield ${shieldImage}`, false)
-            .catch((error) => this.showError(error));
 
-        this.cliExec(`set user-list ${this.enableUserList}`, false).catch((error: any) => this.showError(error));
+        this.cliExec(`--gui save ${themeArgs},set shield ${shieldImage},set user-list ${this.enableUserList}`).then((stdout: any) => {
+                this.writeConfig().then((status: any) => {
+                    this.rebootDialog = true;
+                }, (error: any) => this.showError(error));
+            }, (error: any) => {
+                if (!error.includes('Command failed: pkexec')) {
+                    this.showError(error);
+                }
+            });
     }
 
     private reboot() {
@@ -302,8 +299,8 @@ export default class App extends Vue {
         this.setUserList(userlist);
     }
 
-    private cliExec(command: string, sudo: boolean): Promise<any> {
-        return this.exec(`${sudo ? 'pkexec ' : ''}${App.BASE_PATH}/loginized-cli.sh ${command}`);
+    private cliExec(command: string): Promise<any> {
+        return this.exec(`${App.BASE_PATH}/loginized-cli.sh ${command}`);
     }
 
     private exec(command: string): Promise<any> {
@@ -322,7 +319,7 @@ export default class App extends Vue {
         // We want to explicitly name the default theme to gnome-shell-theme.gresource
         const nameWithPath = `${this.configLocation}/default/gnome-shell-theme.gresource`;
         this.$refs.defaultThemeFile.writeUploadFile(nameWithPath, file).then((retVal: any) =>
-            this.cliExec(`updateDefault ${this.configLocation}`, false)
+            this.cliExec(`--gui updateDefault`)
             .then((stdout: any) => { }, (error: any) => this.showError(error)));
     }
 
@@ -356,7 +353,7 @@ export default class App extends Vue {
         }
         command += `,${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
 
-        this.cliExec(`setupApp ${command}`, true)
+        this.cliExec(`--gui setupApp ${command}`)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
             .catch((error) => {
                 if (!error.includes('Command failed: pkexec')) {
