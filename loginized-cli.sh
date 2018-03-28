@@ -7,7 +7,6 @@
 # Global variables
 # defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
-executionPath=$(pwd)
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 gdmConf=/etc/dconf/db/gdm.d
@@ -20,7 +19,7 @@ function notRecognized {
 }
 
 function help {
-    echo "Usage: loginized-cli.sh [-h | --help | ?] | [action] [theme] [image] | set [config] [arg]
+    echo "Usage: loginized-cli.sh [-h | --help | ?] | [--gui] [action] [theme] [image] | [--gui] set [config] [arg]
 Provides functionality to alternate login gnome shell theme. Theme must be found under 
 /usr/share/themes in order to list as option.
 Definition of arguments.
@@ -81,6 +80,31 @@ Examples.
 Copyright (C) 2018 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
 This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY"
 }
+
+# Simple function to extract gui attribute from cmd
+function extractGui() {
+    cmd="$@"
+    gui=""
+    for arg in $(echo $cmd); do
+        [ "$arg" == "--gui" ] && gui=$arg && break;
+    done;
+
+    echo $gui
+}
+
+# Determine whether we are running on gui
+if [ "$(extractGui "$@")" == "--gui" ]; then
+    runningOnGui=true
+else 
+    runningOnGui=false
+fi
+
+# Trim --gui from arguments
+args="$@"
+argList=""
+for arg in $(echo $args); do
+    [ $arg != "--gui" ] && argList="$argList $arg"
+done;
 
 # Extracts theme (.gresource)
 function extract {
@@ -163,17 +187,10 @@ function installDefault {
     installGdm3Css $installPath/default/gdm3.css
 }
 
-# Install theme $1=theme, $2=image, $3=gui
+# Install theme $1=theme, $2=image
 function install {
     theme=$1
     image=$2
-    gui=$3
-    
-    # Empty image which is falsely set to gui and fix gui to right variable
-    if [ "$image" == "gui" ]; then
-        image=""
-        gui="gui"
-    fi;
 
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
@@ -193,7 +210,7 @@ function install {
         workLocation=$workDir/theme
         
         # When processed from gui image is saved to $installPath
-        if [ "$gui" == "gui" ]; then
+        if [ $runningOnGui == true ]; then
             cp $installPath/$image $workLocation/.
         else 
             cp $image $workLocation/.        
@@ -228,7 +245,9 @@ function updateDefaultTheme {
 
 # On start functionality
 function onStart {
-    gui=$1
+    print=$runningOnGui
+    [ "$1" == "--no-print" ] && print=false
+
     installPath=${HOME}/.config/Loginized
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
@@ -242,7 +261,7 @@ function onStart {
     fi;
 
     # By default only gui application needs information of config path
-    [ "$gui" != "" ] && echo $installPath
+    [ $print == true ] && echo $installPath
 }
 
 # Reboots system no questions asked
@@ -352,92 +371,93 @@ user=$(whoami)
 
 # Run as root if current user is not root, $1 = file, $2 = args, $3 = guil
 function runAsRoot() {
+    cmd="$@"
     if [ "$user" != "root" ]; then 
-        if [ "$3" == "gui" ]; then
-            exec pkexec bash -c "$1 "$2""
+        if [ $runningOnGui == true ]; then
+            exec pkexec bash -c "$cmd"
         else 
-            exec sudo bash -c "$1 "$2""
+            exec sudo bash -c "$cmd"
         fi;
     fi;
 }
 
-args="$@"
-# Main functions
-# $1 = option, $2 = gui, $3 = installPath, $4 = theme, $5 = image
-case $1 in
-    extract)
-        onStart
-        extract $2 $3
-    ;;
-    compile)
-        onStart
-        compile $2 $3
-    ;;
-    reboot)
-        fastReboot
-    ;;
-    install)
-        if [ "$2" == "gui" ]; then
-            installPath=$3
-            install $4 $5 $2
-        else
+echo "debug:" $user $0 $args "|runningOnGui:" $runningOnGui "|argList:" "$argList"
+
+function main() {
+    # Main functions
+    # $1 = option, $2 = installPath, 3 = theme, $4 = image
+    case $1 in
+        extract)
+            onStart "--no-print"
+            extract $2 $3
+        ;;
+        compile)
+            onStart "--no-print"
+            compile $2 $3
+        ;;
+        reboot)
+            fastReboot
+        ;;
+        install)
             # Startup configuration in order to enable all functionalities correctly
-            onStart
+            onStart "--no-print"
             # On cli version we make sure that command is executed with correct rights.
-            [ "$user" == "root" ] || exec sudo bash -c "$0 $args"
+            runAsRoot $0 $args
             if [ "$user" == "root" ]; then
                 install $2 $3
                 # Only offer reboot option if this was executed non GUI
-                reboot
+                [ $runningOnGui == true ] || reboot
             fi;
-        fi;
-    ;;
-    list)
-        list
-    ;;
-    start)
-        onStart "gui"
-    ;;
-    updateDefault)
-        installPath=$2
-        updateDefaultTheme
-    ;;
-    setupApp)
-        setupApplication $2
-    ;;
-    set)
-        case $2 in
-            shield)
-                runAsRoot $0 "$args" $3
-                if [ "$user" == "root" ]; then 
-                    if [ "$3" == "gui" ]; then
-                        setShield $4
-                    else 
+        ;;
+        list)
+            list
+        ;;
+        start)
+            onStart
+        ;;
+        updateDefault)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            if [ "$user" == "root" ]; then
+                updateDefaultTheme
+            fi;
+        ;;
+        setupApp)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            if [ "$user" == "root" ]; then
+                # $2 = comman separated config list
+                setupApplication $2
+            fi;
+        ;;
+        set)
+        # $2 = config, $3 = value
+            case $2 in
+                shield)
+                    runAsRoot $0 $args
+                    if [ "$user" == "root" ]; then 
                         setShield $3
-                        reboot
+                        # Only cli version is offered to reboot
+                        [ $runningOnGui == true ] || reboot
                     fi;
-                fi;
-            ;;
-            user-list)
-                runAsRoot $0 "$args" $3
-                if [ "$user" == "root" ]; then 
-                    if [ "$3" == "gui" ]; then
-                        setUserList $4
-                    else 
+                ;;
+                user-list)
+                    runAsRoot $0 $args
+                    if [ "$user" == "root" ]; then 
                         setUserList $3
-                        reboot
+                        # Only cli version is offered to reboot
+                        [ $runningOnGui == true ] || reboot
                     fi;
-                fi;
-            ;;
-            *)
-            notRecognized $2
-            ;;
-        esac
-    ;;
-    *)
-        notRecognized $1
-    ;;
-esac
+                ;;
+                *)
+                notRecognized $2
+                ;;
+            esac
+        ;;
+        *)
+            notRecognized $1
+        ;;
+    esac
+}
 
-# If we are not in execution path, return to execution path
-if [ "$executionPath" != "$(pwd)" ]; then cd $executionPath; fi;
+main $argList
