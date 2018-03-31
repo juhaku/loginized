@@ -430,6 +430,7 @@ function main() {
             fi;
         ;;
         list)
+            onStart "--no-print"
             list
         ;;
         start)
@@ -485,6 +486,6 @@ function main() {
     esac
 }
 
-main $argList
+main $argList 
 
-test -f $runtimeConf && rm -rf $runtimeConf
+test -f $runtimeConf && rm -f $runtimeConf

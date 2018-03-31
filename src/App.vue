@@ -106,7 +106,7 @@
                         </v-layout>
                         <v-layout align-baseline row>
                             <v-flex xs6>
-                                <h3>User list enabled:</h3>
+                                <h3>User list enabled: <Info text="Enables or disables user selection in login. If user list is disabled then user need to be typed to username field at login." /></h3>
                             </v-flex>
                             <v-flex style="display: flex; justify-content: flex-end;">
                                 <div style="width: 3em;">
@@ -153,11 +153,13 @@ import * as Promise from 'promise';
 import * as opn from 'opn';
 import * as path from 'path';
 import FileEntry from '@/model/FileEntry';
+import * as Info from './components/Info.vue';
 
 @Component({
     components: {
         File,
         ImageFile,
+        Info,
     },
 })
 export default class App extends Vue {
@@ -211,15 +213,21 @@ export default class App extends Vue {
             }
 
             this.setConfigLocation(stdout.trim());
-        }, (error: any) => this.showError(error));
 
-        this.cliExec('list').then((stdout: string) =>
-            this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
-                (error: any) => this.showError(error));
+            this.cliExec('list').then((stdout: string) =>
+                this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
+                    (error: any) => this.showError(error));
+        }, (error: any) => this.showError(error));
 
         this.$store.subscribe((mutation, state) => {
             if (mutation.type === 'setConfigLocation' && state.release === null) {
                 this.openWelcomeOrUpdateSetup(state.release);
+            }
+        });
+
+        this.$store.watch(() => this.$store.state.userList, (userList: boolean, oldUserList: boolean) => {
+            if (userList !== undefined) {
+                this.enableUserList = userList;
             }
         });
     }
