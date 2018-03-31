@@ -9,10 +9,11 @@ export default new Vuex.Store({
     configLocation: '',
     shield: '',
     background: '',
-    theme: '',
+    theme: 'Default',
     release: null,
     defaultDesktop: false,
     userList: true,
+    checked: '',
   },
   mutations: {
     updateThemes(state: any, themes: []) {
@@ -38,6 +39,9 @@ export default new Vuex.Store({
     },
     setUserList(state: any, userList: boolean) {
       state.userList = userList;
+    },
+    setChecked(state: any, checked: string) {
+      state.checked = checked;
     },
   },
   actions: {
