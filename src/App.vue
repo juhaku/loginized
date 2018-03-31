@@ -247,7 +247,7 @@ export default class App extends Vue {
             } else {
                 const lastChecked = DateTime.fromISO(checked);
                 // When there is more than 24 hours since last check then check updates.
-                if (DateTime.local().diff(this.lastChecked, 'hours').toObject().hours > 24) {
+                if (DateTime.local().diff(this.updatesChecked, 'hours').toObject().hours > 24) {
                     this.checkUpdates();
                 }
             }
@@ -422,6 +422,7 @@ export default class App extends Vue {
                 }
             });
         }).catch((error) => this.showError(error));
+        this.writeConfig().catch((error) => this.showError(error));
     }
 
 }
