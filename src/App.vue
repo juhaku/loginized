@@ -199,7 +199,7 @@ export default class App extends Vue {
     }
 
     private created() {
-        this.cliExec('start').then((stdout: any) => {
+        this.cliExec('--gui start').then((stdout: any) => {
             const configPath = `${stdout.trim()}/config.json`;
 
             if (fs.existsSync(configPath)) {
@@ -263,23 +263,19 @@ export default class App extends Vue {
     }
 
     private save() {
-        let themeArgs = '';
-        if (this.selectedTheme !== '') {
-            themeArgs = `install ${this.selectedTheme} ${this.selectedImage.getFileName()}`;
-        }
-
+        const themeArgs = `${this.selectedTheme},${this.selectedImage.getFileName()}`;
         const shieldImage = this.selectedShield && this.selectedShield.name !== undefined ?
             `${this.configLocation}/${this.selectedShield.getFileName()}` : '';
 
-        this.cliExec(`--gui save ${themeArgs},set shield ${shieldImage},set user-list ${this.enableUserList}`).then((stdout: any) => {
-                this.writeConfig().then((status: any) => {
-                    this.rebootDialog = true;
-                }, (error: any) => this.showError(error));
-            }, (error: any) => {
-                if (!error.includes('Command failed: pkexec')) {
-                    this.showError(error);
-                }
-            });
+        this.cliExec(`--gui save ${themeArgs},${shieldImage},${this.enableUserList}`).then((stdout: any) => {
+            this.writeConfig().then((status: any) => {
+                this.rebootDialog = true;
+            }, (error: any) => this.showError(error));
+        }, (error: any) => {
+            if (!error.includes('Command failed: pkexec')) {
+                this.showError(error);
+            }
+        });
     }
 
     private reboot() {

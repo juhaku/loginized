@@ -10,6 +10,7 @@ gs=gnome-shell-theme.gresource
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 gdmConf=/etc/dconf/db/gdm.d
+runtimeConf=/tmp/loginized-conf.tmp
 
 # Determine this dynamically later
 installPath=""
@@ -248,7 +249,12 @@ function onStart {
     print=$runningOnGui
     [ "$1" == "--no-print" ] && print=false
 
-    installPath=${HOME}/.config/Loginized
+    if [ -f $runtimeConf ]; then
+        installPath=$(cat $runtimeConf)
+    else 
+        installPath=${HOME}/.config/Loginized
+    fi;
+
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $installPath/default/$gs ]; then
@@ -262,6 +268,7 @@ function onStart {
 
     # By default only gui application needs information of config path
     [ $print == true ] && echo $installPath
+    test ! -f $runtimeConf && echo $installPath > $runtimeConf
 }
 
 # Reboots system no questions asked
@@ -339,8 +346,9 @@ function setUserList() {
     [ "$showUserList" == "" ] && notRecognized
 
     test ! -d $gdmConf && mkdir -p $gdmConf
-    if [ "$1" != "false" ]; then 
-        echo -e "[org/gnome/login-screen]\ndisable-user-list=$1" > $gdmConf/00-screensaver
+    # Compare status to real argument and set inverted argument to file
+    if [ "$1" == "false" ]; then 
+        echo -e "[org/gnome/login-screen]\ndisable-user-list=$showUserList" > $gdmConf/00-screensaver
     else 
         # Set defaults when user list is set to true
         rm -f $gdmConf/00-screensaver
@@ -365,13 +373,15 @@ function setShield() {
 }
 
 function save() {
-    installArgs=$(echo $1 | cut -d ',' -f 1)
-    setShieldArgs=$(echo $1 | cut -d ',' -f 2)
-    setUserListArgs=$(echo $1 | cut -d ',' -f 3)
+    cmd="$2"
+    theme=$(echo $cmd | cut -d ',' -f 1)
+    background=$(echo $cmd | cut -d ',' -f 2)
+    shield=$(echo $cmd | cut -d ',' -f 3)
+    userList=$(echo $cmd | cut -d ',' -f 4)
 
-    [ $installArgs != "" ] && main $installArgs
-    [ $setShieldArgs != "" ] && main $setShieldArgs
-    [ $setUserListArgs != "" ] && main $setUserListArgs
+    install $theme $background
+    setShield $shield
+    setUserList $userList
 }
 
 # Determine whether we need help
@@ -391,7 +401,7 @@ function runAsRoot() {
     fi;
 }
 
-echo "debug:" $user $0 $args "|runningOnGui:" $runningOnGui "|argList:" "$argList"
+#echo "debug:" $user $0 $args "|runningOnGui:" $runningOnGui "|argList:" "$argList"
 
 function main() {
     # Main functions
@@ -443,7 +453,7 @@ function main() {
         save)
             onStart "--no-print"
             runAsRoot $0 $args
-            [ "$user" == "root" ] && save "$@"
+            [ "$user" == "root" ] && save $argList
         ;;
         set)
         # $2 = config, $3 = value
@@ -476,3 +486,5 @@ function main() {
 }
 
 main $argList
+
+test -f $runtimeConf && rm -rf $runtimeConf

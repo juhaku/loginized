@@ -38,7 +38,8 @@ export default class ImageFile extends mixins(AbstractFile) {
 
     private created() {
         this.$store.watch(() => this.$store.state[this.name], (value: any, oldValue: any) => {
-            if (value !== '') {
+            if (value && value !== '') {
+                console.log(value);
                 const img = fs.readFileSync(value);
                 const blob = new Blob([img], {type: 'application/octet-binary'});
                 this.imgBlob = URL.createObjectURL(blob);
