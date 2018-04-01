@@ -230,21 +230,26 @@ export default class App extends Vue {
 
             this.setConfigLocation(stdout.trim());
 
+            if (this.$store.state.checked === undefined || this.$store.state.checked === '') {
+                this.checkUpdates();
+            }
+
             this.cliExec('list').then((stdout: string) =>
                 this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
                     (error: any) => this.showError(error));
         }, (error: any) => this.showError(error));
 
         this.$store.subscribe((mutation, state) => {
+            // Set the selected theme always point to theme from vuex
+            this.selectedTheme = state.theme;
+
             if (mutation.type === 'setConfigLocation' && state.release === null) {
                 this.openWelcomeOrUpdateSetup(state.release);
             }
         });
 
         this.$store.watch(() => this.$store.state.checked, (checked: string, oldChecked: string) => {
-            if (checked === undefined) {
-                this.checkUpdates();
-            } else {
+            if (checked !== undefined) {
                 const lastChecked = DateTime.fromISO(checked);
                 // When there is more than 24 hours since last check then check updates.
                 if (DateTime.local().diff(this.updatesChecked, 'hours').toObject().hours > 24) {
