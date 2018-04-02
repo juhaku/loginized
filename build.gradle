@@ -37,7 +37,7 @@ release {
 }
 
 artifacts {
-    String v = version.replace("-SNAPSHOT", "")
+    String v = project.ext['newVersion'].replace("-SNAPSHOT", "")
     def debFile = file("./out/make/${rootProject.name}_${v}_x64.deb")
     def rpmFile = file("./out/make/${rootProject.name}_${v}_x64.rpm")
     def zipFile = file("./out/make/${rootProject.name}_${v}_x64_all.zip")
@@ -88,18 +88,25 @@ uploadArchives {
     }
 }
 
+task(name: 'cacheNewVersion', description: 'Caches new version to project ext properties for later usage') {
+    println version
+    project.ext['newVersion'] = version
+}
+
 task revert(type: Exec) {
     commandLine './integrity.sh', 'rollback'
 }
 revert.description = 'Rollback commit on release failure'
 
 task('updatePomVersion') {
+    project.version = project.ext['newVersion']
     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
 
 createReleaseTag.dependsOn uploadArchives
 preTagCommit.dependsOn updatePomVersion
+checkSnapshotDependencies.dependsOn cacheNewVersion
 
 task releaseBuild(type: Exec) {
     commandLine './integrity.sh', 'release'
