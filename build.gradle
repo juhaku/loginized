@@ -93,21 +93,22 @@ task revert(type: Exec) {
 }
 revert.description = 'Rollback commit on release failure'
 
-// task('updatePomVersion') {
-//     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
-//     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
-// }
+task('updatePomVersion') {
+    configurations.archives = artifacts
+    release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
+    uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
+}
 
 createReleaseTag.dependsOn uploadArchives
-// preTagCommit.dependsOn updatePomVersion
+preTagCommit.dependsOn updatePomVersion
 
 task releaseBuild(type: Exec) {
     commandLine './integrity.sh', 'release'
 }
 releaseBuild.description = "Builds distribution versions of app"
 
-// project.tasks.runBuildTasks.dependsOn releaseBuild
-uploadArchives.dependsOn releaseBuild
+project.tasks.runBuildTasks.dependsOn releaseBuild
+//uploadArchives.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
     commandLine './integrity.sh', 'update-version'
