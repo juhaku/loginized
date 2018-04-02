@@ -89,10 +89,11 @@ uploadArchives {
     }
 }
 
-task(name: 'cacheNewVersion', description: 'Caches new version to project ext properties for later usage') {
+task('cacheNewVersion') {
     println version
     project.ext['newVersion'] = version
 }
+cacheNewVersion.description = "Caches new version to project ext properties for later usage"
 
 task revert(type: Exec) {
     commandLine './integrity.sh', 'rollback'
