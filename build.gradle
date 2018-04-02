@@ -37,10 +37,11 @@ release {
 }
 
 artifacts {
-    println version
-    def debFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64.deb")
-    def rpmFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64.rpm")
-    def zipFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64_all.zip")
+    println "version: $version"
+    String v = version.replace("-SNAPSHOT", "")
+    def debFile = file("./out/make/${rootProject.name}_"$v"_x64.deb")
+    def rpmFile = file("./out/make/${rootProject.name}_"$v"_x64.rpm")
+    def zipFile = file("./out/make/${rootProject.name}_"$v"_x64_all.zip")
 
     archives debFile, rpmFile, zipFile
 }
