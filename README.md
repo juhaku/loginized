@@ -41,8 +41,6 @@ For a first run try to run it via terminal and see if any dependency is missing.
 Login theme is kind of global theme for the desktop, so you should use same or similar theme as login theme and shell theme since login theme affects to shell as well. If different theme is being used as shell theme and login theme then there might be funny outcomes and some things won't necessarily render correctly.
 
 ## Screenshots
-![Main Screen](https://github.com/juhaku/loginized/blob/master/screenshots/screen_1.png)
-
 ![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screenshots/screen_3.png)
 
 ![Settings](https://github.com/juhaku/loginized/blob/master/screenshots/screen_2.png)
