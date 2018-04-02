@@ -90,8 +90,8 @@ uploadArchives {
 }
 
 task('cacheNewVersion') {
-    println version
-    project.ext['newVersion'] = version
+    println project.version
+    project.ext['newVersion'] = project.version
 }
 cacheNewVersion.description = "Caches new version to project ext properties for later usage"
 
@@ -102,8 +102,8 @@ revert.description = 'Rollback commit on release failure'
 
 task('updatePomVersion') {
     project.version = project.ext['newVersion']
-    release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
-    uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
+    release.tagTemplate = "v${project.version}".replace("-SNAPSHOT", "")
+    uploadArchives.repositories.mavenDeployer.pom.version = project.version.replace("-SNAPSHOT", "")
 }
 
 createReleaseTag.dependsOn uploadArchives
