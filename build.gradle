@@ -93,7 +93,7 @@ task revert(type: Exec) {
 revert.description = 'Rollback commit on release failure'
 
 task ('updatePomVersion') {
-    println version $version
+    println version
     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
