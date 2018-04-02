@@ -285,7 +285,7 @@ export default class App extends Vue {
             this.updateDialog = true;
             this.installCli = this.isCliInstalled();
             // Only allow update desktop file if it was not default desktop
-            this.installDesktop = this.defaultDesktop;
+            this.installDesktop = !this.defaultDesktop;
         }
     }
 
