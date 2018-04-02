@@ -36,11 +36,12 @@ release {
     }
 }
 
-def debFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64.deb")
-def rpmFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64.rpm")
-def zipFile = file("./out/make/${rootProject.name}_${project.version.replace("-SNAPSHOT", "")}_x64_all.zip")
-
 artifacts {
+    println version
+    def debFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64.deb")
+    def rpmFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64.rpm")
+    def zipFile = file("./out/make/${rootProject.name}_${version.replace("-SNAPSHOT", "")}_x64_all.zip")
+
     archives debFile, rpmFile, zipFile
 }
 
@@ -93,7 +94,6 @@ task revert(type: Exec) {
 revert.description = 'Rollback commit on release failure'
 
 task ('updatePomVersion') {
-    println version
     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
