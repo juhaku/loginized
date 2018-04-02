@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.researchgate:gradle-release:2.6.0'
+        classpath 'net.researchgate:gradle-release:2.4.0'
     }
 }
 
@@ -93,28 +93,27 @@ task revert(type: Exec) {
 }
 revert.description = 'Rollback commit on release failure'
 
-task ('updatePomVersion') {
-    println "vers: $version"
-    release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
-    uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
-}
+// task('updatePomVersion') {
+//     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
+//     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
+// }
 
 createReleaseTag.dependsOn uploadArchives
-preTagCommit.dependsOn updatePomVersion
+// preTagCommit.dependsOn updatePomVersion
 
 task releaseBuild(type: Exec) {
     commandLine './integrity.sh', 'release'
 }
 releaseBuild.description = "Builds distribution versions of app"
 
-updatePomVersion.dependsOn releaseBuild
+// project.tasks.runBuildTasks.dependsOn releaseBuild
+uploadArchives.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
     commandLine './integrity.sh', 'update-version'
 }
 updateAppVersion.description = "Updates current version to application"
 
-commitNewVersion
 commitNewVersion.dependsOn updateAppVersion
 
 def released = false
