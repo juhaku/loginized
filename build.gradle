@@ -37,7 +37,6 @@ release {
 }
 
 artifacts {
-    println "version: $version"
     String v = version.replace("-SNAPSHOT", "")
     def debFile = file("./out/make/${rootProject.name}_${v}_x64.deb")
     def rpmFile = file("./out/make/${rootProject.name}_${v}_x64.rpm")
@@ -110,6 +109,7 @@ releaseBuild.description = "Builds distribution versions of app"
 project.tasks.runBuildTasks.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
+    println "ver: $version"
     commandLine './integrity.sh', 'update-version'
 }
 updateAppVersion.description = "Updates current version to application"
