@@ -92,6 +92,7 @@ uploadArchives {
 task('cacheNewVersion') {
     println "v: ${project.version}"
     project.ext['newVersion'] = project.version
+    outputs.upToDateWhen { false }
 }
 cacheNewVersion.description = "Caches new version to project ext properties for later usage"
 
@@ -104,6 +105,7 @@ task('updatePomVersion') {
     project.version = project.ext['newVersion']
     release.tagTemplate = "v${project.version}".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = project.version.replace("-SNAPSHOT", "")
+    outputs.upToDateWhen { false }
 }
 
 createReleaseTag.dependsOn uploadArchives
