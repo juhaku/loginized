@@ -1,9 +1,11 @@
 # Loginized
 Gnome GDM Login Theme Manager. Easy and Fast Login Theme Manipulation.
 
-Loginized provides easy to use GUI to quickly change login theme of Gnome desktop environment. You can change the theme 
-among all the themes that are installed globally on your system (/usr/share/themes). Also you can additionally change
-login wallpaper. 
+### Features
+* Change login wallpaper
+* Change login theme (global system theme) from themes located in __/usr/share/themes__
+* Change login screen shield. (Login screen's lockscreen image)
+* Enable / disable user list at login. 
 
 As a cherry on top of the cake Loginized comes also with command line application __(loginized-cli)__ and it can be installed if wanted. It is highly recommended as it comes with many useful and awesome features that are not available via the GUI.
 
@@ -27,7 +29,7 @@ In Ubuntu it is found from `libglib2.0-bin` package and in OpenSUSE it is found 
 ### Downloads
 Debian Based | RPM Based | All Distributions
 -------------|-----------|------------------
-[Loginized_0.1.3_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.1.3/Loginized_0.1.3_x64.deb)|[Loginized_0.1.3_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.1.3/Loginized_0.1.3_x64.rpm)|[Loginized_0.1.3_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.1.3/Loginized_0.1.3_x64_all.zip)
+[Loginized_0.2.0_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.0/Loginized_0.2.0_x64.deb)|[Loginized_0.2.0_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.0/Loginized_0.2.0_x64.rpm)|[Loginized_0.2.0_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.0/Loginized_0.2.0_x64_all.zip)
 
 ### All distributions
 Download zip archive and extract it where ever. After first run you don't need downloaded content as 
@@ -39,11 +41,11 @@ For a first run try to run it via terminal and see if any dependency is missing.
 Login theme is kind of global theme for the desktop, so you should use same or similar theme as login theme and shell theme since login theme affects to shell as well. If different theme is being used as shell theme and login theme then there might be funny outcomes and some things won't necessarily render correctly.
 
 ## Screenshots
-![Main Screen](https://github.com/juhaku/loginized/blob/master/screen_1.png)
+![Main Screen](https://github.com/juhaku/loginized/blob/master/screenshots/screen_1.png)
 
-![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screen_2.png)
+![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screenshots/screen_3.png)
 
-![Settings](https://github.com/juhaku/loginized/blob/master/screen_3.png)
+![Settings](https://github.com/juhaku/loginized/blob/master/screenshots/screen_2.png)
 
 # License
 
