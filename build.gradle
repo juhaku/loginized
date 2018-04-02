@@ -30,6 +30,7 @@ repositories {
 }
 
 release {
+    project.ext['newVersion'] = version
     tagTemplate = "v$version".replace("-SNAPSHOT", "")
     git {
         requireBranch = 'master'
