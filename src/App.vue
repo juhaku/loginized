@@ -243,7 +243,7 @@ export default class App extends Vue {
             // Set the selected theme always point to theme from vuex
             this.selectedTheme = state.theme;
 
-            if (mutation.type === 'setConfigLocation' && state.release === null) {
+            if (mutation.type === 'setConfigLocation') {
                 this.openWelcomeOrUpdateSetup(state.release);
             }
         });
