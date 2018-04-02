@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.researchgate:gradle-release:2.4.0'
+        classpath 'net.researchgate:gradle-release:2.6.0'
     }
 }
 
@@ -94,6 +94,7 @@ task revert(type: Exec) {
 revert.description = 'Rollback commit on release failure'
 
 task ('updatePomVersion') {
+    println "vers: $version"
     release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
     uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
