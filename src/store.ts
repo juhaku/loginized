@@ -7,10 +7,13 @@ export default new Vuex.Store({
   state: {
     themes: [],
     configLocation: '',
-    img: '',
-    theme: '',
+    shield: '',
+    background: '',
+    theme: 'Default',
     release: null,
     defaultDesktop: false,
+    userList: true,
+    checked: '',
   },
   mutations: {
     updateThemes(state: any, themes: []) {
@@ -19,8 +22,11 @@ export default new Vuex.Store({
     setConfigLocation(state: any, location: string) {
       state.configLocation = location;
     },
-    setImg(state: any, img: string) {
-      state.img = img;
+    background(state: any, background: string) {
+      state.background = background;
+    },
+    shield(state: any, shield: string) {
+      state.shield = shield;
     },
     setTheme(state: any, theme: string) {
       state.theme = theme;
@@ -30,6 +36,12 @@ export default new Vuex.Store({
     },
     setDefaultDesktop(state: any, defaultDesktop: boolean) {
       state.defaultDesktop = defaultDesktop;
+    },
+    setUserList(state: any, userList: boolean) {
+      state.userList = userList;
+    },
+    setChecked(state: any, checked: string) {
+      state.checked = checked;
     },
   },
   actions: {

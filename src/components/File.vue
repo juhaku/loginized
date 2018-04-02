@@ -48,8 +48,10 @@ export default class File extends mixins(AbstractFile) {
     }
 
     private dropFiles($event: any) {
+        // Remove start (*) from this accept as it would lead wrong information when filtered files
+        const acceptTrimmed = this.accept.replace('*', '');
         this.updateFiles(this.fileListToArray($event.dataTransfer.files)
-            .filter((file: any) => file.type.includes(this.accept) || file.name.includes(this.accept)));
+            .filter((file: any) => file.type.includes(acceptTrimmed) || file.name.includes(acceptTrimmed)));
     }
 
     private update($event: any) {
@@ -75,6 +77,8 @@ export default class File extends mixins(AbstractFile) {
                     entry.name = file.name;
                     entry.file = file;
                     entry.url = URL.createObjectURL(file);
+
+                    return entry;
             }));
         }
     }

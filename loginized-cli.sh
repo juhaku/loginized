@@ -7,9 +7,10 @@
 # Global variables
 # defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
-executionPath=$(pwd)
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
+gdmConf=/etc/dconf/db/gdm.d
+runtimeConf=/tmp/loginized-conf.tmp
 
 # Determine this dynamically later
 installPath=""
@@ -19,7 +20,7 @@ function notRecognized {
 }
 
 function help {
-    echo "Usage: loginized-cli.sh [-h | --help | ?] | [action] [theme] [image]
+    echo "Usage: loginized-cli.sh [-h | --help | ?] | [--gui] [action] [theme] [image] | [--gui] set [config] [arg]
 Provides functionality to alternate login gnome shell theme. Theme must be found under 
 /usr/share/themes in order to list as option.
 Definition of arguments.
@@ -35,6 +36,8 @@ Definition of arguments.
  extract ............ Extracts theme to /tmp/shell/theme folder. Additionally target folder 
                       may be provided where to extract content.
  compile ............ Compiles theme and places it to provided folder.
+ set ................ Set is configuration command to change GDM configurations. Set can change 
+                      login screen user list configuration or default shield picture for login screen. 
  
 Examples.
  loginized-cli.sh list    This will list available themes. These themes are available for this tool.
@@ -62,10 +65,47 @@ Examples.
     This will compile theme sources to .gresource file in given source path. Theme root folder
     must containt the gnome-shell.css file and rest of sources accordingly. Target folder must be a 
     valid location and it is used to place the compiled .gresource file.
+
+ loginized-cli.sh set shield
+    This will set the default shield in use for login screen. 
+
+ loginized-cli.sh set shield /usr/share/mypic.jpg 
+    This will set mypic.jpg as default shield for login screen.
+
+ loginized-cli.sh set user-list true
+    This will set user list enabled in login screen. This is by default true.
+
+ loginized-cli.sh set user-list false
+    This will set user list disabled in login screen.
     
 Copyright (C) 2018 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
 This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY"
 }
+
+# Simple function to extract gui attribute from cmd
+function extractGui() {
+    cmd="$@"
+    gui=""
+    for arg in $(echo $cmd); do
+        [ "$arg" == "--gui" ] && gui=$arg && break;
+    done;
+
+    echo $gui
+}
+
+# Determine whether we are running on gui
+if [ "$(extractGui "$@")" == "--gui" ]; then
+    runningOnGui=true
+else 
+    runningOnGui=false
+fi
+
+# Trim --gui from arguments
+args="$@"
+argList=""
+for arg in $(echo $args); do
+    [ $arg != "--gui" ] && argList="$argList $arg"
+done;
 
 # Extracts theme (.gresource)
 function extract {
@@ -148,17 +188,10 @@ function installDefault {
     installGdm3Css $installPath/default/gdm3.css
 }
 
-# Install theme $1=theme, $2=image, $3=gui
+# Install theme $1=theme, $2=image
 function install {
     theme=$1
     image=$2
-    gui=$3
-    
-    # Empty image which is falsely set to gui and fix gui to right variable
-    if [ "$image" == "gui" ]; then
-        image=""
-        gui="gui"
-    fi;
 
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
@@ -178,7 +211,7 @@ function install {
         workLocation=$workDir/theme
         
         # When processed from gui image is saved to $installPath
-        if [ "$gui" == "gui" ]; then
+        if [ $runningOnGui == true ]; then
             cp $installPath/$image $workLocation/.
         else 
             cp $image $workLocation/.        
@@ -213,8 +246,15 @@ function updateDefaultTheme {
 
 # On start functionality
 function onStart {
-    gui=$1
-    installPath=${HOME}/.config/Loginized
+    print=$runningOnGui
+    [ "$1" == "--no-print" ] && print=false
+
+    if [ -f $runtimeConf ]; then
+        installPath=$(cat $runtimeConf)
+    else 
+        installPath=${HOME}/.config/Loginized
+    fi;
+
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $installPath/default/$gs ]; then
@@ -227,7 +267,8 @@ function onStart {
     fi;
 
     # By default only gui application needs information of config path
-    [ "$gui" != "" ] && echo $installPath
+    [ $print == true ] && echo $installPath
+    test ! -f $runtimeConf && echo $installPath > $runtimeConf
 }
 
 # Reboots system no questions asked
@@ -281,58 +322,170 @@ function setupApplication {
     fi;
 }
 
+function createGdmProfile() {
+    gdmProfile=/etc/dconf/profile
+
+    # If gdm profile is not found create one and fill with data.
+    test ! -d $gdmProfile && mkdir -p $gdmProfile
+    echo -e "user-db:user\nsystem-db:gdm\nfile-db:/usr/share/gdm/greeter-dconf-defaults" > $gdmProfile/gdm
+}
+
+# Sets user list in login screen either enabled or disabled
+function setUserList() {
+    showUserList=$1
+    createGdmProfile
+    
+    # Invert selection for sake of api
+    if [ $showUserList == true ]; then
+        showUserList=false
+    else 
+        showUserList=true
+    fi;
+
+    # If there is no option provided show not recognized message
+    [ "$showUserList" == "" ] && notRecognized
+
+    test ! -d $gdmConf && mkdir -p $gdmConf
+    # Compare status to real argument and set inverted argument to file
+    if [ "$1" == "false" ]; then 
+        echo -e "[org/gnome/login-screen]\ndisable-user-list=$showUserList" > $gdmConf/00-screensaver
+    else 
+        # Set defaults when user list is set to true
+        rm -f $gdmConf/00-screensaver
+    fi;
+    
+    dconf update
+}
+
+# Changes login screen shield picture.
+function setShield() {
+    createGdmProfile
+
+    test ! -d $gdmConf && mkdir -p $gdmConf
+    if [ "$1" != "" ]; then 
+        echo -e "[org/gnome/desktop/screensaver]\npicture-uri='file://$1'" > $gdmConf/01-screensaver
+    else 
+        # Set defaults when there is no image provided
+        rm -f $gdmConf/01-screensaver
+    fi;
+
+    dconf update
+}
+
+function save() {
+    cmd="$2"
+    theme=$(echo $cmd | cut -d ',' -f 1)
+    background=$(echo $cmd | cut -d ',' -f 2)
+    shield=$(echo $cmd | cut -d ',' -f 3)
+    userList=$(echo $cmd | cut -d ',' -f 4)
+
+    install $theme $background
+    setShield $shield
+    setUserList $userList
+}
+
 # Determine whether we need help
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
-args="$@"
-# Main functions
-# $1 = option, $2 = gui, $3 = installPath, $4 = theme, $5 = image
-case $1 in
-    extract)
-        onStart
-        extract $2 $3
-    ;;
-    compile)
-        onStart
-        compile $2 $3
-    ;;
-    reboot)
-        fastReboot
-    ;;
-    install)
-        if [ "$2" == "gui" ]; then
-            installPath=$3
-            install $4 $5 $2
-        else
+user=$(whoami)
+
+# Run as root if current user is not root, $1 = file, $2 = args, $3 = guil
+function runAsRoot() {
+    cmd="$@"
+    if [ "$user" != "root" ]; then 
+        if [ $runningOnGui == true ]; then
+            exec pkexec bash -c "$cmd"
+        else 
+            exec sudo bash -c "$cmd"
+        fi;
+    fi;
+}
+
+#echo "debug:" $user $0 $args "|runningOnGui:" $runningOnGui "|argList:" "$argList"
+
+function main() {
+    # Main functions
+    # $1 = option, $2 = installPath, 3 = theme, $4 = image
+    case $1 in
+        extract)
+            onStart "--no-print"
+            extract $2 $3
+        ;;
+        compile)
+            onStart "--no-print"
+            compile $2 $3
+        ;;
+        reboot)
+            fastReboot
+        ;;
+        install)
             # Startup configuration in order to enable all functionalities correctly
-            onStart
-            user=$(whoami)
+            onStart "--no-print"
             # On cli version we make sure that command is executed with correct rights.
-            [ "$user" == "root" ] || exec sudo bash -c "$0 $args"
+            runAsRoot $0 $args
             if [ "$user" == "root" ]; then
                 install $2 $3
                 # Only offer reboot option if this was executed non GUI
-                reboot
+                [ $runningOnGui == true ] || reboot
             fi;
-        fi;
-    ;;
-    list)
-        list
-    ;;
-    start)
-        onStart "gui"
-    ;;
-    updateDefault)
-        installPath=$2
-        updateDefaultTheme
-    ;;
-    setupApp)
-        setupApplication $2
-    ;;
-    *)
-        notRecognized $1
-    ;;
-esac
+        ;;
+        list)
+            onStart "--no-print"
+            list
+        ;;
+        start)
+            onStart
+        ;;
+        updateDefault)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            if [ "$user" == "root" ]; then
+                updateDefaultTheme
+            fi;
+        ;;
+        setupApp)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            if [ "$user" == "root" ]; then
+                # $2 = comman separated config list
+                setupApplication $2
+            fi;
+        ;;
+        save)
+            onStart "--no-print"
+            runAsRoot $0 $args
+            [ "$user" == "root" ] && save $argList
+        ;;
+        set)
+        # $2 = config, $3 = value
+            case $2 in
+                shield)
+                    runAsRoot $0 $args
+                    if [ "$user" == "root" ]; then 
+                        setShield $3
+                        # Only cli version is offered to reboot
+                        [ $runningOnGui == true ] || reboot
+                    fi;
+                ;;
+                user-list)
+                    runAsRoot $0 $args
+                    if [ "$user" == "root" ]; then 
+                        setUserList $3
+                        # Only cli version is offered to reboot
+                        [ $runningOnGui == true ] || reboot
+                    fi;
+                ;;
+                *)
+                notRecognized $2
+                ;;
+            esac
+        ;;
+        *)
+            notRecognized $1
+        ;;
+    esac
+}
 
-# If we are not in execution path, return to execution path
-if [ "$executionPath" != "$(pwd)" ]; then cd $executionPath; fi;
+main $argList 
+
+test -f $runtimeConf && rm -f $runtimeConf

@@ -1,6 +1,12 @@
 <template>
     <div>
         <v-app>
+            <v-snackbar :timeout="20000" :top="true" v-model="updatesAvailable">
+                Newer version ({{newVersion}}) of this application is available. 
+                <a href="https://github.com/juhaku/loginized/releases" @click.prevent="openLink($event.currentTarget.href)">Releases</a>
+                <v-btn flat color="primary" @click.native="updatesAvailable = false">Close</v-btn>
+            </v-snackbar>
+
             <v-dialog v-model="rebootDialog" persistent max-width="40em">
                 <v-card>
                     <v-card-title class="headline">Reboot Computer</v-card-title>
@@ -68,6 +74,8 @@
                             <div class="box__100">
                                 <h3>Upload default theme .gresource file:</h3>
                                 <File :max-files="1" accept=".gresource" v-on:file-upload="defaultTheme = $event[0]" ref="defaultThemeFile" />
+                                <h3>Check for updates:</h3>
+                                <v-btn @click="checkUpdates()"><v-icon>refresh</v-icon> Check for updates ({{updatesChecked ? updatesChecked.toLocaleString(dateTimeFormat) : '--'}})</v-btn>
                             </div>
                             <div class="box__100">
                                 <p style="margin: 0 !important;">&copy; 2018 Juha Kukkonen - 
@@ -96,14 +104,32 @@
                 </div>
                 <div class="box__100">
                     <v-container fluid justify-space-between grid-list-md>
-                        <v-layout row>
+                        <v-layout align-baseline row>
                             <v-flex xs6>
                                 <h3>Theme:</h3>
+                            </v-flex>
+                            <v-flex xs6>
                                 <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout align-baseline row>
+                            <v-flex xs6>
+                                <h3>User list enabled: <Info text="Enables or disables user selection in login. If user list is disabled then user need to be typed to username field at login." /></h3>
+                            </v-flex>
+                            <v-flex style="display: flex; justify-content: flex-end;">
+                                <div style="width: 3em;">
+                                    <v-switch v-model="enableUserList"></v-switch>
+                                </div>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row>
+                            <v-flex xs6>
+                                <h3>Shield:</h3>
+                                <ImageFile name="shield" v-on:img-change="selectedShield=$event" />
                             </v-flex>
                             <v-flex xs6>
                                 <h3>Background image:</h3>
-                                <ImageFile v-on:img-change="selectedImage=$event" />
+                                <ImageFile name="background" v-on:img-change="selectedImage=$event" />
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -134,19 +160,26 @@ import * as PerfectScrollbar from 'perfect-scrollbar';
 import * as Promise from 'promise';
 import * as opn from 'opn';
 import * as path from 'path';
+import FileEntry from '@/model/FileEntry';
+import * as Info from './components/Info.vue';
+import 'whatwg-fetch';
+import { DateTime } from 'luxon';
 
 @Component({
     components: {
         File,
         ImageFile,
+        Info,
     },
 })
 export default class App extends Vue {
-    private static BASE_PATH = `${__dirname}/..`;
+    private static readonly BASE_PATH = `${__dirname}/..`;
     private static readonly VERSION = '0.1.4-SNAPSHOT';
+    private static readonly LATEST_RELEASE_URL = 'http://api.github.com/repos/juhaku/loginized/releases/latest';
 
     private selectedTheme: string = '';
     private selectedImage: FileEntry = new FileEntry();
+    private selectedShield: FileEntry = new FileEntry();
     private rebootDialog: boolean = false;
     private settingsDialog: boolean = false;
     private defaultTheme: FileEntry | null = null;
@@ -159,11 +192,16 @@ export default class App extends Vue {
     private welcomeDialog = false;
     private release: string | undefined;
     private setupClicked: boolean = false;
+    private enableUserList: boolean = true;
+    private updatesAvailable: boolean = false;
+    private newVersion: string;
+    private dateTimeFormat: string = DateTime.DATETIME_SHORT;
 
     @State('themes') private themes: string[];
     @State('configLocation') private configLocation: string;
     @State('theme') private theme: string;
     @State('defaultDesktop') private defaultDesktop: boolean;
+    @State((state) => state.checked && DateTime.fromISO(state.checked)) private updatesChecked: DateTime;
 
     @Mutation private updateThemes: ({ }) => {};
     @Mutation private setConfigLocation: ({ }) => {};
@@ -171,13 +209,15 @@ export default class App extends Vue {
     @Mutation private setTheme: ({ }) => {};
     @Mutation private setRelease: ({ }) => {};
     @Mutation private setDefaultDesktop: ({ }) => {};
+    @Mutation private setUserList: ({ }) => {};
+    @Mutation private setChecked: ({ }) => {};
 
     private getVersion() {
         return App.VERSION;
     }
 
     private created() {
-        this.cliExec('start', false).then((stdout: any) => {
+        this.cliExec('--gui start').then((stdout: any) => {
             const configPath = `${stdout.trim()}/config.json`;
 
             if (fs.existsSync(configPath)) {
@@ -189,15 +229,38 @@ export default class App extends Vue {
             }
 
             this.setConfigLocation(stdout.trim());
+
+            if (this.$store.state.checked === undefined || this.$store.state.checked === '') {
+                this.checkUpdates();
+            }
+
+            this.cliExec('list').then((stdout: string) =>
+                this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
+                    (error: any) => this.showError(error));
         }, (error: any) => this.showError(error));
 
-        this.cliExec('list', false).then((stdout: string) =>
-            this.updateThemes([...stdout.split(/\s/).filter((item: string) => item !== '')]),
-                (error: any) => this.showError(error));
-
         this.$store.subscribe((mutation, state) => {
+            // Set the selected theme always point to theme from vuex
+            this.selectedTheme = state.theme;
+
             if (mutation.type === 'setConfigLocation' && state.release === null) {
                 this.openWelcomeOrUpdateSetup(state.release);
+            }
+        });
+
+        this.$store.watch(() => this.$store.state.checked, (checked: string, oldChecked: string) => {
+            if (checked !== undefined) {
+                const lastChecked = DateTime.fromISO(checked);
+                // When there is more than 24 hours since last check then check updates.
+                if (DateTime.local().diff(this.updatesChecked, 'hours').toObject().hours > 24) {
+                    this.checkUpdates();
+                }
+            }
+        });
+
+        this.$store.watch(() => this.$store.state.userList, (userList: boolean, oldUserList: boolean) => {
+            if (userList !== undefined) {
+                this.enableUserList = userList;
             }
         });
     }
@@ -241,20 +304,19 @@ export default class App extends Vue {
     }
 
     private save() {
-        if (this.selectedTheme === '') {
-            return;
-        }
+        const themeArgs = `${this.selectedTheme},${this.selectedImage.getFileName()}`;
+        const shieldImage = this.selectedShield && this.selectedShield.name !== undefined ?
+            `${this.configLocation}/${this.selectedShield.getFileName()}` : '';
 
-        this.cliExec(`install gui ${this.configLocation} ${this.selectedTheme} ${this.selectedImage.getFileName()}`,
-            true).then((stdout: any) => {
-                this.writeConfig().then((status: any) => {
-                    this.rebootDialog = true;
-                }, (error: any) => this.showError(error));
-            }, (error: any) => {
-                if (!error.includes('Command failed: pkexec')) {
-                    this.showError(error);
-                }
-            });
+        this.cliExec(`--gui save ${themeArgs},${shieldImage},${this.enableUserList}`).then((stdout: any) => {
+            this.writeConfig().then((status: any) => {
+                this.rebootDialog = true;
+            }, (error: any) => this.showError(error));
+        }, (error: any) => {
+            if (!error.includes('Command failed: pkexec')) {
+                this.showError(error);
+            }
+        });
     }
 
     private reboot() {
@@ -270,8 +332,12 @@ export default class App extends Vue {
         this.setTheme(theme);
     }
 
-    private cliExec(command: string, sudo: boolean): Promise<any> {
-        return this.exec(`${sudo ? 'pkexec ' : ''}${App.BASE_PATH}/loginized-cli.sh ${command}`);
+    @Watch('enableUserList') private updateUserListChanges(userlist: boolean, oldUserList: boolean) {
+        this.setUserList(userlist);
+    }
+
+    private cliExec(command: string): Promise<any> {
+        return this.exec(`${App.BASE_PATH}/loginized-cli.sh ${command}`);
     }
 
     private exec(command: string): Promise<any> {
@@ -279,6 +345,7 @@ export default class App extends Vue {
     }
 
     private saveSettings() {
+        this.$refs.defaultThemeFile.clear();
         this.settingsDialog = false;
         if (this.defaultTheme !== null || this.defaultTheme !== undefined) {
             this.updateDefaultTheme(this.defaultTheme);
@@ -289,8 +356,8 @@ export default class App extends Vue {
         // We want to explicitly name the default theme to gnome-shell-theme.gresource
         const nameWithPath = `${this.configLocation}/default/gnome-shell-theme.gresource`;
         this.$refs.defaultThemeFile.writeUploadFile(nameWithPath, file).then((retVal: any) =>
-            this.cliExec('updateDefault', false)
-            .then((stdout: any) => this.$refs.defaultThemeFile.clear(), (error: any) => this.showError(error)));
+            this.cliExec(`--gui updateDefault`)
+            .then((stdout: any) => { }, (error: any) => this.showError(error)));
     }
 
     private openLink(link: string) {
@@ -323,7 +390,7 @@ export default class App extends Vue {
         }
         command += `,${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
 
-        this.cliExec(`setupApp ${command}`, true)
+        this.cliExec(`--gui setupApp ${command}`)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
             .catch((error) => {
                 if (!error.includes('Command failed: pkexec')) {
@@ -344,6 +411,23 @@ export default class App extends Vue {
                     resolve('OK');
                 });
         });
+    }
+
+    private checkUpdates() {
+        this.setChecked(DateTime.local().toISO());
+        fetch(App.LATEST_RELEASE_URL).then((response) => response.json()).then((release: any) => {
+            const latest = release.tag_name.replace('v', '').split('.');
+            const current = App.VERSION.replace('-SNAPSHOT', '').split('.');
+
+            latest.forEach((version: string, index: number) => {
+                if (Number(version) > Number(current[index])) {
+                    this.newVersion = latest.join('.');
+                    this.updatesAvailable = true;
+                    return;
+                }
+            });
+        }).catch((error) => this.showError(error));
+        this.writeConfig().catch((error) => this.showError(error));
     }
 
 }

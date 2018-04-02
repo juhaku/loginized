@@ -31,5 +31,9 @@ export default class AbstractFile extends Vue {
         return Array(fileList.length).fill(0).map((value: number, index: number) => fileList[index]);
     }
 
+    protected acceptFilter(fileList: FileList, acceptFunction: (file: any) => boolean): any[] {
+        return this.fileListToArray(fileList).filter((file: any) => acceptFunction.call(this, file) === true);
+    }
+
 }
 </script>

@@ -22,7 +22,7 @@ let mainWindow
 function createWindow() {
   // Create the browser window.
   const icon = electron.nativeImage.createFromPath(path.resolve(__dirname, '../src/assets/icon_3.png'))
-  mainWindow = new BrowserWindow({width: 800, height: 600, icon: icon, title: 'Loginized'})
+  mainWindow = new BrowserWindow({width: 900, height: 700, icon: icon, title: 'Loginized'})
 
 
   // and load the index.html of the app.

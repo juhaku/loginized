@@ -17,7 +17,7 @@ _loginized-cli() {
     local options=""
 
     if [ $length -le 2 ]; then
-        options="install list extract compile --help ? -h"
+        options="install list extract compile set --gui --help ? -h"
     elif [ $length -gt 2 ]; then
         # Get list of themes
         themes=$($(which loginized-cli) list)
@@ -25,11 +25,23 @@ _loginized-cli() {
         # If current is not related to help then allow extra options
         if [[ "$previous" != "-h" || "$previous" != "--help" || "$previous" != "?" ]]; then
             case $previous in
+                --gui)
+                    options="install list extract compile set"
+                ;;
                 install)
                     options=$themes
                 ;;
                 extract)
                     options=$themes
+                ;;
+                set)
+                    options="shield user-list"
+                ;;
+                shield)
+                    compopt -o default
+                ;;
+                user-list)
+                    options="true false"                    
                 ;;
             esac
         fi;
