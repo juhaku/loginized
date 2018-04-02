@@ -30,7 +30,6 @@ repositories {
 }
 
 release {
-    project.ext['newVersion'] = version
     tagTemplate = "v$version".replace("-SNAPSHOT", "")
     git {
         requireBranch = 'master'
@@ -38,7 +37,7 @@ release {
 }
 
 artifacts {
-    String v = project.ext['newVersion'].replace("-SNAPSHOT", "")
+    String v = project.version.replace("-SNAPSHOT", "")
     def debFile = file("./out/make/${rootProject.name}_${v}_x64.deb")
     def rpmFile = file("./out/make/${rootProject.name}_${v}_x64.rpm")
     def zipFile = file("./out/make/${rootProject.name}_${v}_x64_all.zip")
@@ -89,28 +88,18 @@ uploadArchives {
     }
 }
 
-task('cacheNewVersion') {
-    println "v: ${project.version}"
-    project.ext['newVersion'] = project.version
-    outputs.upToDateWhen { false }
-}
-cacheNewVersion.description = "Caches new version to project ext properties for later usage"
-
 task revert(type: Exec) {
     commandLine './integrity.sh', 'rollback'
 }
 revert.description = 'Rollback commit on release failure'
 
-task('updatePomVersion') {
-    project.version = project.ext['newVersion']
-    release.tagTemplate = "v${project.version}".replace("-SNAPSHOT", "")
-    uploadArchives.repositories.mavenDeployer.pom.version = project.version.replace("-SNAPSHOT", "")
-    outputs.upToDateWhen { false }
+task ('updatePomVersion') {
+    release.tagTemplate = "v$version".replace("-SNAPSHOT", "")
+    uploadArchives.repositories.mavenDeployer.pom.version = version.replace("-SNAPSHOT", "")
 }
 
 createReleaseTag.dependsOn uploadArchives
 preTagCommit.dependsOn updatePomVersion
-checkSnapshotDependencies.dependsOn cacheNewVersion
 
 task releaseBuild(type: Exec) {
     commandLine './integrity.sh', 'release'
@@ -118,7 +107,6 @@ task releaseBuild(type: Exec) {
 releaseBuild.description = "Builds distribution versions of app"
 
 project.tasks.runBuildTasks.dependsOn releaseBuild
-//uploadArchives.dependsOn releaseBuild
 
 task updateAppVersion(type: Exec) {
     commandLine './integrity.sh', 'update-version'
