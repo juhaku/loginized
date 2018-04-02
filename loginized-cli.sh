@@ -311,7 +311,7 @@ function setupApplication {
 
         # Remove or unlink existing ones before they are created or recreated.
         [ -f $appDesktop ] && rm $appDesktop
-        [ -f $app ] && rm -rf $app
+        [ -d $app ] && rm -rf $app
         [ -f $pixmap ] && rm $pixmap
         [ -h $appBin ] && unlink $appBin
 
