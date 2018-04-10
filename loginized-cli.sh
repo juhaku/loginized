@@ -11,6 +11,7 @@ workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 gdmConf=/etc/dconf/db/gdm.d
 runtimeConf=/tmp/loginized-conf.tmp
+imagesPath=/usr/share/Loginized/images
 
 # Determine this dynamically later
 installPath=""
@@ -293,7 +294,10 @@ function setupApplication {
     icon=$(echo $1 | cut -d ',' -f 5)
 
     cliBin=/usr/bin/loginized-cli
-    cliCompletion=/etc/bash_completion.d/loginized-cli-prompt
+    # Make sure completion directory exists
+    completion=/etc/bash_completion.d
+    test ! -d $completion && mkdir -p $completion
+    cliCompletion=$completion/loginized-cli-prompt
 
     if [ "$cli" != "" ]; then
         # If bin and completion already exists remove them and then update new ones
@@ -363,7 +367,12 @@ function setShield() {
 
     test ! -d $gdmConf && mkdir -p $gdmConf
     if [ "$1" != "" ]; then 
-        echo -e "[org/gnome/desktop/screensaver]\npicture-uri='file://$1'" > $gdmConf/01-screensaver
+        # Make sure that image's path is available
+        test ! -d $imagesPath && mkdir -p $imagesPath
+        # Copy the actual file to images path and use that path for shield image
+        shieldPath=$imagesPath/$(basename $1)
+        cp $1 $shieldPath
+        echo -e "[org/gnome/desktop/screensaver]\npicture-uri='file://$shieldPath'" > $gdmConf/01-screensaver
     else 
         # Set defaults when there is no image provided
         rm -f $gdmConf/01-screensaver
