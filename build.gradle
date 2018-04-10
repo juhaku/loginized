@@ -102,7 +102,7 @@ createReleaseTag.dependsOn uploadArchives
 preTagCommit.dependsOn updatePomVersion
 
 task releaseBuild(type: Exec) {
-    commandLine './integrity.sh', 'release'
+    commandLine './integrity.sh', 'release-build'
 }
 releaseBuild.description = "Builds distribution versions of app"
 

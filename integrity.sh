@@ -25,6 +25,9 @@ if [ "$1" == "release" ]; then
     mv out/make/*.rpm out/make/Loginized_"$v"_x64.rpm
     mv out/make/*.zip out/make/Loginized_"$v"_x64_all.zip
     git commit -am 'Gradle Release: Automatic version upgrade' && git push
+elif [ "$1" == "release-build" ]; then
+    docker build --tag loginized-maker:latest .
+    docker run -v "$(pwd)":/build -w "/build" loginized-maker:latest
 elif [ "$1" == "rollback" ]; then
     updateVersion $currentVersion
     revert
