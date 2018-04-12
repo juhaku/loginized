@@ -1,7 +1,7 @@
 {
   "name": "Loginized",
   "description": "Loginized Gnome GDM Login Theme Manager",
-  "version": "0.2.4-SNAPSHOT",
+  "version": "0.2.4",
   "private": true,
   "main": "./electron/main.js",
   "license": "GPL-3.0",

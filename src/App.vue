@@ -174,7 +174,7 @@ import { DateTime } from 'luxon';
 })
 export default class App extends Vue {
     private static readonly BASE_PATH = `${__dirname}/..`;
-    private static readonly VERSION = '0.2.4-SNAPSHOT';
+    private static readonly VERSION = '0.2.4';
     private static readonly LATEST_RELEASE_URL = 'http://api.github.com/repos/juhaku/loginized/releases/latest';
 
     private selectedTheme: string = '';
