@@ -42,6 +42,11 @@ export default class ImageFile extends mixins(AbstractFile) {
                 const img = fs.readFileSync(value);
                 const blob = new Blob([img], {type: 'application/octet-binary'});
                 this.imgBlob = URL.createObjectURL(blob);
+                // Update existing information to App
+                const entry = new FileEntry();
+                entry.name = value;
+                entry.url = this.imgBlob;
+                this.$emit('img-change', entry);
             } else {
                 this.imgBlob = '';
             }
