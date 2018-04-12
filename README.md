@@ -29,7 +29,7 @@ In Ubuntu it is found from `libglib2.0-bin` package and in OpenSUSE it is found 
 ### Downloads
 Debian Based | RPM Based | All Distributions
 -------------|-----------|------------------
-[Loginized_0.2.2_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.2/Loginized_0.2.2_x64.deb)|[Loginized_0.2.2_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.2/Loginized_0.2.2_x64.rpm)|[Loginized_0.2.2_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.2/Loginized_0.2.2_x64_all.zip)
+[Loginized_0.2.3_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.3/Loginized_0.2.3_x64.deb)|[Loginized_0.2.3_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.3/Loginized_0.2.3_x64.rpm)|[Loginized_0.2.3_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.3/Loginized_0.2.3_x64_all.zip)
 
 ### All distributions
 Download zip archive and extract it where ever. After first run you don't need downloaded content as 
