@@ -24,7 +24,7 @@ In Debian and RPM based installations you may choose whether you want to install
 
 ### Pre-requirements
 This application uses `glib-compile-resources` command, make sure it is available in your system.
-In Ubuntu it is found from `libglib2.0-bin` package and in OpenSUSE it is found under `glib2-devel` package.
+In Ubuntu it is found from `libglib2.0-bin` package and `in Ubuntu 18.04 it is found from package libglib2.0-dev-bin` and in OpenSUSE it is found under `glib2-devel` package.
 
 ### Downloads
 Debian Based | RPM Based | All Distributions
