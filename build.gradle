@@ -21,10 +21,10 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url repositoryURL
+        url nexusURL
         credentials {
-            username = gradleArtifactoryUser
-            password = gradleArtifactoryPassword
+            username = nexusUser
+            password = nexusPassword
         }
     }
 }
@@ -53,8 +53,8 @@ uploadArchives {
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: repositoryURL) { //repositoryURL
-            authentication(userName: gradleArtifactoryUser, password: gradleArtifactoryPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
+        repository(url: nexusURL) { //repositoryURL
+            authentication(userName: nexusUser, password: nexusPassword) //gradleArtifactoryUser, gradleArtifactoryPassword
         }
 
         pom.project {
