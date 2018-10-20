@@ -108,6 +108,10 @@ for arg in $(echo $args); do
     [ $arg != "--gui" ] && argList="$argList $arg"
 done;
 
+function removeWorkDir {
+    rm -rf $workDir
+}
+
 # Extracts theme (.gresource)
 function extract {
     theme=$1
@@ -226,7 +230,7 @@ function install {
         installGdm3Css $workLocation/gnome-shell.css
         
         # Clear work dir after installation
-        rm -r $workDir
+        removeWorkDir
     fi
 }
 
@@ -242,7 +246,7 @@ function updateDefaultTheme {
     if [[ -f $gdm3 &&  ! -f $installPath/default/gdm3.css ]]; then
         cp $workDir/theme/gnome-shell.css installPath/default/gdm3.css
     fi;
-    rm $workDir
+    removeWorkDir
 }
 
 # On start functionality

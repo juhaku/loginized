@@ -34,11 +34,11 @@
             <v-dialog v-model="welcomeDialog" persistent max-width="40em">
                 <v-card>
                     <v-card-title>
-                        <div style="width: 100% !important;" class="headline">Hello! Choose setup you wish to continue with.</div>
+                        <div style="width: 100% !important;" class="headline">Hello! Following items will be installed</div>
                     </v-card-title>
                     <v-card-text>
-                        <v-checkbox label="Install .desktop file to /usr/share/applications" v-model="installDesktop" :disabled="desktopDisabled"></v-checkbox>
-                        <v-checkbox label="Install cli for loginized to /usr/bin" v-model="installCli"></v-checkbox>
+                        <div>Install .desktop file to /usr/share/applications</div>
+                        <div>Install cli for loginized to /usr/bin</div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -185,8 +185,6 @@ export default class App extends Vue {
     private defaultTheme: FileEntry | null = null;
     private errorDialog: boolean = false;
     private error: string | null = null;
-    private installDesktop = true;
-    private installCli = false;
     private desktopDisabled = false;
     private updateDialog = false;
     private welcomeDialog = false;
@@ -271,10 +269,9 @@ export default class App extends Vue {
         }
 
         // When application is new installation
-        if (release === null) {
+        if (release === null && release === undefined) {
             // If desktop file is already installed in new installation do not allow installation of it
             if (this.isLoginizedDesktopInstalled()) {
-                this.installDesktop = false;
                 this.desktopDisabled = true;
                 this.setDefaultDesktop(true);
             }
@@ -283,9 +280,6 @@ export default class App extends Vue {
         // When different release than before offer update
         } else if (App.VERSION !== this.release) {
             this.updateDialog = true;
-            this.installCli = this.isCliInstalled();
-            // Only allow update desktop file if it was not default desktop
-            this.installDesktop = !this.defaultDesktop;
         }
     }
 
@@ -381,14 +375,9 @@ export default class App extends Vue {
         this.setRelease(App.VERSION); // Set new release version at setup
 
         let command = ``;
-        if (this.installCli) {
-            command += `${App.BASE_PATH}/loginized-cli.sh,${App.BASE_PATH}/loginized-cli-prompt`;
-        }
-        command += ',';
-        if (this.installDesktop) {
-            command += `${App.BASE_PATH}/Loginized.desktop`;
-        }
-        command += `,${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
+        command += `${App.BASE_PATH}/loginized-cli.sh,${App.BASE_PATH}/loginized-cli-prompt,`;
+        command += `${App.BASE_PATH}/Loginized.desktop,`;
+        command += `${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
 
         this.cliExec(`--gui setupApp ${command}`)
             .then((stdout: any) => this.writeConfig().catch((error: any) => this.showError(error)))
