@@ -26,7 +26,7 @@ In Ubuntu it is found from `libglib2.0-bin` package and in Ubuntu 18.04 onwards 
 ### Downloads
 Debian Based | RPM Based | All Distributions
 -------------|-----------|------------------
-[Loginized_0.2.6_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.6/Loginized_0.2.6_x64.deb)|[Loginized_0.2.6_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.6/Loginized_0.2.6_x64.rpm)|[Loginized_0.2.6_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.6/Loginized_0.2.6_x64_all.zip)
+[Loginized_0.2.5_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64.deb)|[Loginized_0.2.5_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64.rpm)|[Loginized_0.2.5_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64_all.zip)
 
 ### Tested on
 * Ubuntu 16.10 ->
