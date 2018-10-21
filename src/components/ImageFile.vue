@@ -3,8 +3,8 @@
         <input type="file" accept="image/*" style="display: none;" @change="update($event)" ref="imageFile" />
         <v-card>
             <div @click="browseImage($event)" class="pointer" @dragenter.prevent @dragover.prevent @dragleave.prevent @drop.prevent="dropFiles($event)">
-                <v-card-media :src="imgBlob" height="200px" v-if="imgBlob != ''">
-                </v-card-media>
+                <v-img :src="imgBlob" height="200px" v-if="imgBlob != ''">
+                </v-img>
                 <v-card-title style="height: 250px !important;" v-else>
                     <div class="grey-label">Drag and drop or click to select image</div>
                 </v-card-title>

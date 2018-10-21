@@ -109,7 +109,7 @@
                                 <h3>Theme:</h3>
                             </v-flex>
                             <v-flex xs6>
-                                <v-select autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo required :rules="[() => select && select.length > 0 || 'You must choose theme first']"></v-select>
+                                <v-autocomplete :items="themes" v-model="selectedTheme" label="Select theme" single-line solo></v-autocomplete>
                             </v-flex>
                         </v-layout>
                         <v-layout align-baseline row>
@@ -284,9 +284,11 @@ export default class App extends Vue {
     }
 
     private mounted() {
-        const contentMenu = this.$el.querySelector('.menu__content');
-        contentMenu.style.overflow = 'hidden';
-        const ps = new PerfectScrollbar('.menu__content');
+        this.$nextTick(() => {
+            const contentMenu = this.$el.querySelector('.v-menu__content');
+            contentMenu.style.overflow = 'hidden';
+            const ps = new PerfectScrollbar('.v-menu__content');
+        });
     }
 
     private isCliInstalled(): boolean {
