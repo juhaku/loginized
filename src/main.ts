@@ -1,26 +1,17 @@
-import * as Vue from 'vue';
-import * as App from './App.vue';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import App from './App.vue';
 import store from './store';
-import './plugins/shell.ts';
+import router from './router';
+import cli from './cli';
 
-import * as Vuetify from 'vuetify';
+Vue.config.productionTip = false;
 
-Vue.use(Vuetify, {
-  theme: {
-    primary: "#F4511E",
-    secondary: "#FF7043",
-    accent: "#E65100",
-    error: "#f44336",
-    warning: "#ffeb3b",
-    info: "#2196f3",
-    success: "#4caf50"
-  }
-});
-
-// Vue.config.productionTip = process.env.NODE_ENV === 'production';
-Vue.config.productionTip = !process.execPath.match(/[\\/]electron/);
+Vue.use(VueRouter);
+Vue.use(cli);
 
 new Vue({
   store,
+  router,
   render: (h) => h(App),
 }).$mount('#app');

@@ -1,52 +1,105 @@
-import * as Vue from 'vue';
-import * as Vuex from 'vuex';
+import Vue from 'vue';
+import Vuex from 'vuex';
+import { DateTime } from 'luxon';
+import Constants from './constants';
+import fs from 'fs';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {
-    themes: [],
+export enum ActionKeys {
+    CHECK_FOR_UPDATES = 'CHECK_FOR_UPDATES',
+    SET_LAST_CHECKED = 'SET_LAST_CHECKED',
+    SET_ERROR = 'SHOW_ERROR',
+    SET_NEW_VERSION = 'SET_NEW_VERSION',
+    WRITE_CONFIG = 'WRITE_CONFIG',
+    SET_CONFIG_LOCATION = 'SET_CONFIG_LOCATION',
+    OPEN_DIALOG = 'OPEN_DIALOG',
+    SET_CLI_INSTALLED_VERSION = 'SET_CLI_INSTALLED_VERSION',
+}
+
+export interface AppState {
+    lastChecked: string;
+    error: any | undefined;
+    newVersion: string;
+    configLocation: string;
+    theme: string;
+    userlistEnabled: boolean;
+    shield: string;
+    background: string;
+    dialog: string;
+    cliInstalledOnVersion: string;
+}
+
+const appState: AppState = {
+    lastChecked: '',
+    newVersion: '',
     configLocation: '',
+    error: undefined,
+    dialog: '',
+    theme: '',
     shield: '',
     background: '',
-    theme: 'Default',
-    release: null,
-    defaultDesktop: false,
-    userList: true,
-    checked: '',
-  },
-  mutations: {
-    updateThemes(state: any, themes: []) {
-      state.themes = [...themes];
+    userlistEnabled: true,
+    cliInstalledOnVersion: '',
+};
+
+export default new Vuex.Store({
+    state: appState,
+    mutations: {
+        [ActionKeys.SET_ERROR]: (state: AppState, error: any) => {
+            state.error = error;
+        },
+
+        [ActionKeys.SET_NEW_VERSION]: (state: AppState, version: string) => {
+            state.newVersion = version;
+        },
+
+        [ActionKeys.SET_CONFIG_LOCATION]: (state: AppState, configLocation: string) => {
+            state.configLocation = configLocation;
+        },
+
+        [ActionKeys.SET_LAST_CHECKED]: (state: AppState, lastChecked) => {
+            state.lastChecked = lastChecked;
+        },
+
+        [ActionKeys.OPEN_DIALOG]: (state: AppState, dialog: string) => {
+            state.dialog = dialog;
+        },
+
+        [ActionKeys.SET_CLI_INSTALLED_VERSION]: (state: AppState, cliInstalledVersion: string) => {
+            state.cliInstalledOnVersion = cliInstalledVersion;
+        },
     },
-    setConfigLocation(state: any, location: string) {
-      state.configLocation = location;
+    actions: {
+        [ActionKeys.CHECK_FOR_UPDATES]: ({ state, commit, dispatch }, force?: boolean) => {
+            if (state.lastChecked === ''
+                || DateTime.local().diff(DateTime.fromISO(state.lastChecked)).toObject().hours! > 24
+                || force === true) {
+                fetch(Constants.LATEST_RELEASE_URL).then((response) => response.json()).then((release: any) => {
+                    const latest = release.tag_name.replace('v', '').split('.');
+                    const current = Constants.VERSION.replace('-SNAPSHOT', '').split('.');
+
+                    latest.forEach((version: string, index: number) => {
+                        if (Number(version) > Number(current[index])) {
+                            commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
+                        }
+                    });
+                }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
+                commit(ActionKeys.SET_LAST_CHECKED, DateTime.local().toISO());
+                dispatch(ActionKeys.WRITE_CONFIG);
+            }
+        },
+
+        [ActionKeys.WRITE_CONFIG]: async ({ state, commit }) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(`${state.configLocation}/config.json`,
+                    JSON.stringify(state), (nerr: NodeJS.ErrnoException) => {
+                        if (nerr) {
+                            reject(nerr);
+                        }
+                        resolve('OK');
+                    });
+            }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
+        },
     },
-    background(state: any, background: string) {
-      state.background = background;
-    },
-    shield(state: any, shield: string) {
-      state.shield = shield;
-    },
-    setTheme(state: any, theme: string) {
-      state.theme = theme;
-    },
-    setRelease(state: any, release: string) {
-      state.release = release;
-    },
-    setDefaultDesktop(state: any, defaultDesktop: boolean) {
-      state.defaultDesktop = defaultDesktop;
-    },
-    setUserList(state: any, userList: boolean) {
-      state.userList = userList;
-    },
-    setChecked(state: any, checked: string) {
-      state.checked = checked;
-    },
-  },
-  actions: {
-    updateThemes(context) {
-      context.commit('updateThemes');
-    },
-  },
 });

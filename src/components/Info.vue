@@ -1,18 +1,24 @@
 <template>
-  <v-menu open-on-hover right offset-x>
-      <v-icon slot="activator">info_outline</v-icon>
-      <v-card width="300">
-          <v-card-text>
-            {{text}}
-          </v-card-text>
-      </v-card>
-    </v-menu>
+    <Tooltip
+        maxWidth="20"
+        :text="text">
+        <div slot="opener">
+            <Icon size="small" icon="help" />
+        </div>
+    </Tooltip>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import Icon from '@/components/Icon/Icon.vue';
 
-@Component
+@Component({
+    components: {
+        Tooltip,
+        Icon,
+    },
+})
 export default class Info extends Vue {
     @Prop() private text!: string;
 }

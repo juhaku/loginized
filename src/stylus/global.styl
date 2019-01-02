@@ -1,0 +1,140 @@
+@import './variables.styl'
+
+* 
+    font-family 'Montserrat', 'Avenir', Helvetica, Arial, sans-serif
+    -webkit-font-smoothing antialiased
+    -moz-osx-font-smoothing grayscale
+
+p, span
+    color: midnight-black
+
+    &.inverted
+        color cool-white
+        text-shadow 0px 0px 1px midnight-black
+    
+    &.bold
+        font-weight 600
+
+    &.hint
+        color mid-grey
+        font-style italic
+
+.dark-grey-text
+    color: rgba(59, 59, 59, 0.5)
+
+body
+    background-color cool-white
+    padding 0
+    margin 0
+
+// .cool-white 
+//     background-color cool-white
+
+// .smoke
+//     background-color smoke
+
+// .midnight-black
+//     background-color midnight-black
+
+a:not(.heading)
+    color main-color
+    transition color 150ms ease-in
+    text-decoration none
+    
+    &:link, &:visited
+        color main-color
+    
+    &:hover, &:active
+        color secondary
+
+a.heading
+    color midnight-black
+    transition color 150ms ease-in
+    cursor pointer
+    text-decoration none
+    
+    &:link, &:visited
+        color midnight-black
+    
+    &:hover, &:active
+        color early-black
+
+    &--inverted
+        color cool-white
+        text-shadow 0px 0px 1px midnight-black
+    
+        &:link, &:visited
+            color darker-white
+        
+        &:hover, &:active
+            color cool-white
+
+.no-margin-padding
+    padding 0em
+    margin 0em
+
+.mid-grey-dark-grey-gradient
+    background linear-gradient(mid-grey, dark-grey)
+
+.darker-white-dark-white-gradient
+    background linear-gradient(darker-white, dark-white)
+
+::selection
+    background-color tertiary
+
+*:focus
+    outline 0
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x
+    background-color tertiary !important
+    border-radius 6px
+    transition background-color 200ms linear, height 200ms ease-in-out
+    -webkit-transition background-color 200ms linear, height 200ms ease-in-out
+    height 6px
+    /* there must be 'bottom' for ps__thumb-x */
+    bottom 2px
+    /* please don't change 'position' */
+    position: absolute;
+  
+.ps__thumb-y
+    /* #aaa */
+    background-color tertiary !important
+    border-radius 6px
+    transition background-color 200ms linear, width 200ms ease-in-out
+    -webkit-transition background-color 200ms linear, width 200ms ease-in-out
+    width 6px
+    /* there must be 'right' for ps__thumb-y */
+    right 2px
+    /* please don't change 'position' */
+    position absolute
+
+.ps:hover > .ps__rail-x, .ps:hover > .ps__rail-y, .ps--focus > .ps__rail-x, .ps--focus > .ps__rail-y, .ps--scrolling-x > .ps__rail-x, .ps--scrolling-y > .ps__rail-y
+    background-color transparent
+
+.ps .ps__rail-x:hover, .ps .ps__rail-y:hover, .ps .ps__rail-x:focus, .ps .ps__rail-y:focus, .ps .ps__rail-x.ps--clicking, .ps .ps__rail-y.ps--clicking 
+    background-color transparent
+
+.arrow-title
+    display inline-block
+    &:hover 
+        // color early-black
+        cursor pointer
+
+        > svg
+            fill secondary
+
+.relative-heading
+    @media screen and (min-width 200px)
+        font-size:  0.7em
+
+    @media screen and (min-width 400px)
+        font-size:  1em
+    
+    @media screen and (min-width 700px)
+        font-size:  1.17em
+
+    @media screen and (min-width 1700px)
+        font-size:  1.3em

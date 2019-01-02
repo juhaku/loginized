@@ -1,10 +1,8 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import * as fs from 'fs';
-import FileEntry from '../model/FileEntry.ts';
-import * as Promise from 'promise';
+import { FileEntry } from '@/FileEntry';
 
-@Component
 export default class AbstractFile extends Vue {
 
     public writeUploadFile(name: string, entry: FileEntry): Promise<any> {
