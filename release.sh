@@ -7,17 +7,17 @@ function setVersion {
 }
 
 version=`cat VERSION`
-releaseVersion=`echo $version | sed s|-SNAPSHOT||`
+releaseVersion=`echo $version | sed "s|-SNAPSHOT||"`
 
 setVersion $releaseVersion
 
 git commit -am 'Automated pre-release commit: '$releaseVersion'' && git push
 
 yarn electron:build
-git tag -a ''$releaseVersion'' -m 'Automated release pre-tag commit' && git push origin $releaseVersion
+git tag -a $releaseVersion -m 'Automated release pre-tag commit' && git push origin $releaseVersion
 gradle -Pversion=$releaseVersion uploadArchives
 
-nextVersion=`echo $releaseVersion | awk -F . '{print $1"."$2"."$3+1"-SNAPSHOT"}'`
+nextVersion=`echo $releaseVersion | awk -F . '{print $1"."$2"."$3+1"-SNAPSHOT"}'`
 
 setVersion $nextVersion
 
