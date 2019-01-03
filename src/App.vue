@@ -1,12 +1,17 @@
 <template>
-    <div>
+    <div class="app">
+        <Snackbar :active="newVersion !== ''" :timeout="10000" :onClose="() => hideUpdatesSnackbar('')">
+            <h3 class="snackbar-message">Updates available {{newVersion}} 
+                <Button class="button" text="Show" :filled="true" :inverted="true" />
+            </h3>
+        </Snackbar>
         <ErrorDialog :error="error"
             :onCloseDialog="onCloseErrorDialog" v-if="error"/>
         <RebootDialog  v-else-if="dialog === 'reboot'"
-            :onCloseDialog="onCloseDialog" :onReboot="reboot"/>
+            :onCloseDialog="() => openDialog('')" :onReboot="reboot"/>
         <AboutDialog
             v-else-if="dialog === 'about'"
-            :onCloseDialog="onCloseDialog" />
+            :onCloseDialog="() => openDialog('')" />
         <FluidGrid class="app-grid" direction="row" noWrap="noWrap" ref="grid">
             <FluidGridColumn class="app-grid__menu_view">
                 <div class="menu">
@@ -64,6 +69,8 @@ import { State, Mutation, Action } from 'vuex-class';
 import ErrorDialog from '@/components/Dialog/ErrorDialog.vue';
 import RebootDialog from '@/components/Dialog/RebootDialog.vue';
 import AboutDialog from '@/components/Dialog/AboutDialog.vue';
+import Snackbar from '@/components/Snackbar/Snackbar.vue';
+import Button from '@/components/Button/Button.vue';
 
 
 @Component({
@@ -75,6 +82,8 @@ import AboutDialog from '@/components/Dialog/AboutDialog.vue';
     ErrorDialog,
     RebootDialog,
     AboutDialog,
+    Snackbar,
+    Button,
   },
 })
 export default class App extends Vue {
@@ -82,15 +91,16 @@ export default class App extends Vue {
     @State('configLocation') private configLocation!: string;
     @State('dialog') private dialog!: string;
     @State('error') private error!: any;
+    @State('newVersion') private newVersion!: string;
 
     @Mutation(ActionKeys.SET_ERROR)
     private onCloseErrorDialog!: () => void;
 
     @Mutation(ActionKeys.OPEN_DIALOG)
-    private onCloseDialog!: () => void;
-
-    @Mutation(ActionKeys.OPEN_DIALOG)
     private openDialog!: (dialog: string) => void;
+
+    @Mutation(ActionKeys.SET_NEW_VERSION)
+    private hideUpdatesSnackbar!: (v: string) => void;
 
     @Action(ActionKeys.CHECK_FOR_UPDATES)
     private checkForUpdates!: () => void;
@@ -137,7 +147,7 @@ export default class App extends Vue {
     }
 
     private reboot() {
-        this.onCloseDialog();
+        this.openDialog('');
         this.$exec('gnome-session-quit --reboot');
     }
 }
@@ -145,35 +155,41 @@ export default class App extends Vue {
 <style lang="stylus">
 @import './stylus/*'
 
-.app-grid
-    display flex
-    background-color darker-white
+.app
+    .snackbar-message
+        margin-left 1rem
+        color cool-white
 
-    &__view
-        padding 0.5rem
+        .button
+            margin-left 1rem
 
-    &__menu_view
-        width 70px
-    
-    .menu
-        background-color dark-grey
+    .app-grid
         display flex
-        flex-direction column
-        height 100%
-        width 70px
+        background-color darker-white
 
-        &__item
-            width 45px
-            height 45px
-            border 0em solid grey
-            transition fill 150ms ease-in, border 150ms ease-in
-            padding 0.3rem
+        &__view
+            padding 0.5rem
 
-            &:hover, &--active
-                fill secondary
-                border-left 0.2rem solid secondary
-                cursor pointer
+        &__menu_view
+            width 70px
+        
+        .menu
+            background-color dark-grey
+            display flex
+            flex-direction column
+            height 100%
+            width 70px
 
+            &__item
+                width 45px
+                height 45px
+                border 0em solid grey
+                transition fill 150ms ease-in, border 150ms ease-in
+                padding 0.3rem
 
+                &:hover, &--active
+                    fill secondary
+                    border-left 0.2rem solid secondary
+                    cursor pointer
 
 </style>

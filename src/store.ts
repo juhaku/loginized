@@ -72,18 +72,18 @@ export default new Vuex.Store({
     },
     actions: {
         [ActionKeys.CHECK_FOR_UPDATES]: ({ state, commit, dispatch }, force?: boolean) => {
-            if (state.lastChecked === ''
-                || DateTime.local().diff(DateTime.fromISO(state.lastChecked)).toObject().hours! > 24
-                || force === true) {
-                fetch(Constants.LATEST_RELEASE_URL).then((response) => response.json()).then((release: any) => {
+            if (force === true
+                || state.lastChecked === ''
+                || DateTime.local().diff(DateTime.fromISO(state.lastChecked)).toObject().hours! > 24) {
+                commit(ActionKeys.SET_NEW_VERSION, '');
+                fetch(Constants.LATEST_RELEASE_URL).then((response) => response.json())
+                    .then((release: any) => {
                     const latest = release.tag_name.replace('v', '').split('.');
                     const current = Constants.VERSION.replace('-SNAPSHOT', '').split('.');
 
-                    latest.forEach((version: string, index: number) => {
-                        if (Number(version) > Number(current[index])) {
-                            commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
-                        }
-                    });
+                    if (Number(latest.join('')) > Number(current.join(''))) {
+                        commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
+                    }
                 }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
                 commit(ActionKeys.SET_LAST_CHECKED, DateTime.local().toISO());
                 dispatch(ActionKeys.WRITE_CONFIG);
@@ -93,7 +93,12 @@ export default new Vuex.Store({
         [ActionKeys.WRITE_CONFIG]: async ({ state, commit }) => {
             return new Promise((resolve, reject) => {
                 fs.writeFile(`${state.configLocation}/config.json`,
-                    JSON.stringify(state), (nerr: NodeJS.ErrnoException) => {
+                    JSON.stringify(state, (key, value) => {
+                        if (key === 'dialog') {
+                            return '';
+                        }
+                        return value;
+                    }), (nerr: NodeJS.ErrnoException) => {
                         if (nerr) {
                             reject(nerr);
                         }
