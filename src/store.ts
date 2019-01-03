@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import { DateTime } from 'luxon';
 import Constants from './constants';
 import fs from 'fs';
+import { ThemeConfig } from './ThemeConfig';
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export enum ActionKeys {
     SET_CONFIG_LOCATION = 'SET_CONFIG_LOCATION',
     OPEN_DIALOG = 'OPEN_DIALOG',
     SET_CLI_INSTALLED_VERSION = 'SET_CLI_INSTALLED_VERSION',
+    SET_THEME_CONFIG = 'SET_THEME_CONFIG',
 }
 
 export interface AppState {
@@ -69,6 +71,13 @@ export default new Vuex.Store({
         [ActionKeys.SET_CLI_INSTALLED_VERSION]: (state: AppState, cliInstalledVersion: string) => {
             state.cliInstalledOnVersion = cliInstalledVersion;
         },
+
+        [ActionKeys.SET_THEME_CONFIG]: (state: AppState, config: ThemeConfig) => {
+            state.background = config.background;
+            state.theme = config.theme;
+            state.shield = config.shield;
+            state.userlistEnabled = config.userlistEnabled;
+        },
     },
     actions: {
         [ActionKeys.CHECK_FOR_UPDATES]: ({ state, commit, dispatch }, force?: boolean) => {
@@ -94,7 +103,7 @@ export default new Vuex.Store({
             return new Promise((resolve, reject) => {
                 fs.writeFile(`${state.configLocation}/config.json`,
                     JSON.stringify(state, (key, value) => {
-                        if (key === 'dialog') {
+                        if (key === 'dialog' || key === 'error') {
                             return '';
                         }
                         return value;

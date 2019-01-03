@@ -123,6 +123,7 @@ export default class Select extends Vue {
             .find((value, selectionIndex) => selectionIndex === index) || '';
         this.close();
         this.cursor = -1;
+        this.$emit('input', this.selected);
     }
 
     private onKeyUp(event: KeyboardEvent) {

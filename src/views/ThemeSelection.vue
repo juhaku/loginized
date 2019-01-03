@@ -42,6 +42,7 @@
             <FluidGrid justify="end">
                 <FluidGridColumn>
                     <Button
+                        :disabled="!selectedTheme || selectedTheme === ''"
                         @click.native="save"
                         text="Save"
                         size="large" />
@@ -64,6 +65,7 @@ import Icon from '@/components/Icon/Icon.vue';
 import { State, Action, Mutation } from 'vuex-class';
 import { FileEntry } from '@/FileEntry';
 import { ActionKeys } from '@/store';
+import { ThemeConfig } from '@/ThemeConfig';
 
 @Component({
   components: {
@@ -88,6 +90,9 @@ export default class ThemeSelection extends Vue {
     @Mutation(ActionKeys.OPEN_DIALOG)
     private openDialog!: (dialog: string) => void;
 
+    @Mutation(ActionKeys.SET_THEME_CONFIG)
+    private setThemeConfig!: (config: ThemeConfig) => void;
+
     @Action(ActionKeys.WRITE_CONFIG)
     private writeConfig!: () => Promise<string>;
 
@@ -100,6 +105,12 @@ export default class ThemeSelection extends Vue {
     private created() {
         this.$watch('userlistEnabled',
             (newValue, oldValue) => (this.userListEnabled = newValue), { immediate: true });
+        this.$watch('shield',
+            (newValue, oldValue) => (this.selectedShield = newValue), { immediate: true });
+        this.$watch('background',
+            (newValue, oldValue) => (this.selectedBackground = newValue), { immediate: true });
+        this.$watch('theme',
+            (newValue, oldValue) => (this.selectedTheme = newValue), { immediate: true });
         this.$cliExec('list').then((result) =>
             (this.themes = [...result.split(/\s/).filter((item: string) => item !== '')]));
     }
@@ -115,6 +126,12 @@ export default class ThemeSelection extends Vue {
 
         this.$cliExec(`--gui save ${themeArgs},${shieldImage},${this.userListEnabled}`)
             .then((stdout: any) => {
+            this.setThemeConfig({
+                theme: this.selectedTheme,
+                background: this.selectedBackground,
+                shield: this.selectedShield,
+                userlistEnabled: this.userlistEnabled,
+            });
             this.writeConfig().then((status: any) => {
                 this.openDialog('reboot');
             });

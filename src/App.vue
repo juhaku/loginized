@@ -113,7 +113,7 @@ export default class App extends Vue {
 
         this.$cliExec('--gui start').then((result) => {
             this.$store.commit(ActionKeys.SET_CONFIG_LOCATION,
-                Constants.IS_DEBUG ? `${result.replace('\n', '')}/_test` : result);
+                Constants.IS_DEBUG ? `${result.replace('\n', '')}/_test` : result.replace('\n', ''));
             const config = `${this.configLocation}/config.json`;
 
             if (fs.existsSync(config)) {

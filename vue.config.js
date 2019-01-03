@@ -3,13 +3,15 @@ module.exports = {
     electronBuilder: {
       builderOptions: {
         // options placed here will be merged with default configuration and passed to electron-builder
+        directories: {
+          buildResources: 'electron_build',
+        },
+        extraFiles: [
+          "loginized-cli*"
+        ],
         linux: {
-          asarUnpack: [
-            "/public/*.sh",
-            "/public/*-prompt"
-          ],
-          executableName: 'loginized',
-          icon: './src/assets/256x256.png',
+          asar: true,
+          category: 'GTK;GNOME;Utility;',
           target: [
             // {
             //   target: "deb",
