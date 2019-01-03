@@ -43,14 +43,14 @@ Definition of arguments.
 Examples.
  loginized-cli.sh list    This will list available themes. These themes are available for this tool.
  
- loginized-cli.sh install /home/user/.config/loginized Adapta my-background.png    
+ loginized-cli.sh install Adapta my-background.png    
     This example will install Adapta theme from /usr/share/themes with my-bakcground.png as 
     background image
  
- loginized-cli.sh install /home/user/.config/loginized Default
+ loginized-cli.sh install Default
     This example will install default theme as login theme
  
- loginized-cli.sh install /home/user/.config/loginized Adapta
+ loginized-cli.sh install Adapta
     This example will install Adapta theme as login theme without any modifications
         
  loginized-cli.sh extract Adapta-Eta
@@ -89,7 +89,7 @@ function extractGui() {
     gui=""
     for arg in $(echo $cmd); do
         [ "$arg" == "--gui" ] && gui=$arg && break;
-    done;
+    done
 
     echo $gui
 }
@@ -106,7 +106,7 @@ args="$@"
 argList=""
 for arg in $(echo $args); do
     [ $arg != "--gui" ] && argList="$argList $arg"
-done;
+done
 
 function removeWorkDir {
     rm -rf $workDir
@@ -123,7 +123,7 @@ function extract {
         location=$installPath/default
     else
         location=/usr/share/themes/$theme/gnome-shell
-    fi;
+    fi
     gsl=$location/$gs
     
     test ! -d $workDir/theme/assets/dot && mkdir -p $workDir/theme/assets/dot
@@ -134,8 +134,8 @@ function extract {
 
     if [ -d "$2" ]; then
         test ! -d $2/"$theme"-extracted && mkdir $2/"$theme"-extracted
-        cp -r /tmp/shell/theme $2/"$theme"-extracted 
-    fi;
+        cp -r $workDir/theme $2/"$theme"-extracted 
+    fi
 }
 
 trimmed=""
@@ -145,7 +145,7 @@ function trimLastSlash {
         trimmed=$(echo $1 | rev | cut -c 2- | rev)
     else 
         trimmed=$1
-    fi;
+    fi
 }
 
 # Compiles theme in source location and places compiled theme to target location
@@ -167,7 +167,9 @@ function compile {
 
     glib-compile-resources --sourcedir=$source $source/$gs.xml
     
-    cp $source/$gs "$target/$gs"
+    if [[ "$source" != "." && "$target" != "." && "$source" != "$target" && "$target" != "" ]]; then
+        cp $source/$gs "$target/$gs"
+    fi
 }
 
 # Install gdm3 css file if it is being used by the operating system. Ubuntu newer than 16.10 uses it
@@ -175,7 +177,7 @@ function installGdm3Css {
     from=$1
     if [ -f $gdm3 ]; then 
         cp $from $gdm3
-    fi;
+    fi
 }
 
 # Install specific theme with defaults as login theme
@@ -248,8 +250,8 @@ function onStart {
     if [ -f $runtimeConf ]; then
         installPath=$(cat $runtimeConf)
     else 
-        installPath=${HOME}/.config/Loginized
-    fi;
+        installPath=${HOME}/.config/loginized
+    fi
 
     test ! -d $installPath && mkdir -p $installPath
     # Take a backup at the beginning if back up does not exists
@@ -257,10 +259,6 @@ function onStart {
         test ! -d $installPath/default && mkdir -p $installPath/default
         cp /usr/share/gnome-shell/$gs $installPath/default/$gs
     fi
-
-    if [[ -f $gdm3 &&  ! -f $installPath/default/gdm3.css ]]; then
-        cp $gdm3 $installPath/default/gdm3.css
-    fi;
 
     # By default only gui application needs information of config path
     [ $print == true ] && echo $installPath
@@ -300,7 +298,7 @@ function setupApplication {
         [ -f $cliCompletion ] && rm $cliCompletion
         cp $cli $cliBin
         cp $cliPrompt $cliCompletion
-    fi;
+    fi
 
     if [ "$desktop" != "" ]; then
         appDesktop=/usr/share/applications/Loginized.desktop
@@ -318,7 +316,7 @@ function setupApplication {
         cp -r $appFolder $app
         cp $icon $pixmap
         ln -s $app/Loginized $appBin
-    fi;
+    fi
 }
 
 function createGdmProfile() {

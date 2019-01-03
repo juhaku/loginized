@@ -11,16 +11,16 @@ releaseVersion=`echo $version | sed "s|-SNAPSHOT||"`
 
 setVersion $releaseVersion
 
-git commit -am 'Automated pre-release commit: '$releaseVersion'' && git push
+git commit -am '[Automated release commit] release version: '$releaseVersion'' && git push
 
 yarn electron:build
-git tag -a $releaseVersion -m 'Automated release pre-tag commit' && git push origin $releaseVersion
+git tag $releaseVersion && git push origin $releaseVersion
 gradle -Pversion=$releaseVersion uploadArchives
 
 nextVersion=`echo $releaseVersion | awk -F . '{print $1"."$2"."$3+1"-SNAPSHOT"}'`
 
 setVersion $nextVersion
 
-git commit -am 'Automated release commit, next version: '$nextVersion'' && git push
+git commit -am '[Automated release commit] next version: '$nextVersion'' && git push
 
 echo "DONE!"
