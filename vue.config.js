@@ -7,7 +7,8 @@ module.exports = {
           buildResources: 'electron_build',
         },
         extraFiles: [
-          "loginized-cli*"
+          "loginized-cli*",
+          "utils.sh"
         ],
         linux: {
           asar: true,

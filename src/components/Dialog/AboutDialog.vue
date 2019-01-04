@@ -33,7 +33,6 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Dialog from '@/components/Dialog/Dialog.vue';
 import Constants from '@/constants';
-import opn from 'opn';
 
 @Component({
     components: {
@@ -47,7 +46,7 @@ export default class AboutDialog extends Vue {
     private readonly version = Constants.VERSION;
 
     private openLink(link: string) {
-        opn(link);
+        this.$exec(`${Constants.BASE_PATH}/utils.sh open ${link}`);
     }
 }
 </script>

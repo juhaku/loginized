@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "luxon": "^1.9.0",
-    "opn": "^5.4.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
@@ -29,7 +28,6 @@
   },
   "devDependencies": {
     "@types/luxon": "^1.4.1",
-    "@types/opn": "^5.1.0",
     "@vue/cli-plugin-typescript": "^3.2.0",
     "@vue/cli-service": "^3.2.0",
     "electron": "^4.0.0",
