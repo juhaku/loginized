@@ -17,10 +17,20 @@
                         <FluidGridColumn>
                             <h3>
                                 <Button
-                                    :disabled="isCliInstalled() && appVersion === cliInstalledOnVersion"
+                                    class="button"
+                                    :disabled="cliInstalled"
                                     size="normal"
-                                    :text="!isCliInstalled() ? 'Install' : 'Update'"
-                                    @click.native="installOrUpdateCli()"/>
+                                    text="Install"
+                                    @click.native="installCli()"/>
+                                <Button
+                                    class="button"
+                                    size="normal"
+                                    text="Remove"
+                                    :filled="true"
+                                    :inverted="true"
+                                    :danger="true"
+                                    @click.native="removeCli()"
+                                    v-if="cliInstalled"/>
                             </h3>
                         </FluidGridColumn>
                     </FluidGrid>
@@ -93,31 +103,35 @@ export default class Settings extends Vue {
     @State('configLocation')
     private configLocation!: string;
 
-    @Mutation(ActionKeys.SET_CLI_INSTALLED_VERSION)
-    private setCliInstalledOnVersion!: (version: string) => void;
-
     @Action(ActionKeys.CHECK_FOR_UPDATES)
     private checkForUpdates!: (force?: boolean) => void;
 
-    @Action(ActionKeys.WRITE_CONFIG)
-    private writeConfig!: () => Promise<string>;
-
     private readonly appVersion = Constants.VERSION;
+
+    private cliInstalled = false;
+
+    private created() {
+        this.cliInstalled = this.isCliInstalled();
+    }
 
     private isCliInstalled(): boolean {
         return fs.existsSync('/usr/bin/loginized-cli');
     }
 
-    private installOrUpdateCli() {
-        let command = ``;
-        command += `${Constants.BASE_PATH}/loginized-cli.sh,${Constants.BASE_PATH}/loginized-cli-prompt,`;
+    private installCli() {
+        const command = `${Constants.BASE_PATH}/loginized-cli.sh,${Constants.BASE_PATH}/loginized-cli-prompt`;
         // command += `${App.BASE_PATH}/Loginized.desktop,`;
         // command += `${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
+        this.$exec(`${Constants.BASE_PATH}/utils.sh --gui install-cli ${command}`)
+            .then(() => (this.cliInstalled = this.isCliInstalled()));
+        // this.$cliExec(`--gui setupApp ${command}`).then((stdout: any) => {
+        //     this.writeConfig();
+        // });
+    }
 
-        this.$cliExec(`--gui setupApp ${command}`).then((stdout: any) => {
-            this.setCliInstalledOnVersion(Constants.VERSION);
-            this.writeConfig();
-        });
+    private removeCli() {
+        this.$exec(`${Constants.BASE_PATH}/utils.sh --gui remove-cli`)
+            .then(() => (this.cliInstalled = this.isCliInstalled()));
     }
 }
 </script>
@@ -132,5 +146,9 @@ export default class Settings extends Vue {
     .divider
         height default-border-width
         background-color smoke
+    
+    .button
+        margin-left 0.5rem
+        margin-right 0.5rem
     
 </style>

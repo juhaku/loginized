@@ -16,7 +16,8 @@ const cli = {
                             && !stderr.includes(XML_LINT_WARNING)
                             && !stderr.includes('Command failed: pkexec')
                             && !stderr.includes('Operation was cancelled')
-                            && !stderr.includes('Request dismissed')) {
+                            && !stderr.includes('Request dismissed')
+                            && !stderr.includes('firefox')) {
                                 store.commit(ActionKeys.SET_ERROR, error || stderr);
                         }
                         reject(error || stderr);
