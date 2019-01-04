@@ -20,7 +20,7 @@ repositories {
 }
 
 artifacts {
-    def appImage = file("./dist_electron/loginized ${version}.AppImage")
+    def appImage = file("./dist_electron/Loginized ${version}.AppImage")
     def debFile = file("./dist_electron/loginized_${version}_amd64.deb")
     def snapFile = file("./dist_electron/loginized_${version}_amd64.snap")
     def pacmanFile = file("./dist_electron/loginized-${version}.pacman")
