@@ -17,16 +17,22 @@ wish to revert back to original ubuntu theme then you should backup this folder.
 More features are planned in further releases.
 
 ## Installation
-Download package that suits most for you. Software has built in quick installer for fast setup. Installation needs sudo access and it will be asked from you at the installation.
+Download package that suits most for you.
 
 ### Pre-requirements
-This application uses `glib-compile-resources` command, make sure it is available in your system.
-In Ubuntu it is found from `libglib2.0-bin` package and in Ubuntu 18.04 onwards it is found from package `libglib2.0-dev-bin`. In OpenSUSE it is found under `glib2-devel` package.
+* Command `glib-compile-resources` is used to compile and extract the themes. This must be available in operating system in order to application work correctly.
+* Command `xdg-open` is used to open links via application. Missing this will not stop using the application.
 
 ### Downloads
-Debian Based | RPM Based | All Distributions
--------------|-----------|------------------
-[Loginized_0.2.5_x64.deb](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64.deb)|[Loginized_0.2.5_x64.rpm](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64.rpm)|[Loginized_0.2.5_x64_all.zip](https://github.com/juhaku/loginized/releases/download/v0.2.5/Loginized_0.2.5_x64_all.zip)
+
+Distribution | DL | Sha1 | Required packages
+-------------|----|------|------------------
+Arch based   | [loginized-1.0.0.pacman](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.pacman) | a13f5aafed0574781d0efc89427f5f1050c66c87 | glib2, xdg-utils
+RPM based    | [loginized-1.0.0.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.x86_64.rpm) | 975247a6cdfff8bae0cbf831e5ff8fd755cb1c59 | glib2-devel, xdg-utils (Open SUSE, Fedora)
+Debian based | [loginized_1.0.0_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized_1.0.0_amd64.deb) | f546f73850a44e5716fc882e380af3a7e746219a | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
+All (Snap capable) | [loginized_1.0.0_amd64.snap](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized_1.0.0_amd64.snap) | 28d8d969011770bc6f148b9f094139b73aabe9fb | Distro dependant
+All          | [loginized.1.0.0.AppImage](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized.1.0.0.AppImage) | 50e020a4d49332e31b150639ff5e2362d9d2e87f | Distro dependant
+All          | [loginized-1.0.0.zip](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.zip) | 04ed9b42453a077b8f0101c0bf054d1d51da7d0d | Distro dependant
 
 ### Tested on
 * Ubuntu 16.10 ->
