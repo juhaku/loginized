@@ -86,6 +86,7 @@ export default class ThemeSelection extends Vue {
     @State('shield') private shield!: string;
     @State('background') private background!: string;
     @State('configLocation') private configLocation!: string;
+    @State('themes') private themes!: string[];
 
     @Mutation(ActionKeys.OPEN_DIALOG)
     private openDialog!: (dialog: string) => void;
@@ -96,7 +97,6 @@ export default class ThemeSelection extends Vue {
     @Action(ActionKeys.WRITE_CONFIG)
     private writeConfig!: () => Promise<string>;
 
-    private themes: string[] = [];
     private selectedTheme = '';
     private userListEnabled = false;
     private selectedShield = '';
@@ -111,11 +111,6 @@ export default class ThemeSelection extends Vue {
             (newValue, oldValue) => (this.selectedBackground = newValue), { immediate: true });
         this.$watch('theme',
             (newValue, oldValue) => (this.selectedTheme = newValue), { immediate: true });
-
-        this.$nextTick(() => {
-            this.$cliExec('list').then((result) =>
-                (this.themes = [...result.split(/\s/).filter((item: string) => item !== '')]));
-        });
     }
 
     private getFileName(file: string): string {

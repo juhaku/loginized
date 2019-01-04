@@ -17,6 +17,8 @@ export enum ActionKeys {
     OPEN_DIALOG = 'OPEN_DIALOG',
     SET_CLI_INSTALLED_VERSION = 'SET_CLI_INSTALLED_VERSION',
     SET_THEME_CONFIG = 'SET_THEME_CONFIG',
+    SET_THEMES = 'SET_THEMES',
+    MERGE_STATE = 'MERGE_STATE',
 }
 
 export interface AppState {
@@ -30,6 +32,7 @@ export interface AppState {
     background: string;
     dialog: string;
     cliInstalledOnVersion: string;
+    themes: string[];
 }
 
 const appState: AppState = {
@@ -43,6 +46,7 @@ const appState: AppState = {
     background: '',
     userlistEnabled: true,
     cliInstalledOnVersion: '',
+    themes: [],
 };
 
 export default new Vuex.Store({
@@ -78,6 +82,14 @@ export default new Vuex.Store({
             state.shield = config.shield;
             state.userlistEnabled = config.userlistEnabled;
         },
+
+        [ActionKeys.SET_THEMES]: (state: AppState, themes: string[]) => {
+            state.themes = [...themes];
+        },
+
+        [ActionKeys.MERGE_STATE]: (state: AppState, newState: AppState) => {
+            state = { ...newState };
+        },
     },
     actions: {
         [ActionKeys.CHECK_FOR_UPDATES]: ({ state, commit, dispatch }, force?: boolean) => {
@@ -87,13 +99,13 @@ export default new Vuex.Store({
                 commit(ActionKeys.SET_NEW_VERSION, '');
                 fetch(Constants.LATEST_RELEASE_URL).then((response) => response.json())
                     .then((release: any) => {
-                    const latest = release.tag_name.replace('v', '').split('.');
-                    const current = Constants.VERSION.replace('-SNAPSHOT', '').split('.');
+                        const latest = release.tag_name.replace('v', '').split('.');
+                        const current = Constants.VERSION.replace('-SNAPSHOT', '').split('.');
 
-                    if (Number(latest.join('')) > Number(current.join(''))) {
-                        commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
-                    }
-                }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
+                        if (Number(latest.join('')) > Number(current.join(''))) {
+                            commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
+                        }
+                    }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
                 commit(ActionKeys.SET_LAST_CHECKED, DateTime.local().toISO());
                 dispatch(ActionKeys.WRITE_CONFIG);
             }

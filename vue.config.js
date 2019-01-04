@@ -4,14 +4,14 @@ module.exports = {
       builderOptions: {
         // options placed here will be merged with default configuration and passed to electron-builder
         directories: {
-          buildResources: 'electron_build',
+          buildResources: 'build_electron',
         },
         extraFiles: [
           "loginized-cli*",
           "utils.sh"
         ],
+        productName: 'Loginized',
         linux: {
-          asar: true,
           category: 'GTK;GNOME;Utility;',
           target: [
             {

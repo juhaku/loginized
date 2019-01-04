@@ -62,7 +62,7 @@ import FluidGrid from '@/components/Grid/FluidGrid.vue';
 import FluidGridColumn from '@/components/Grid/FluidGridColumn.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import Icon from '@/components/Icon/Icon.vue';
-import { ActionKeys } from '@/store';
+import { ActionKeys, AppState } from '@/store';
 import fs from 'fs';
 import Constants from '@/constants';
 import { State, Mutation, Action } from 'vuex-class';
@@ -102,6 +102,12 @@ export default class App extends Vue {
     @Mutation(ActionKeys.SET_NEW_VERSION)
     private hideUpdatesSnackbar!: (v: string) => void;
 
+    @Mutation(ActionKeys.SET_THEMES)
+    private setThemes!: (themes: string[]) => void;
+
+    @Mutation(ActionKeys.MERGE_STATE)
+    private mergeState!: (state: AppState) => void;
+
     @Action(ActionKeys.CHECK_FOR_UPDATES)
     private checkForUpdates!: () => void;
 
@@ -118,8 +124,11 @@ export default class App extends Vue {
 
             if (fs.existsSync(config)) {
                 const state = fs.readFileSync(config, 'utf8');
-                this.$store.replaceState(JSON.parse(state));
+                this.mergeState(JSON.parse(state));
             }
+            this.$cliExec('list').then((themes) =>
+                (this.setThemes([...themes.split(/\s/).filter((item: string) => item !== '')])));
+
             this.checkForUpdates();
         });
     }
