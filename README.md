@@ -27,12 +27,17 @@ Download package that suits most for you.
 
 Distribution | DL | Sha1 | Required packages
 -------------|----|------|------------------
-Arch based   | [loginized-1.0.0.pacman](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.pacman) | a13f5aafed0574781d0efc89427f5f1050c66c87 | glib2, xdg-utils
-RPM based    | [loginized-1.0.0.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.x86_64.rpm) | 975247a6cdfff8bae0cbf831e5ff8fd755cb1c59 | glib2-devel, xdg-utils (Open SUSE, Fedora)
-Debian based | [loginized_1.0.0_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized_1.0.0_amd64.deb) | f546f73850a44e5716fc882e380af3a7e746219a | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
-All (Snap capable) | [loginized_1.0.0_amd64.snap](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized_1.0.0_amd64.snap) | 28d8d969011770bc6f148b9f094139b73aabe9fb | Distro dependant
-All          | [Loginized.1.0.1.AppImage](https://github.com/juhaku/loginized/releases/download/1.0.1/Loginized.1.0.1.AppImage) | 50e020a4d49332e31b150639ff5e2362d9d2e87f | Distro dependant
-All          | [loginized-1.0.0.zip](https://github.com/juhaku/loginized/releases/download/1.0.0/loginized-1.0.0.zip) | 04ed9b42453a077b8f0101c0bf054d1d51da7d0d | Distro dependant
+Arch based   | [loginized-1.0.1.pacman](https://github.com/juhaku/loginized/releases/download/1.0.1/loginized-1.0.1.pacman) | 	
+2257d442df1d587ce74e24edc4a6d6c795bbb411 | glib2, xdg-utils
+RPM based    | [loginized-1.0.1.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.0.1/loginized-1.0.1.x86_64.rpm) | 	
+41352203b2f5eaa4e9c41518c6b502e282b0b4ac | glib2-devel, xdg-utils (Open SUSE, Fedora)
+Debian based | [loginized_1.0.1_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.0.1/loginized_1.0.1_amd64.deb) | 4b07bad289a59876607d87dae5b53ad0102b36a7 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
+All (Snap capable) | [loginized_1.0.1_amd64.snap](https://github.com/juhaku/loginized/releases/download/1.0.1/loginized_1.0.1_amd64.snap) | 	
+83ad7d494eda78724cd0b479a629c7e6398b12a1 | Distro dependant
+All          | [Loginized.1.0.1.AppImage](https://github.com/juhaku/loginized/releases/download/1.0.1/Loginized.1.0.1.AppImage) | 	
+48d083e9ee52f0ac7b5baaccae9f4363abdea73e | Distro dependant
+All          | [loginized-1.0.1.zip](https://github.com/juhaku/loginized/releases/download/1.0.1/loginized-1.0.1.zip) | 	
+7130051a1f8d148d8ea41933961bd3cea886d32d | Distro dependant
 
 ### Tested on
 * Ubuntu 16.10 ->
