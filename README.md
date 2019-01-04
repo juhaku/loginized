@@ -46,9 +46,11 @@ Basically runs on every Gnome based distribution with GDM as login manager runni
 Login theme is kind of global theme for the desktop, so you should use same or similar theme as login theme and shell theme since login theme affects to shell as well. If different theme is being used as shell theme and login theme then there might be funny outcomes and some things won't necessarily render correctly.
 
 ## Screenshots
-![Main screen with selections](https://github.com/juhaku/loginized/blob/master/screenshots/screen_3.png)
+![Theme selection](https://github.com/juhaku/loginized/blob/master/screenshots/screen1.png)
 
-![Settings](https://github.com/juhaku/loginized/blob/master/screenshots/screen_2.png)
+![Settings](https://github.com/juhaku/loginized/blob/master/screenshots/screen2.png)
+
+![About](https://github.com/juhaku/loginized/blob/master/screenshots/screen3.png)
 
 # License
 
