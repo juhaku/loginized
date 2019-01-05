@@ -37,15 +37,21 @@ completion=/etc/bash_completion.d
 cliCompletion=$completion/loginized-cli-prompt
 
 function installCli {
-    cli=$(echo $1 | cut -d ',' -f 1)
-    cliPrompt=$(echo $1 | cut -d ',' -f 2)
+    basePath=$(echo $1 | cut -d ',' -f 1)
+    cli=$(echo $1 | cut -d ',' -f 2)
+    cliPrompt=$(echo $1 | cut -d ',' -f 3)
 
     #echo "$cli $cliPrompt"
 
     if [[ "$cli" != "" && "$cliPrompt" != "" ]]; then
         test ! -d $completion && mkdir -p $completion
-        ln -s $cli $cliBin
-        ln -s $cliPrompt $cliCompletion
+
+        appName=$(basename $basePath)
+        sed -i "s|appName=\".*\"|appName="\"$appName\""|" $basePath/$cli
+        sed -i "s|basePath=\".*\"|basePath="\"$basePath\""|" $basePath/$cli
+
+        ln -s $basePath/$cli $cliBin
+        ln -s $basePath/$cliPrompt $cliCompletion
     fi
 }
 

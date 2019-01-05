@@ -62,7 +62,7 @@ import FluidGrid from '@/components/Grid/FluidGrid.vue';
 import FluidGridColumn from '@/components/Grid/FluidGridColumn.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import Icon from '@/components/Icon/Icon.vue';
-import { ActionKeys, AppState } from '@/store';
+import { AppState } from '@/store/store';
 import fs from 'fs';
 import Constants from '@/constants';
 import { State, Mutation, Action } from 'vuex-class';
@@ -71,6 +71,7 @@ import RebootDialog from '@/components/Dialog/RebootDialog.vue';
 import AboutDialog from '@/components/Dialog/AboutDialog.vue';
 import Snackbar from '@/components/Snackbar/Snackbar.vue';
 import Button from '@/components/Button/Button.vue';
+import { ActionKeys } from '@/store/action-keys';
 
 
 @Component({
@@ -105,27 +106,24 @@ export default class App extends Vue {
     @Mutation(ActionKeys.SET_THEMES)
     private setThemes!: (themes: string[]) => void;
 
-    @Mutation(ActionKeys.MERGE_STATE)
-    private mergeState!: (state: AppState) => void;
+    @Mutation(ActionKeys.RESTORE_PERSISTED_STATE)
+    private restorePersistedState!: () => void;
+
+    @Mutation(ActionKeys.SET_CONFIG_LOCATION)
+    private setConfigLocation!: (configLocation: string) => void;
 
     @Action(ActionKeys.CHECK_FOR_UPDATES)
     private checkForUpdates!: () => void;
 
-    @Action(ActionKeys.WRITE_CONFIG)
-    private writeConfig!: () => Promise<string>;
-
     private created() {
         window.addEventListener('resize', (ev) => (this.setGridHeight()));
+        this.restorePersistedState();
 
-        this.$cliExec('--gui start').then((result) => {
-            this.$store.commit(ActionKeys.SET_CONFIG_LOCATION,
-                Constants.IS_DEBUG ? `${result.replace('\n', '')}/_test` : result.replace('\n', ''));
+        this.$cliExec('--gui start').then((configLocation) => {
+            this.setConfigLocation(Constants.IS_DEBUG
+                ? `${configLocation.replace('\n', '')}/_test` : configLocation.replace('\n', ''));
             const config = `${this.configLocation}/config.json`;
 
-            if (fs.existsSync(config)) {
-                const state = fs.readFileSync(config, 'utf8');
-                this.mergeState(JSON.parse(state));
-            }
             this.$cliExec('list').then((themes) =>
                 (this.setThemes([...themes.split(/\s/).filter((item: string) => item !== '')])));
 

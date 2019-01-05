@@ -72,7 +72,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import FluidGrid from '@/components/Grid/FluidGrid.vue';
 import FluidGridColumn from '@/components/Grid/FluidGridColumn.vue';
 import { State, Action, Mutation } from 'vuex-class';
-import { AppState, ActionKeys } from '@/store';
+import { AppState } from '@/store/store';
 import { DateTime } from 'luxon';
 import fs from 'fs';
 import Constants from '@/constants';
@@ -80,6 +80,7 @@ import Info from '@/components/Info.vue';
 import Button from '@/components/Button/Button.vue';
 import File from '@/components/File.vue';
 import { FileEntry } from '@/FileEntry';
+import { ActionKeys } from '@/store/action-keys';
 
 @Component({
     components: {
@@ -92,8 +93,8 @@ import { FileEntry } from '@/FileEntry';
 })
 export default class Settings extends Vue {
 
-    @State((state: AppState) => (state.lastChecked !== ''
-        && DateTime.fromISO(state.lastChecked)
+    @State((state: AppState) => (state.persisted.lastChecked !== ''
+        && DateTime.fromISO(state.persisted.lastChecked)
             .toLocaleString(DateTime.DATETIME_SHORT)))
     private lastChecked!: string;
 
@@ -119,14 +120,9 @@ export default class Settings extends Vue {
     }
 
     private installCli() {
-        const command = `${Constants.BASE_PATH}/loginized-cli.sh,${Constants.BASE_PATH}/loginized-cli-prompt`;
-        // command += `${App.BASE_PATH}/Loginized.desktop,`;
-        // command += `${path.resolve(App.BASE_PATH, '../../')},${path.resolve(__dirname, 'assets/icon_3@3x.png')}`;
+        const command = `${Constants.BASE_PATH},loginized-cli.sh,loginized-cli-prompt`;
         this.$exec(`${Constants.BASE_PATH}/utils.sh --gui install-cli ${command}`)
             .then(() => (this.cliInstalled = this.isCliInstalled()));
-        // this.$cliExec(`--gui setupApp ${command}`).then((stdout: any) => {
-        //     this.writeConfig();
-        // });
     }
 
     private removeCli() {

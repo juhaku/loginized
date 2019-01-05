@@ -1,8 +1,8 @@
 import { VueConstructor } from 'vue';
 import { exec } from 'child_process';
 import Constants from './constants';
-import store from './store';
-import { ActionKeys } from '@/store';
+import store from './store/store';
+import { ActionKeys } from './store/action-keys';
 
 const XML_LINT_WARNING = 'XMLLINT not set and xmllint not found in path; skipping xml preprocessing.';
 

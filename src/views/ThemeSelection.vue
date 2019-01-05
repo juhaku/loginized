@@ -64,8 +64,9 @@ import ImageFile from '@/components/ImageFile.vue';
 import Icon from '@/components/Icon/Icon.vue';
 import { State, Action, Mutation } from 'vuex-class';
 import { FileEntry } from '@/FileEntry';
-import { ActionKeys } from '@/store';
+import { AppState } from '@/store/store';
 import { ThemeConfig } from '@/ThemeConfig';
+import { ActionKeys } from '@/store/action-keys';
 
 @Component({
   components: {
@@ -81,10 +82,18 @@ import { ThemeConfig } from '@/ThemeConfig';
 })
 export default class ThemeSelection extends Vue {
 
-    @State('theme') private theme!: string;
-    @State('userlistEnabled') private userlistEnabled!: boolean;
-    @State('shield') private shield!: string;
-    @State('background') private background!: string;
+    @State((state: AppState) => state.persisted.theme)
+    private theme!: string;
+
+    @State((state: AppState) => state.persisted.userlistEnabled)
+    private userlistEnabled!: boolean;
+
+    @State((state: AppState) => state.persisted.shield)
+    private shield!: string;
+
+    @State((state: AppState) => state.persisted.background)
+    private background!: string;
+
     @State('configLocation') private configLocation!: string;
     @State('themes') private themes!: string[];
 
@@ -93,9 +102,6 @@ export default class ThemeSelection extends Vue {
 
     @Mutation(ActionKeys.SET_THEME_CONFIG)
     private setThemeConfig!: (config: ThemeConfig) => void;
-
-    @Action(ActionKeys.WRITE_CONFIG)
-    private writeConfig!: () => Promise<string>;
 
     private selectedTheme = '';
     private userListEnabled = false;
@@ -130,9 +136,8 @@ export default class ThemeSelection extends Vue {
                 shield: this.selectedShield,
                 userlistEnabled: this.userlistEnabled,
             });
-            this.writeConfig().then((status: any) => {
-                this.openDialog('reboot');
-            });
+
+            this.openDialog('reboot');
         });
     }
 }

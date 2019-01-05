@@ -4,17 +4,24 @@
 # This application provides easy access api to install specific theme as login theme for GNOME desktop 
 # environment. 
 
+user=$(whoami)
+# Dynamically configured at install
+appName="loginized"
+basePath="/opt/$appName"
+
+# Dynamic properties
+runAsUser=""
+configPath=""
+runConfig=/tmp/loginized-run.tmp
+
 # Global variables
 # defaultBackground=noise-texture.png
 gs=gnome-shell-theme.gresource
 workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 gdmConf=/etc/dconf/db/gdm.d
-runtimeConf=/tmp/loginized-conf.tmp
-imagesPath=/usr/share/Loginized/images
-
-# Determine this dynamically later
-installPath=""
+# Used by login screen shield
+imagesPath=$basePath/images
 
 function notRecognized {
     echo "action $1 was not recogninzed, use ?, -h, --help flags for help" && exit 1
@@ -44,7 +51,7 @@ Examples.
  loginized-cli.sh list    This will list available themes. These themes are available for this tool.
  
  loginized-cli.sh install Adapta my-background.png    
-    This example will install Adapta theme from /usr/share/themes with my-bakcground.png as 
+    This example will install Adapta theme from /usr/share/themes with my-background.png as 
     background image
  
  loginized-cli.sh install Default
@@ -120,7 +127,7 @@ function extract {
     test -d $workDir/theme && rm -r $workDir/theme
     
     if [ "$theme" == "Default" ]; then
-        location=$installPath/default
+        location=$configPath/default
     else
         location=/usr/share/themes/$theme/gnome-shell
     fi
@@ -190,8 +197,8 @@ function installThemeWithDefaults {
 
 # Install default theme what has been backed up during initial startup
 function installDefault {
-    test ! -f $installPath/default/$gs && echo "Default theme not found ($installPath/default/$gs), cannot perform install" && exit 1;
-    cp $installPath/default/$gs /usr/share/gnome-shell/$gs
+    test ! -f $configPath/default/$gs && echo "Default theme not found ($configPath/default/$gs), cannot perform install" && exit 1;
+    cp $configPath/default/$gs /usr/share/gnome-shell/$gs
     extract Default
     installGdm3Css $workDir/theme/gnome-shell.css
 }
@@ -218,9 +225,9 @@ function install {
         location=/usr/share/gnome-shell
         workLocation=$workDir/theme
         
-        # When processed from gui image is saved to $installPath
+        # When processed from gui image is saved to $configPath
         if [ $runningOnGui == true ]; then
-            cp $installPath/$image $workLocation/.
+            cp $configPath/$image $workLocation/.
         else 
             cp $image $workLocation/.        
         fi;
@@ -244,25 +251,13 @@ function list {
 
 # On start functionality
 function onStart {
-    print=$runningOnGui
-    [ "$1" == "--no-print" ] && print=false
-
-    if [ -f $runtimeConf ]; then
-        installPath=$(cat $runtimeConf)
-    else 
-        installPath=${HOME}/.config/loginized
-    fi
-
-    test ! -d $installPath && mkdir -p $installPath
+    test ! -d $configPath && mkdir -p $configPath
     # Take a backup at the beginning if back up does not exists
-    if [ ! -f $installPath/default/$gs ]; then
-        test ! -d $installPath/default && mkdir -p $installPath/default
-        cp /usr/share/gnome-shell/$gs $installPath/default/$gs
+    if [ ! -f $configPath/default/$gs ]; then
+        test ! -d $configPath/default && mkdir -p $configPath/default
+        cp /usr/share/gnome-shell/$gs $configPath/default/$gs
     fi
-
-    # By default only gui application needs information of config path
-    [ $print == true ] && echo $installPath
-    test ! -f $runtimeConf && echo $installPath > $runtimeConf
+    echo $configPath
 }
 
 # Reboots system no questions asked
@@ -277,46 +272,6 @@ function reboot {
     if [[ "$decision" == "" || "$decision" == "y" || "$decision" == "Y" ]]; then 
         fastReboot
     fi;
-}
-
-function setupApplication {
-    cli=$(echo $1 | cut -d ',' -f 1)
-    cliPrompt=$(echo $1 | cut -d ',' -f 2)
-    desktop=$(echo $1 | cut -d ',' -f 3)
-    appFolder=$(echo $1 | cut -d ',' -f 4)
-    icon=$(echo $1 | cut -d ',' -f 5)
-
-    cliBin=/usr/bin/loginized-cli
-    # Make sure completion directory exists
-    completion=/etc/bash_completion.d
-    test ! -d $completion && mkdir -p $completion
-    cliCompletion=$completion/loginized-cli-prompt
-
-    if [ "$cli" != "" ]; then
-        # If bin and completion already exists remove them and then update new ones
-        [ -f $cliBin ] && rm $cliBin
-        [ -f $cliCompletion ] && rm $cliCompletion
-        cp $cli $cliBin
-        cp $cliPrompt $cliCompletion
-    fi
-
-    if [ "$desktop" != "" ]; then
-        appDesktop=/usr/share/applications/Loginized.desktop
-        app=/usr/lib/Loginized
-        pixmap=/usr/share/pixmaps/loginized.png
-        appBin=/usr/bin/Loginized
-
-        # Remove or unlink existing ones before they are created or recreated.
-        [ -f $appDesktop ] && rm $appDesktop
-        [ -d $app ] && rm -rf $app
-        [ -f $pixmap ] && rm $pixmap
-        [ -h $appBin ] && unlink $appBin
-
-        cp $desktop $appDesktop
-        cp -r $appFolder $app
-        cp $icon $pixmap
-        ln -s $app/Loginized $appBin
-    fi
 }
 
 function createGdmProfile() {
@@ -389,8 +344,6 @@ function save() {
 # Determine whether we need help
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
 
-user=$(whoami)
-
 # Run as root if current user is not root, $1 = file, $2 = args, $3 = guil
 function runAsRoot() {
     cmd="$@"
@@ -406,23 +359,26 @@ function runAsRoot() {
 #echo "debug:" $user $0 $args "|runningOnGui:" $runningOnGui "|argList:" "$argList"
 
 function main() {
+    if [ ! -f $runConfig ]; then
+        echo $user > $runConfig
+        configPath="/home/$user/.config/$appName"
+    else
+        runAsUser=$(cat $runConfig)
+        configPath="/home/$runAsUser/.config/$appName"
+    fi
     # Main functions
-    # $1 = option, $2 = installPath, 3 = theme, $4 = image
+    # $1 = option, $2 = theme, 3 = image
     case $1 in
         extract)
-            onStart "--no-print"
             extract $2 $3
         ;;
         compile)
-            onStart "--no-print"
             compile $2 $3
         ;;
         reboot)
             fastReboot
         ;;
         install)
-            # Startup configuration in order to enable all functionalities correctly
-            onStart "--no-print"
             # On cli version we make sure that command is executed with correct rights.
             runAsRoot $0 $args
             if [ "$user" == "root" ]; then
@@ -432,22 +388,13 @@ function main() {
             fi;
         ;;
         list)
-            onStart "--no-print"
             list
         ;;
         start)
+            # when gui is started check defaults
             onStart
         ;;
-        setupApp)
-            onStart "--no-print"
-            runAsRoot $0 $args
-            if [ "$user" == "root" ]; then
-                # $2 = comman separated config list
-                setupApplication $2
-            fi;
-        ;;
         save)
-            onStart "--no-print"
             runAsRoot $0 $args
             [ "$user" == "root" ] && save $argList
         ;;
@@ -483,4 +430,4 @@ function main() {
 
 main $argList 
 
-test -f $runtimeConf && rm -f $runtimeConf
+test -f $runConfig && rm -f $runConfig
