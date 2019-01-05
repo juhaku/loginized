@@ -44,12 +44,12 @@ module.exports = {
                 "x64"
               ]
             },
-            {
-              target: "snap",
-              arch: [
-                "x64"
-              ]
-            }
+            // {
+            //   target: "snap",
+            //   arch: [
+            //     "x64"
+            //   ]
+            // }
           ]
         }
       }

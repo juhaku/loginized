@@ -22,12 +22,12 @@ repositories {
 artifacts {
     def appImage = file("./dist_electron/Loginized ${version}.AppImage")
     def debFile = file("./dist_electron/loginized_${version}_amd64.deb")
-    def snapFile = file("./dist_electron/loginized_${version}_amd64.snap")
+    // def snapFile = file("./dist_electron/loginized_${version}_amd64.snap")
     def pacmanFile = file("./dist_electron/loginized-${version}.pacman")
     def rpmFile = file("./dist_electron/loginized-${version}.x86_64.rpm")
     def zipFile = file("./dist_electron/loginized-${version}.zip")
 
-    archives appImage, debFile, snapFile, pacmanFile, rpmFile, zipFile
+    archives appImage, debFile, pacmanFile, rpmFile, zipFile
 }
 
 signing {
