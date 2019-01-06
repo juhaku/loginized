@@ -6,7 +6,7 @@
 
 user=$(whoami)
 # Dynamically configured at install
-appName="loginized"
+appName="Loginized"
 basePath="/opt/$appName"
 
 # Dynamic properties
