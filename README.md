@@ -11,17 +11,17 @@ As a cherry on top of the cake Loginized comes also with command line applicatio
 
 __Note!__ If you are not seeing any themes via the application or you cannot see the theme you want to see. It might be because of that theme or those themes does not have gnome-shell theme available as compilied resource. In such case see the wiki for more details [WIKI](https://github.com/juhaku/loginized/wiki/Help).
 
-__Note!__ In Ubuntu you should take a backup from /usr/share/gnome-shell/theme folder as it contains ubuntu specific gnome-shell.css file which is named as ubuntu.css. This is actually will override the gnome-shell theme if it is not changed. So if you 
-wish to revert back to original ubuntu theme then you should backup this folder. As Default in Loginized points to gnome-shell default which is the blue theme.
-
 More features are planned in further releases.
 
 ## Installation
-Download package that suits most for you. Also it's not bad idea to check release notes in [RELEASES](https://github.com/juhaku/loginized/releases).
+Download package that suits most for you.
+ * Read install instructions from [WIKI](https://github.com/juhaku/loginized/wiki).
+ * Also it's not bad idea to check release notes in [RELEASES](https://github.com/juhaku/loginized/releases).
 
 ### Pre-requirements
-* Command `glib-compile-resources` is used to compile and extract the themes. This must be available in operating system in order to application work correctly.
-* Command `xdg-open` is used to open links via application. Missing this will not stop using the application.
+ * Command `glib-compile-resources` is used to compile and extract the themes. This must be available in operating system in order to application work correctly.
+ * Command `xdg-open` is used to open links via application. Missing this will not stop using the application.
+ * Before Download PLEASE READ [__Things to consider__](#things-to-consider) section first.
 
 ### Downloads
 
@@ -42,7 +42,10 @@ All          | [loginized-1.1.0.zip](https://github.com/juhaku/loginized/release
 Basically runs on every Gnome based distribution with GDM as login manager running on gnome-shell 3.26 and above. Older ones should work as well but are not tested.
 
 ## Things to consider
-Login theme is kind of global theme for the desktop, so you should use same or similar theme as login theme and shell theme since login theme affects to shell as well. If different theme is being used as shell theme and login theme then there might be funny outcomes and some things won't necessarily render correctly.
+ * Login theme is actually just a global gnome-shell theme. You should use same or similar gnome-shell theme as login theme and desktop's gnome-shell theme which can be changed via __Gnome Tweak Tool__. If different theme is being used as shell theme and login theme there might be funny outcomes and some things won't necessarily render correctly.
+ * In Ubuntu 18.04 you should take a backup from /usr/share/gnome-shell/theme/ubuntu.css file. This file contains the Ubuntu flavored styles of the default gnome-shell blue theme. In Ubuntu 18.04 this file is overrided by each theme's .css file when installed as login theme. So if needed to go back to original Ubuntu flavored theme you need to manually revert this file to the original one.
+ * Please backup default __/usr/share/gnome-shell/gnome-shell-theme.gresource__ file before using Loginized in case it need to be reverted.
+ * Anything you do with the application is at your own risk and you understand that something can go wrong if misused or broken themes are being used. In case of issues please refer to [WIKI](https://github.com/juhaku/loginized/wiki/Help).
 
 ## Screenshots
 ![Theme selection](https://github.com/juhaku/loginized/blob/master/screenshots/screen1.png)
