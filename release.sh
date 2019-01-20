@@ -17,8 +17,8 @@ yarn electron:build
 git tag $releaseVersion && git push origin $releaseVersion
 # gradle -Pversion=$releaseVersion uploadArchives
 
-for dist in `find ./dist_electron/ -not -iname "*asc*" -iname "*$releaseVersion*"`; do
-    echo `sha1sum $dist` > $dist.sha1
+find ./dist_electron/ -not -iname "*asc*" -not -iname "*.sha1" -iname "*$releaseVersion*" | while read dist; do
+    echo `sha1sum "$dist"` > "$dist".sha1
 done
 
 nextVersion=`echo $releaseVersion | awk -F . '{print $1"."$2"."$3+1"-SNAPSHOT"}'`
