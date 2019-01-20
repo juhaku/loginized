@@ -27,11 +27,11 @@ Download package that suits most for you.
 
 Distribution | DL | Sha1 | Required packages
 -------------|----|------|------------------
-Arch based   | [loginized-1.1.1.pacman](https://github.com/juhaku/loginized/releases/download/1.1.1/loginized-1.1.1.pacman) | 	 47c824106722ecce78bea331509d8581ae3ebb44 | glib2, xdg-utils
-RPM based    | [loginized-1.1.1.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.1.1/loginized-1.1.1.x86_64.rpm) | 	 be79f67e45b63397bf195abed38f31f0a118573f | glib2-devel, xdg-utils (Open SUSE, Fedora)
-Debian based | [loginized_1.1.1_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.1.1/loginized_1.1.1_amd64.deb) | 954f9ea317cfa3c7133e685b5f6b2e625d473317 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
-All          | [Loginized.1.1.1.AppImage](https://github.com/juhaku/loginized/releases/download/1.1.1/Loginized.1.1.1.AppImage) | 	 cc0b5ef1a60caf57c2fe10ca8847aa56e8463bd1 | Distro dependant
-All          | [loginized-1.1.1.zip](https://github.com/juhaku/loginized/releases/download/1.1.1/loginized-1.1.1.zip) | 	 62d6f1f046059e96bd893efbc3484b429e0d2770 | Distro dependant
+Arch based   | [loginized-1.1.2.pacman](https://github.com/juhaku/loginized/releases/download/1.1.2/loginized-1.1.2.pacman) | 	 f0d1b6f37dab97e650b001aa59180c0422feff66 | glib2, xdg-utils
+RPM based    | [loginized-1.1.2.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.1.2/loginized-1.1.2.x86_64.rpm) | 	 ad7fa1fe336d00443fcd547b13ec7676b74c6575 | glib2-devel, xdg-utils (Open SUSE, Fedora)
+Debian based | [loginized_1.1.2_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.1.2/loginized_1.1.2_amd64.deb) | a287baca22c12c1d71fa8341f1640c537ff95a74 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
+All          | [Loginized.1.1.2.AppImage](https://github.com/juhaku/loginized/releases/download/1.1.2/Loginized.1.1.2.AppImage) | 	 fd655b95543d52e3ba792b993e9f00b1d4846774 | Distro dependant
+All          | [loginized-1.1.2.zip](https://github.com/juhaku/loginized/releases/download/1.1.2/loginized-1.1.2.zip) | 	 8f2c90d76eab30287ba875c64181978904e72105 | Distro dependant
 
 ### Tested on
 * Ubuntu 16.10 ->
