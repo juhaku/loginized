@@ -255,7 +255,7 @@ function onStart {
     # Take a backup at the beginning if back up does not exists
     if [ ! -f $configPath/default/$gs ]; then
         test ! -d $configPath/default && mkdir -p $configPath/default
-        cp /usr/share/gnome-shell/$gs $configPath/default/$gs
+        test -f /usr/share/gnome-shell/$gs && cp /usr/share/gnome-shell/$gs $configPath/default/$gs
     fi
     echo $configPath
 }
