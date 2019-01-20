@@ -15,7 +15,7 @@ git commit -am '[Automated release commit] release version: '$releaseVersion'' &
 
 yarn electron:build
 git tag $releaseVersion && git push origin $releaseVersion
-gradle -Pversion=$releaseVersion uploadArchives
+# gradle -Pversion=$releaseVersion uploadArchives
 
 nextVersion=`echo $releaseVersion | awk -F . '{print $1"."$2"."$3+1"-SNAPSHOT"}'`
 

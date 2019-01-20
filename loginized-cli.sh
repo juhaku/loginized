@@ -21,7 +21,7 @@ workDir=/tmp/shell
 gdm3=/etc/alternatives/gdm3.css
 gdmConf=/etc/dconf/db/gdm.d
 # Used by login screen shield
-imagesPath=$basePath/images
+imagesPath=/usr/share/Loginized/images
 
 function notRecognized {
     echo "action $1 was not recogninzed, use ?, -h, --help flags for help" && exit 1
