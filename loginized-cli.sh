@@ -163,7 +163,8 @@ function compile {
     target=$trimmed
 
     #Generate gresource xml file for current theme
-    resourceFiles=$(for file in $(find $source -type f | sed "s|$source||" | cut -c 2-); do echo "<file>$file</file>"; done)
+    # resourceFiles=$(for file in $(find $source -type f | sed "s|$source||" | cut -c 2-); do echo "<file>$file</file>"; done)
+    resourceFiles=$(find $source -type f | sed "s|$source||" | cut -c 2- | while read file; do echo "<file>$file</file>"; done)
     gresourceXml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <gresources>
   <gresource prefix=\"/org/gnome/shell/theme\">
@@ -205,8 +206,8 @@ function installDefault {
 
 # Install theme $1=theme, $2=image
 function install {
-    theme=$1
-    image=$2
+    theme="$(echo $1 | sed 's|\\| |')"
+    image="$(echo $2 | sed 's|\\| |')"
 
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
@@ -217,19 +218,18 @@ function install {
     else 
         test ${#theme} -eq 0 && echo "Theme is not defined $theme, cannot continue installation" && exit 1;
         test ${#image} -eq 0 && echo "Image is not defined $image, cannot continue installation" && exit 1;
-        extract $theme
+        extract "$theme"
 
-        tempImage=$(basename $image)
+        tempImage=$(basename "$image")
         dialogCss="#lockDialogGroup { background: #2e3436 url(\"resource:\/\/\/org\/gnome\/shell\/theme\/$tempImage\"); background-repeat: none; background-size: cover; }"
-
         location=/usr/share/gnome-shell
         workLocation=$workDir/theme
         
         # When processed from gui image is saved to $configPath
         if [ $runningOnGui == true ]; then
-            cp $configPath/$image $workLocation/.
+            cp $configPath/"$image" $workLocation/.
         else 
-            cp $image $workLocation/.        
+            cp "$image" $workLocation/.        
         fi;
 
         sed -i "/#lockDialogGroup/,/}/ { /#lockDialogGroup/ { s/.*// }; /}/ ! { s/.*// }; /}/ { s/.*/$dialogCss/ }; }" $workLocation/gnome-shell.css
@@ -312,14 +312,15 @@ function setUserList() {
 # Changes login screen shield picture.
 function setShield() {
     createGdmProfile
+    shield=$(echo $1 | sed 's|\\| |')
 
     test ! -d $gdmConf && mkdir -p $gdmConf
-    if [ "$1" != "" ]; then 
+    if [ "$shield" != "" ]; then 
         # Make sure that image's path is available
         test ! -d $imagesPath && mkdir -p $imagesPath
         # Copy the actual file to images path and use that path for shield image
-        shieldPath=$imagesPath/$(basename $1)
-        cp $1 $shieldPath
+        shieldPath=$imagesPath/$(basename "$shield")
+        cp "$shield" $shieldPath
         echo -e "[org/gnome/desktop/screensaver]\npicture-uri='file://$shieldPath'" > $gdmConf/01-screensaver
     else 
         # Set defaults when there is no image provided
@@ -330,14 +331,14 @@ function setShield() {
 }
 
 function save() {
-    cmd="$2"
+    cmd=$(echo $@ | cut -c 5-)
     theme=$(echo $cmd | cut -d ',' -f 1)
     background=$(echo $cmd | cut -d ',' -f 2)
     shield=$(echo $cmd | cut -d ',' -f 3)
     userList=$(echo $cmd | cut -d ',' -f 4)
 
-    install $theme $background
-    setShield $shield
+    install $(echo $theme | sed 's| |\\|') $(echo $background | sed 's| |\\|')
+    setShield $(echo $shield | sed 's| |\\|')
     setUserList $userList
 }
 

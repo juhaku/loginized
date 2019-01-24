@@ -11,6 +11,10 @@ const cli = {
         Vue.prototype.$exec = (cmd: string): Promise<string> => {
             return new Promise((resolve, reject) => {
                 exec(cmd, (error, stdout: string, stderr: any) => {
+                    if (Constants.IS_DEBUG && console) {
+                        // tslint:disable-next-line
+                        console.log(stdout, stderr);
+                    }
                     if (error || stderr) {
                         if ((error || stderr)
                             && !stderr.includes(XML_LINT_WARNING)
