@@ -24,11 +24,11 @@ gdmConf=/etc/dconf/db/gdm.d
 imagesPath=/usr/share/Loginized/images
 
 function notRecognized {
-    echo "action $1 was not recogninzed, use ?, -h, --help flags for help" && exit 1
+    echo "action $1 was not recogninzed, use -h, --help flags for help" && exit 1
 }
 
 function help {
-    echo "Usage: loginized-cli.sh [-h | --help | ?] | [--gui] [action] [theme] [image] | [--gui] set [config] [arg]
+    echo "Usage: loginized-cli.sh [-h | --help] | [--gui] [action] [theme] [image] | [--gui] set [config] [arg]
 Provides functionality to alternate login gnome shell theme. Theme must be found under 
 /usr/share/themes in order to list as option.
 Definition of arguments.
@@ -343,7 +343,7 @@ function save() {
 }
 
 # Determine whether we need help
-if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "?" ]]; then help && exit 0; fi
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then help && exit 0; fi
 
 # Run as root if current user is not root, $1 = file, $2 = args, $3 = guil
 function runAsRoot() {

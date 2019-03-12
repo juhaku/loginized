@@ -116,7 +116,13 @@ export default class ThemeSelection extends Vue {
         this.$watch('background',
             (newValue, oldValue) => (this.selectedBackground = newValue), { immediate: true });
         this.$watch('theme',
-            (newValue, oldValue) => (this.selectedTheme = newValue), { immediate: true });
+            (newValue, oldValue) => {
+            this.selectedTheme = newValue;
+            // If by default there is no theme selected select system default initially
+            if (this.selectedTheme === '' || this.selectedTheme === undefined) {
+                this.selectedTheme = 'Default';
+            }
+        }, { immediate: true });
     }
 
     private getFileName(file: string): string {

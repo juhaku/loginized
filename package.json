@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "luxon": "^1.9.0",
+    "rxjs": "^6.4.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
@@ -28,13 +29,14 @@
   },
   "devDependencies": {
     "@types/luxon": "^1.4.1",
+    "@types/node": "^11.11.2",
     "@vue/cli-plugin-typescript": "^3.2.0",
     "@vue/cli-service": "^3.2.0",
     "electron": "^4.0.0",
     "electron-builder": "^20.38.4",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "typescript": "^3.0.0",
+    "typescript": "^3.3.3333",
     "vue-cli-plugin-electron-builder": "^1.0.0-rc.10",
     "vue-template-compiler": "^2.5.17",
     "vuex-class": "^0.3.1"

@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import Vuex, { MutationPayload } from 'vuex';
 import { DateTime } from 'luxon';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { map, catchError } from 'rxjs/operators';
 import Constants from '../constants';
-import fs from 'fs';
 import persisted, { PersistedState } from './persisted';
 import { ActionKeys } from './action-keys';
 
@@ -62,15 +63,29 @@ const store = new Vuex.Store({
                 || state.persisted.lastChecked === ''
                 || DateTime.local().diff(DateTime.fromISO(state.persisted.lastChecked), 'hour').hours! > 24) {
                 commit(ActionKeys.SET_NEW_VERSION, '');
-                fetch(Constants.LATEST_RELEASE_URL).then((response) => response.json())
-                    .then((release: any) => {
-                        const latest = release.tag_name.replace('v', '').split('.');
+                ajax({
+                    url: Constants.LATEST_RELEASE_URL,
+                    crossDomain: true,
+                    // withCredentials: true,
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/vnd.github.v3+.text+json',
+                    },
+                }).pipe(
+                    map((response: AjaxResponse) => {
+                        const latestReleaseJson = response.response;
+                        const latest = latestReleaseJson.tag_name.replace('v', '').split('.');
                         const current = Constants.VERSION.replace('-SNAPSHOT', '').split('.');
 
                         if (Number(latest.join('')) > Number(current.join(''))) {
                             commit(ActionKeys.SET_NEW_VERSION, latest.join('.'));
                         }
-                    }).catch((error) => (commit(ActionKeys.SET_ERROR, error)));
+                    }),
+                    catchError((error, caught) => {
+                        commit(ActionKeys.SET_ERROR, error);
+                        throw error;
+                    }),
+                ).subscribe();
                 commit(ActionKeys.SET_LAST_CHECKED, DateTime.local().toISO());
             }
         },
