@@ -63,7 +63,6 @@ function installZshCompletion {
         if [ "$(grep "autoload -U compinit \&\& compinit" ${HOME}/.zshrc)" != "" ]; then
             sed -i "s|autoload -U compinit \&\& compinit|# Automatic fpath update for loginized\nfpath=($basePath/completion \$fpath)\n\nautoload -U compinit \&\& compinit|" ${HOME}/.zshrc
             rm -f ${HOME}/.zcompdump
-            zsh compinit
         fi
     fi
 }
