@@ -8,7 +8,8 @@ module.exports = {
         },
         extraFiles: [
           "loginized-cli*",
-          "utils.sh"
+          "utils.sh",
+          "completion/*"
         ],
         productName: 'Loginized',
         linux: {

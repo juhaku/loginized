@@ -55,6 +55,18 @@ function installCli {
     fi
 }
 
+function installZshCompletion {
+    # Install for zsh if zsh is installed and configured
+    if [[ -f ${HOME}/.zshrc && "$(which zsh)" != "" && "$(cat ${HOME}/.zshrc | grep -o $basePath/completion)" == "" ]]; then
+        basePath=$(echo $2 | cut -d ',' -f 1)
+        if [ -L $basePath/completion/_loginized-cli ]; then
+            [ "$user" == "root" ] && ln -s $basePath/completion/_loginized-cli-prompt.zsh $basePath/completion/_loginized-cli
+        fi
+        echo "fpath=($basePath/completion \$fpath)" >> ${HOME}/.zshrc
+        rm -f ${HOME}/.zcompdump; compinit # Rebuild completion
+    fi
+}
+
 function removeCli {
     unlink $cliBin
     unlink $cliCompletion
@@ -66,10 +78,12 @@ function main {
             open $2
         ;;
         install-cli)
+            installZshCompletion $2
+            # Install for bash
             runAsRoot $0 $args
             if [ "$user" == "root" ]; then
                 installCli $2
-            fi;
+            fi
         ;;
         remove-cli)
             runAsRoot $0 $args
