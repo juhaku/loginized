@@ -57,13 +57,14 @@ function installCli {
 
 function installZshCompletion {
     # Install for zsh if zsh is installed and configured
+    basePath=$(echo $1 | cut -d ',' -f 1)
     if [[ -f ${HOME}/.zshrc && "$(which zsh)" != "" && "$(cat ${HOME}/.zshrc | grep -o $basePath/completion)" == "" ]]; then
-        basePath=$(echo $2 | cut -d ',' -f 1)
-        if [ -L $basePath/completion/_loginized-cli ]; then
-            [ "$user" == "root" ] && ln -s $basePath/completion/_loginized-cli-prompt.zsh $basePath/completion/_loginized-cli
+        # If auto load is added then then update fpath and rebuild the completion
+        if [ "$(grep "autoload -U compinit \&\& compinit" ${HOME}/.zshrc)" != "" ]; then
+            sed -i "s|autoload -U compinit \&\& compinit|# Automatic fpath update for loginized\nfpath=($basePath/completion \$fpath)\n\nautoload -U compinit \&\& compinit|" ${HOME}/.zshrc
+            rm -f ${HOME}/.zcompdump
+            zsh compinit
         fi
-        echo "fpath=($basePath/completion \$fpath)" >> ${HOME}/.zshrc
-        rm -f ${HOME}/.zcompdump; compinit # Rebuild completion
     fi
 }
 
