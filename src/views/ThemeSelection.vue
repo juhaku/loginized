@@ -15,18 +15,6 @@
             </FluidGrid>
             <FluidGrid>
                 <FluidGridColumn width="50">
-                        <h3>User list enabled: 
-                            <Info text="Enables or disables user selection in login. If user list is disabled then user need to be typed to username field at login." />
-                        </h3>
-                </FluidGridColumn>
-                <FluidGridColumn width="50">
-                    <FluidGrid justify="end">
-                        <h3><Toggle v-model="userListEnabled" /></h3>
-                    </FluidGrid>
-                </FluidGridColumn>
-            </FluidGrid>
-            <FluidGrid>
-                <FluidGridColumn width="50">
                     <h3>Shield:</h3>
                     <ImageFile class="image-right-padding"
                         v-model="selectedShield" :configLocation="configLocation && configLocation" />
@@ -35,6 +23,25 @@
                     <h3>Background image:</h3>
                     <ImageFile class="image-left-padding"
                         v-model="selectedBackground" :configLocation="configLocation && configLocation" />
+                </FluidGridColumn>
+            </FluidGrid>
+            <FluidGrid>
+                <FluidGridColumn width="50">
+                    <h3>
+                        Advanced:<br>
+                        <span class="hint-text">Change advanced settings for login screen</span>
+                    </h3>
+                </FluidGridColumn>
+                <FluidGridColumn width="50">
+                     <FluidGrid justify="end">
+                        <h3>
+                            <Button
+                                @click.native="openDialog({ dialog: 'advanced_settings', data: { userListEnabled, changeUserListEnabled } })"
+                                text="Advanced"
+                                :neutral="true"
+                                size="normal" />
+                        </h3>
+                     </FluidGrid>
                 </FluidGridColumn>
             </FluidGrid>
         </FluidGridColumn>
@@ -98,7 +105,7 @@ export default class ThemeSelection extends Vue {
     @State('themes') private themes!: string[];
 
     @Mutation(ActionKeys.OPEN_DIALOG)
-    private openDialog!: (dialog: string) => void;
+    private openDialog!: (dialog: string | { dialog: string, data: any }) => void;
 
     @Mutation(ActionKeys.SET_THEME_CONFIG)
     private setThemeConfig!: (config: ThemeConfig) => void;
@@ -127,6 +134,10 @@ export default class ThemeSelection extends Vue {
 
     private getFileName(file: string): string {
         return file.substring(file.lastIndexOf('/') + 1);
+    }
+
+    private changeUserListEnabled(selected: boolean) {
+        this.userListEnabled = selected;
     }
 
     private save() {
@@ -163,5 +174,12 @@ export default class ThemeSelection extends Vue {
 
     .image-right-padding
         margin-right 0.4rem
+    
+    .hint-text
+        padding 0
+        margin 0
+        color smoke
+        font-weight 400
+        font-size 11pt
 
 </style>

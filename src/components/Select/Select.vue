@@ -37,7 +37,8 @@
                         @mouseenter="hoverItem(index)"
                         :class="[
                             'select-selections__selection',
-                            cursor === index && 'select-selections__selection--hovered']">
+                            cursor === index && 'select-selections__selection--hovered',
+                            selection === selected && 'select-selections__selection--selected']">
                         {{selection}}
                     </div>
                     <div class="select-selections__selection" v-if="filteredItems.length === 0">
@@ -256,6 +257,9 @@ export default class Select extends Vue {
 
         &__selection
             padding 0.5rem 0.5rem 0.5rem 0.5rem
+
+            &--selected
+                color main-color
             
             &:hover, &--hovered
                 cursor pointer

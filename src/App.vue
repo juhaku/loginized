@@ -12,6 +12,10 @@
         <AboutDialog
             v-else-if="dialog === 'about'"
             :onCloseDialog="() => openDialog('')" />
+        <AdvancedSettings
+            v-else-if="dialog === 'advanced_settings'"
+            :data="dialogData"
+            :onCloseDialog="() => openDialog('')" />
         <FluidGrid class="app-grid" direction="row" noWrap="noWrap" ref="grid">
             <FluidGridColumn class="app-grid__menu_view">
                 <div class="menu">
@@ -69,6 +73,7 @@ import { State, Mutation, Action } from 'vuex-class';
 import ErrorDialog from '@/components/Dialog/ErrorDialog.vue';
 import RebootDialog from '@/components/Dialog/RebootDialog.vue';
 import AboutDialog from '@/components/Dialog/AboutDialog.vue';
+import AdvancedSettings from './components/Dialog/AdvancedSettings.vue';
 import Snackbar from '@/components/Snackbar/Snackbar.vue';
 import Button from '@/components/Button/Button.vue';
 import { ActionKeys } from '@/store/action-keys';
@@ -83,6 +88,7 @@ import { ActionKeys } from '@/store/action-keys';
     ErrorDialog,
     RebootDialog,
     AboutDialog,
+    AdvancedSettings,
     Snackbar,
     Button,
   },
@@ -91,6 +97,7 @@ export default class App extends Vue {
 
     @State('configLocation') private configLocation!: string;
     @State('dialog') private dialog!: string;
+    @State('dialogData') private dialogData!: string;
     @State('error') private error!: any;
     @State('newVersion') private newVersion!: string;
 

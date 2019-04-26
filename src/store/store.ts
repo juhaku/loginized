@@ -14,6 +14,7 @@ export interface AppState {
     newVersion: string;
     configLocation: string;
     dialog: string;
+    dialogData: any | undefined;
     themes: string[];
     persisted: PersistedState;
 }
@@ -23,6 +24,7 @@ const appState: AppState = {
     configLocation: '',
     error: undefined,
     dialog: '',
+    dialogData: undefined,
     themes: [],
     persisted: {} as PersistedState,
 };
@@ -45,8 +47,14 @@ const store = new Vuex.Store({
             state.configLocation = configLocation;
         },
 
-        [ActionKeys.OPEN_DIALOG]: (state: AppState, dialog: string) => {
-            state.dialog = dialog;
+        [ActionKeys.OPEN_DIALOG]: (state: AppState, dialog: string | { dialog: string, data: any }) => {
+            if (typeof dialog === 'string') {
+                state.dialog = dialog;
+                state.dialogData = undefined;
+            } else {
+                state.dialog = dialog.dialog;
+                state.dialogData = dialog.data;
+            }
         },
 
         [ActionKeys.SET_THEMES]: (state: AppState, themes: string[]) => {

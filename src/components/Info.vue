@@ -1,5 +1,6 @@
 <template>
     <Tooltip
+        class="info"
         maxWidth="20"
         :text="text">
         <div slot="opener">
@@ -23,3 +24,13 @@ export default class Info extends Vue {
     @Prop() private text!: string;
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '../stylus/variables.styl'
+
+.info
+    display inline-block
+    position absolute
+    margin-top -6px
+    margin-left 6px
+</style>
