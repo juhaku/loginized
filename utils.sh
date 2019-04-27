@@ -72,6 +72,11 @@ function removeCli {
     unlink $cliCompletion
 }
 
+function notify {
+    echo "$@"
+    notify-send -a loginized -i loginized "$2" "$3"
+}
+
 function main {
     case $1 in
         open)
@@ -90,6 +95,9 @@ function main {
             if [ "$user" == "root" ]; then
                 removeCli $2
             fi;
+        ;;
+        notify)
+            notify "$args"
         ;;
         *)
             notRecognized $1

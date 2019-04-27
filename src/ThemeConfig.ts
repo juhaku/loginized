@@ -3,4 +3,5 @@ export interface ThemeConfig {
     background: string;
     shield: string;
     userlistEnabled: boolean;
+    forceRoundedLoginIcon: boolean;
 }

@@ -9,6 +9,7 @@ export interface PersistedState {
     userlistEnabled: boolean;
     shield: string;
     background: string;
+    forceRoundedLoginIcon: boolean;
 }
 
 const persistedState: PersistedState = {
@@ -17,6 +18,7 @@ const persistedState: PersistedState = {
     userlistEnabled: true,
     shield: '',
     background: '',
+    forceRoundedLoginIcon: false,
 };
 
 const mutations: MutationTree<PersistedState> = {
@@ -29,6 +31,7 @@ const mutations: MutationTree<PersistedState> = {
         state.theme = config.theme;
         state.shield = config.shield;
         state.userlistEnabled = config.userlistEnabled;
+        state.forceRoundedLoginIcon = config.forceRoundedLoginIcon;
     },
 };
 

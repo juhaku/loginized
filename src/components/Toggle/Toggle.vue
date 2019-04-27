@@ -1,11 +1,13 @@
 <template>
     <div :class="[
         'toggle',
-        checked && 'toggle--checked'
+        checked && 'toggle--checked',
+        disabled && 'toggle--disabled'
         ]" @click="onToggleChange">
         <div :class="[
             'toggle-indicator',
-            checked && 'toggle-indicator--checked'
+            checked && 'toggle-indicator--checked',
+            disabled && 'toggle-indicator--disabled'
             ]"></div>
     </div>
 </template>
@@ -16,6 +18,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 @Component
 export default class Toggle extends Vue {
     @Prop() private value!: boolean;
+    @Prop() private disabled!: boolean;
 
     private checked = false;
 
@@ -26,8 +29,10 @@ export default class Toggle extends Vue {
     }
 
     private onToggleChange() {
-        this.checked = !this.checked;
-        this.$emit('input', this.checked);
+        if (!this.disabled) {
+            this.checked = !this.checked;
+            this.$emit('input', this.checked);
+        }
     }
 }
 </script>
@@ -46,10 +51,14 @@ export default class Toggle extends Vue {
     transition border-color 150ms ease-in, background-color 150ms ease-in
     align-items center
     
-    &:hover
+    &:not(&--disabled):hover
         cursor pointer
 
-    &--checked
+    &--disabled
+        border default-border-width solid smoke
+        background-color darker-white
+
+    &--checked:not(&--disabled)
         border-color main-color
         background-color tertiary
 
@@ -62,8 +71,14 @@ export default class Toggle extends Vue {
         transition border-color 150ms ease-in, background-color 150ms ease-in, transform 150ms ease-in
         transform scale(1.2)
 
-        &--checked
+        &--disabled
+            border default-border-width solid smoke
+            background-color darker-white
+
+        &--checked:not(.toggle-indicator--disabled)
             border-color main-color
             background-color main-color
+        
+        &--checked
             transform translate3d(110%, 0em, 0rem) scale(1.2)
 </style>

@@ -45,7 +45,7 @@
             </FluidGrid>
             <FluidGrid>
                 <FluidGridColumn width="100">
-                        <h3>Upload default theme .gresource file:
+                        <h3>Upload default theme .gresource file
                             <Info text="Update cached Default theme .gresource file. Useful when system will will override the theme file via system update." />
                         </h3>
                         <File
@@ -56,7 +56,7 @@
             </FluidGrid>
             <FluidGrid>
                 <FluidGridColumn>
-                    <h3>Check for updates:</h3>
+                    <h3>Check for updates</h3>
                     <Button
                         size="normal"
                         :text="`Check for updates (${lastChecked || '--'})`"

@@ -8,7 +8,7 @@
                 <FluidGridColumn width="100">
                     <FluidGrid>
                         <FluidGridColumn width="50">
-                                <h3>User list enabled: 
+                                <h3>User list enabled
                                     <Info text="Enables or disables user selection in login. If user list is disabled then user need to be typed to username field at login." />
                                 </h3>
                         </FluidGridColumn>
@@ -19,17 +19,18 @@
                         </FluidGridColumn>
                     </FluidGrid>
                 </FluidGridColumn>
-                <!-- <FluidGridColumn width="100">
-                    <FluidGrid justify="end">
-                        <FluidGridColumn>
-                            <Button
-                                :disabled="!selectedTheme || selectedTheme === ''"
-                                @click.native="save"
-                                text="Save"
-                                size="large" />
+                <FluidGridColumn width="100">
+                    <FluidGrid>
+                        <FluidGridColumn width="50">
+                                <h3>Rounded login icon</h3>
+                        </FluidGridColumn>
+                        <FluidGridColumn width="50">
+                            <FluidGrid justify="end">
+                                <h3><Toggle :disabled="!data.userListEnabled" v-model="data.forceRoundedLoginIcon" @input="(selected) => data.changeForceLoginIcon(selected)" /></h3>
+                            </FluidGrid>
                         </FluidGridColumn>
                     </FluidGrid>
-                </FluidGridColumn> -->
+                </FluidGridColumn>
             </FluidGrid>
         </div>
     </Dialog>

@@ -204,10 +204,11 @@ function installDefault {
     installGdm3Css $workDir/theme/gnome-shell.css
 }
 
-# Install theme $1=theme, $2=image
+# Install theme $1=theme, $2=image $3=rounded login icon
 function install {
     theme="$(echo $1 | sed 's|\\| |')"
     image="$(echo $2 | sed 's|\\| |')"
+    forceRoundedLoginIcon=$3
 
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
@@ -230,9 +231,17 @@ function install {
             cp $configPath/"$image" $workLocation/.
         else 
             cp "$image" $workLocation/.        
-        fi;
+        fi
 
         sed -i "/#lockDialogGroup/,/}/ { /#lockDialogGroup/ { s/.*// }; /}/ ! { s/.*// }; /}/ { s/.*/$dialogCss/ }; }" $workLocation/gnome-shell.css
+
+        if [ $forceRoundedLoginIcon == true ]; then
+            roundedLoginIconCss="
+.user-icon { background-size: contain; color: #eeeeec; border-radius: 99px; }
+
+.user-icon:hover { color: white; }"
+            echo "$roundedLoginIconCss" >> $workLocation/gnome-shell.css
+        fi
         
         # Compile the modified theme and install it
         compile $workLocation "$location"
@@ -336,8 +345,9 @@ function save() {
     background=$(echo $cmd | cut -d ',' -f 2)
     shield=$(echo $cmd | cut -d ',' -f 3)
     userList=$(echo $cmd | cut -d ',' -f 4)
+    forceRoundedLoginIcon=$(echo $cmd | cut -d ',' -f 5)
 
-    install $(echo $theme | sed 's| |\\|') $(echo $background | sed 's| |\\|')
+    install $(echo $theme | sed 's| |\\|') $(echo $background | sed 's| |\\|') $forceRoundedLoginIcon
     setShield $(echo $shield | sed 's| |\\|')
     setUserList $userList
 }

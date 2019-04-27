@@ -3,7 +3,7 @@
         <FluidGridColumn width="100">
             <FluidGrid>
                 <FluidGridColumn width="50">
-                    <h3>Theme:</h3>
+                    <h3>Theme</h3>
                 </FluidGridColumn>
                 <FluidGridColumn width="50">
                     <Select
@@ -15,12 +15,12 @@
             </FluidGrid>
             <FluidGrid>
                 <FluidGridColumn width="50">
-                    <h3>Shield:</h3>
+                    <h3>Shield</h3>
                     <ImageFile class="image-right-padding"
                         v-model="selectedShield" :configLocation="configLocation && configLocation" />
                 </FluidGridColumn>
                 <FluidGridColumn width="50">
-                    <h3>Background image:</h3>
+                    <h3>Background image</h3>
                     <ImageFile class="image-left-padding"
                         v-model="selectedBackground" :configLocation="configLocation && configLocation" />
                 </FluidGridColumn>
@@ -28,7 +28,7 @@
             <FluidGrid>
                 <FluidGridColumn width="50">
                     <h3>
-                        Advanced:<br>
+                        Advanced<br>
                         <span class="hint-text">Change advanced settings for login screen</span>
                     </h3>
                 </FluidGridColumn>
@@ -36,7 +36,15 @@
                      <FluidGrid justify="end">
                         <h3>
                             <Button
-                                @click.native="openDialog({ dialog: 'advanced_settings', data: { userListEnabled, changeUserListEnabled } })"
+                                @click.native="openDialog({
+                                    dialog: 'advanced_settings',
+                                    data: {
+                                        userListEnabled,
+                                        changeUserListEnabled,
+                                        forceRoundedLoginIcon,
+                                        changeForceLoginIcon,
+                                    }
+                                })"
                                 text="Advanced"
                                 :neutral="true"
                                 size="normal" />
@@ -78,13 +86,13 @@ import { ActionKeys } from '@/store/action-keys';
 @Component({
   components: {
     FluidGrid,
-   FluidGridColumn,
-   Button,
-   Info,
-   Toggle,
-   Select,
-   ImageFile,
-   Icon,
+    FluidGridColumn,
+    Button,
+    Info,
+    Toggle,
+    Select,
+    ImageFile,
+    Icon,
   },
 })
 export default class ThemeSelection extends Vue {
@@ -101,6 +109,9 @@ export default class ThemeSelection extends Vue {
     @State((state: AppState) => state.persisted.background)
     private background!: string;
 
+    @State((state: AppState) => state.persisted.forceRoundedLoginIcon)
+    private forceRoundedLogin!: boolean;
+
     @State('configLocation') private configLocation!: string;
     @State('themes') private themes!: string[];
 
@@ -114,6 +125,7 @@ export default class ThemeSelection extends Vue {
     private userListEnabled = false;
     private selectedShield = '';
     private selectedBackground = '';
+    private forceRoundedLoginIcon = false;
 
     private created() {
         this.$watch('userlistEnabled',
@@ -122,6 +134,8 @@ export default class ThemeSelection extends Vue {
             (newValue, oldValue) => (this.selectedShield = newValue), { immediate: true });
         this.$watch('background',
             (newValue, oldValue) => (this.selectedBackground = newValue), { immediate: true });
+        this.$watch('forceRoundedLogin',
+            (newValue, oldValue) => (this.forceRoundedLoginIcon = newValue), { immediate: true });
         this.$watch('theme',
             (newValue, oldValue) => {
             this.selectedTheme = newValue;
@@ -140,18 +154,23 @@ export default class ThemeSelection extends Vue {
         this.userListEnabled = selected;
     }
 
+    private changeForceLoginIcon(loginIconSelected: boolean) {
+        this.forceRoundedLoginIcon = loginIconSelected;
+    }
+
     private save() {
         const themeArgs = `${this.selectedTheme},${this.getFileName(this.selectedBackground)}`;
         const shieldImage = this.selectedShield !== '' ?
             `${this.configLocation}/${this.getFileName(this.selectedShield)}` : '';
 
-        this.$cliExec(`--gui save ${themeArgs},${shieldImage},${this.userListEnabled}`)
+        this.$cliExec(`--gui save ${themeArgs},${shieldImage},${this.userListEnabled},${this.forceRoundedLoginIcon}`)
             .then((stdout: any) => {
             this.setThemeConfig({
                 theme: this.selectedTheme,
                 background: this.selectedBackground,
                 shield: this.selectedShield,
                 userlistEnabled: this.userlistEnabled,
+                forceRoundedLoginIcon: this.forceRoundedLoginIcon,
             });
 
             this.openDialog('reboot');

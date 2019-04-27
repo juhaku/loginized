@@ -126,6 +126,14 @@ export default class App extends Vue {
         window.addEventListener('resize', (ev) => (this.setGridHeight()));
         this.restorePersistedState();
 
+        this.$watch('newVersion', (newValue, oldValue) => {
+            if (newValue !== '') {
+                // this show notification of new version
+                const titleAndMessage = `"New version available ${newValue}" "See https://github.com/juhaku/loginized/releases/latest"`;
+                this.$exec(`${Constants.BASE_PATH}/utils.sh notify ${titleAndMessage}`);
+            }
+        }, { immediate: true });
+
         this.$cliExec('--gui start').then((configLocation) => {
             this.setConfigLocation(Constants.IS_DEBUG
                 ? `${configLocation.replace('\n', '')}/_test` : configLocation.replace('\n', ''));
