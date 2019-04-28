@@ -9,7 +9,7 @@ export default class AbstractFile extends Vue {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (event: any) => {
-                fs.writeFile(name, Buffer.from(event.target.result), (error: NodeJS.ErrnoException) => {
+                fs.writeFile(name, Buffer.from(event.target.result), (error: NodeJS.ErrnoException | null) => {
                     if (error) {
                         reject(error);
                         throw error;
