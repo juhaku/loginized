@@ -6,6 +6,7 @@ Gnome GDM Login Theme Manager. Easy and Fast Login Theme Manipulation.
 * Change login theme (global system theme) from themes located in __/usr/share/themes__
 * Change login screen shield. (Login screen's lockscreen image)
 * Enable / disable user list at login. 
+* __NEW!__ Force rounded login icon. __Proven to work gnome-shell 3.32 onwards as it has support for it.__ Might also work earlier versions but is not tested and in case if it is not working nothing will be done to fix.
 
 As a cherry on top of the cake Loginized comes also with command line application __(loginized-cli)__.
 
@@ -23,17 +24,18 @@ Alternatively you may build the application from sources. See [WIKI](https://git
 ### Pre-requirements
  * Command `glib-compile-resources` is used to compile and extract the themes. This must be available in operating system in order to application work correctly.
  * Command `xdg-open` is used to open links via application. Missing this will not stop using the application.
+ * Command `notify-send` is used to notify new versions. Missing this will not stop using the application but will certainly break the updates notification.
  * Before Download PLEASE READ [__Things to consider__](#things-to-consider) section first.
 
 ### Downloads
 
 Distribution | DL | Sha1 | Required packages
 -------------|----|------|------------------
-Arch based   | [loginized-1.2.2.pacman](https://github.com/juhaku/loginized/releases/download/1.2.2/loginized-1.2.2.pacman) | 	 ae0dc2f2675fe7c0b944774b29557d81c8a4a1ef | glib2, xdg-utils
-RPM based    | [loginized-1.2.2.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.2.2/loginized-1.2.2.x86_64.rpm) | 	 178b244b11264d14c44686d9049115d8da4d4282 | glib2-devel, xdg-utils (Open SUSE, Fedora)
-Debian based | [loginized_1.2.2_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.2.2/loginized_1.2.2_amd64.deb) | 31730c19135e46dd349c8a08a4cfa1a48dd54e05 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
-All          | [Loginized.1.2.2.AppImage](https://github.com/juhaku/loginized/releases/download/1.2.2/Loginized.1.2.2.AppImage) | 	 b7e3fb978b9ee0b54700293db26bc5d8ea409628 | Distro dependant
-All          | [loginized-1.2.2.zip](https://github.com/juhaku/loginized/releases/download/1.2.2/loginized-1.2.2.zip) | 	 3a0dc001a3fc1bb0494db58f76a5b739866998fe | Distro dependant
+Arch based   | [loginized-1.3.0.pacman](https://github.com/juhaku/loginized/releases/download/1.3.0/loginized-1.3.0.pacman) | 	 f28ee57efa74c822f429cf775e03583f430f93b6 | glib2, xdg-utils
+RPM based    | [loginized-1.3.0.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.3.0/loginized-1.3.0.x86_64.rpm) | 	 2743289b457e5194f11250894b10c0f2e37758c7 | glib2-devel, xdg-utils (Open SUSE, Fedora)
+Debian based | [loginized_1.3.0_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.3.0/loginized_1.3.0_amd64.deb) | 67a15347fe80b9a9ea5a81b73a6a0d9d9eaca139 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
+All          | [Loginized.1.3.0.AppImage](https://github.com/juhaku/loginized/releases/download/1.3.0/Loginized.1.3.0.AppImage) | 	 674edaf40dd64ee33993193fc2590ea382acdd92 | Distro dependant
+All          | [loginized-1.3.0.zip](https://github.com/juhaku/loginized/releases/download/1.3.0/loginized-1.3.0.zip) | 	 a203ea876c8c536d0e6bf88e699401dbfd17ac87 | Distro dependant
 
 ### Tested on
 * Ubuntu 16.10 ->
