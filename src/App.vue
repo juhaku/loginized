@@ -69,7 +69,6 @@ import ErrorDialog from '@/components/Dialog/ErrorDialog.vue';
 import RebootDialog from '@/components/Dialog/RebootDialog.vue';
 import AboutDialog from '@/components/Dialog/AboutDialog.vue';
 import AdvancedSettings from './components/Dialog/AdvancedSettings.vue';
-import Snackbar from '@/components/Snackbar/Snackbar.vue';
 import Button from '@/components/Button/Button.vue';
 import { ActionKeys } from '@/store/action-keys';
 
@@ -84,7 +83,6 @@ import { ActionKeys } from '@/store/action-keys';
     RebootDialog,
     AboutDialog,
     AdvancedSettings,
-    Snackbar,
     Button,
   },
 })
@@ -101,9 +99,6 @@ export default class App extends Vue {
 
     @Mutation(ActionKeys.OPEN_DIALOG)
     private openDialog!: (dialog: string) => void;
-
-    @Mutation(ActionKeys.SET_NEW_VERSION)
-    private hideUpdatesSnackbar!: (v: string) => void;
 
     @Mutation(ActionKeys.SET_THEMES)
     private setThemes!: (themes: string[]) => void;
@@ -173,13 +168,6 @@ export default class App extends Vue {
 @import './stylus/*'
 
 .app
-    .snackbar-message
-        margin-left 1rem
-        color cool-white
-
-        .button
-            margin-left 1rem
-
     .app-grid
         display flex
         background-color darker-white
