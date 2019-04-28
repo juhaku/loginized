@@ -1,10 +1,5 @@
 <template>
     <div class="app">
-        <Snackbar :active="newVersion !== ''" :timeout="10000" :onClose="() => hideUpdatesSnackbar('')">
-            <h3 class="snackbar-message">Updates available {{newVersion}} 
-                <Button class="button" text="Show" :filled="true" :inverted="true" />
-            </h3>
-        </Snackbar>
         <ErrorDialog :error="error"
             :onCloseDialog="onCloseErrorDialog" v-if="error"/>
         <RebootDialog  v-else-if="dialog === 'reboot'"
@@ -128,9 +123,9 @@ export default class App extends Vue {
 
         this.$watch('newVersion', (newValue, oldValue) => {
             if (newValue !== '') {
-                // this show notification of new version
-                const titleAndMessage = `"New version available ${newValue}" "See https://github.com/juhaku/loginized/releases/latest"`;
-                this.$exec(`${Constants.BASE_PATH}/utils.sh notify ${titleAndMessage}`);
+                const title = `New_version_available_${newValue}`;
+                const message = 'See_https://github.com/juhaku/loginized/releases/latest';
+                this.$exec(`${Constants.BASE_PATH}/utils.sh notify ${title} ${message}`);
             }
         }, { immediate: true });
 

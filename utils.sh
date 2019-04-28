@@ -73,8 +73,9 @@ function removeCli {
 }
 
 function notify {
-    echo "$@"
-    notify-send -a loginized -i loginized "$2" "$3"
+    title=$(echo $1 | sed 's|_| |g')
+    message=$(echo $2 | sed 's|_| |g')
+    notify-send -a loginized -i loginized "$title" "$message"
 }
 
 function main {
@@ -97,7 +98,7 @@ function main {
             fi;
         ;;
         notify)
-            notify "$args"
+            notify $2 $3
         ;;
         *)
             notRecognized $1
