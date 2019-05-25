@@ -210,6 +210,12 @@ function install {
     image="$(echo $2 | sed 's|\\| |')"
     forceRoundedLoginIcon=$3
 
+    # Force rounded icon is always provided so when this is empty string then the image has not been provided!
+    if [ "$forceRoundedLoginIcon" == "" ]; then
+        forceRoundedLoginIcon=false
+        image=""
+    fi
+
     if [[ "$theme" == "Default" && "$image" == "" ]]; then 
         installDefault
     
