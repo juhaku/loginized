@@ -33,7 +33,7 @@
     "@vue/cli-plugin-typescript": "3.7.0",
     "@vue/cli-service": "3.7.0",
     "electron": "^4.0.0",
-    "electron-builder": "20.39.0",
+    "electron-builder": "20.43.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "typescript": "3.4.5",
