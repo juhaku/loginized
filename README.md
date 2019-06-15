@@ -21,7 +21,7 @@ Download package that suits most for you.
 
 Alternatively you may build the application from sources. See [WIKI](https://github.com/juhaku/loginized/wiki#build-application-from-sources) for more details.
 
-### Pre-requirements
+### Prerequisites
  * Command `glib-compile-resources` is used to compile and extract the themes. This must be available in operating system in order to application work correctly.
  * Command `xdg-open` is used to open links via application. Missing this will not stop using the application.
  * Command `notify-send` is used to notify new versions. Missing this will not stop using the application but will certainly break the updates notification.
