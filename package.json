@@ -2,7 +2,7 @@
   "name": "loginized",
   "description": "Loginized Gnome GDM Login Theme Manager",
   "homepage": "https://github.com/juhaku/loginized",
-  "version": "1.3.5-SNAPSHOT",
+  "version": "1.3.5",
   "private": true,
   "license": "GPL-3.0",
   "author": {
