@@ -14,6 +14,12 @@ __Note!__ If you are not seeing any themes via the application or you cannot see
 
 More features are planned in further releases.
 
+## Ubuntu users
+Default theme in Loginized app is the actual de facto from Gnome which is Blue adwaita based gnome-shell theme.
+Ubuntu overrides this theme's css file to provide different colors to login screen. When Default theme is used with Loginized that will use the standard from Gnome (blue adwaita). 
+
+In order to use the Yaru as login theme with Loginized that is standard for Ubuntu see https://github.com/juhaku/loginized/wiki/Help#ubuntu-users-yaru-gnome-shell-theme
+
 ## Installation
 Download package that suits most for you.
  * Read install instructions from [WIKI](https://github.com/juhaku/loginized/wiki).
@@ -56,6 +62,11 @@ Feel free to prove me wrong as issues are never good thing.
  * In Ubuntu 18.04 onwards you should take a backup from /usr/share/gnome-shell/theme/ubuntu.css file. This file contains the Ubuntu flavored styles of the default gnome-shell blue theme. In Ubuntu 18.04 this file is overrided by each theme's .css file when installed as login theme. So if needed to go back to original Ubuntu flavored theme you need to manually revert this file to the original one.
  * Please backup default __/usr/share/gnome-shell/gnome-shell-theme.gresource__ file before using Loginized in case it need to be reverted.
  * Anything you do with the application is at your own risk and you understand that something can go wrong if misused or broken themes are being used. In case of issues please refer to [WIKI](https://github.com/juhaku/loginized/wiki/Help).
+
+## Contributing
+Contributing is very well welcome. You should start with cloning the repository and then getting to now technics used. In this application. If you are already familiar with them just drop A PR but make sure that you have actually tested that your changes works before submitting a PR. 
+
+As of for quite some time I haven't been using Gnome desktop because mutters inefficiency so I have no interest to develop this application activly. But I will keep it maintained at least for now.
 
 ## Screenshots
 ![Theme selection](https://github.com/juhaku/loginized/blob/master/screenshots/screen1.png)
