@@ -132,9 +132,11 @@ function extract {
         location=/usr/share/themes/$theme/gnome-shell
     fi
     gsl=$location/$gs
-    
-    test ! -d $workDir/theme/assets/dot && mkdir -p $workDir/theme/assets/dot
-    test ! -d $workDir/theme/icons && mkdir -p $workDir/theme/icons
+      
+    #generate the theme complete folder structure
+    cd $location
+    find . -type d -exec mkdir -p $workDir/theme/{} \;
+    cd $OLDPWD
     for r in $(gresource list $gsl); do
         gresource extract $gsl $r > $workDir${r/#\/org\/gnome\/shell}
     done
