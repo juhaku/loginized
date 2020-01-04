@@ -17,12 +17,12 @@
                 <FluidGridColumn width="50">
                     <h3>Shield</h3>
                     <ImageFile class="image-right-padding"
-                        v-model="selectedShield" :configLocation="configLocation && configLocation" />
+                        v-model="selectedShield" :configLocation="configLocation && configLocation" ref="shieldRef" />
                 </FluidGridColumn>
                 <FluidGridColumn width="50">
                     <h3>Background image</h3>
                     <ImageFile class="image-left-padding"
-                        v-model="selectedBackground" :configLocation="configLocation && configLocation" />
+                        v-model="selectedBackground" :configLocation="configLocation && configLocation" ref="backgroundRef" />
                 </FluidGridColumn>
             </FluidGrid>
             <FluidGrid>
@@ -56,6 +56,13 @@
         <FluidGridColumn width="100">
             <FluidGrid justify="end">
                 <FluidGridColumn>
+                    <Button
+                        :disabled="!selectedTheme || selectedTheme === ''"
+                        @click.native="resetDefaults"
+                        text="Reset defaults"
+                        size="large"
+                        :neutral="true"
+                        class="btn-gap" />
                     <Button
                         :disabled="!selectedTheme || selectedTheme === ''"
                         @click.native="save"
@@ -176,6 +183,16 @@ export default class ThemeSelection extends Vue {
             this.openDialog('reboot');
         });
     }
+
+    private resetDefaults() {
+        this.changeUserListEnabled(true);
+        this.changeForceLoginIcon(false);
+        this.selectedTheme = 'Default';
+        (this.$refs.shieldRef as ImageFile).clear();
+        (this.$refs.backgroundRef as ImageFile).clear();
+
+        this.save();
+    }
 }
 </script>
 
@@ -200,5 +217,8 @@ export default class ThemeSelection extends Vue {
         color smoke
         font-weight 400
         font-size 11pt
+
+    .btn-gap
+        margin-right 1em
 
 </style>

@@ -51,6 +51,14 @@ export default class ImageFile extends AbstractFile {
     private dragover = false;
     private imgBlob: string = '';
 
+    public clear() {
+        this.imgBlob = '';
+        if (this.$refs.img) {
+            (this.$refs.img as HTMLDivElement).style.backgroundImage = 'none';
+        }
+        this.$emit('input', '');
+    }
+
     private created() {
         this.$watch('value', (newPath, oldPath) => {
             if (newPath && newPath !== '') {
@@ -97,18 +105,11 @@ export default class ImageFile extends AbstractFile {
         });
     }
 
-    private clear() {
-        this.imgBlob = '';
-        (this.$refs.img as HTMLDivElement).style.backgroundImage = 'none';
-        this.$emit('input', '');
-    }
-
     private showImage() {
         this.$nextTick(() => {
             (this.$refs.img as HTMLDivElement).style.backgroundImage = `url(${this.imgBlob})`;
         });
     }
-
 }
 </script>
 
