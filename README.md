@@ -66,7 +66,7 @@ Feel free to prove me wrong as issues are never good thing.
 ## Contributing
 Contributing is very well welcome. You should start with cloning the repository and then getting to now technics used in this application. If you are already familiar with them just drop A PR but make sure that you have actually tested that your changes works before submitting a PR. 
 
-As of for quite some time I haven't been using Gnome desktop because mutters inefficiency so I have no interest to develop this application activly. But I will keep it maintained at least for now.
+As of for quite some time I haven't been using Gnome desktop because mutters inefficiency so I have no interest to develop this application actively. But I will keep it maintained at least for now.
 
 ## Screenshots
 ![Theme selection](https://github.com/juhaku/loginized/blob/master/screenshots/screen1.png)
