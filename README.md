@@ -31,11 +31,11 @@ Alternatively you may build the application from sources. See [WIKI](https://git
 
 Distribution | DL | Sha1 | Required packages
 -------------|----|------|------------------
-Arch based   | [loginized-1.3.5.pacman](https://github.com/juhaku/loginized/releases/download/1.3.5/loginized-1.3.5.pacman) | 	 623b7af7a29430f39723361006307e56bc564c6e | glib2, xdg-utils
-RPM based    | [loginized-1.3.5.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.3.5/loginized-1.3.5.x86_64.rpm) | 	 9ad7022698cae4a2c8f88ad02d08ced4f908ebd6 | glib2-devel, xdg-utils (Open SUSE, Fedora)
-Debian based | [loginized_1.3.5_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.3.5/loginized_1.3.5_amd64.deb) | c867c25077c68b00b2a23ba573d90a9d88fd18d6 | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
-All          | [Loginized.1.3.5.AppImage](https://github.com/juhaku/loginized/releases/download/1.3.5/Loginized.1.3.5.AppImage) | 	 f52fa68a71e3b867c06db7ca7b68a1042d9d18c2 | Distro dependant
-All          | [loginized-1.3.5.zip](https://github.com/juhaku/loginized/releases/download/1.3.5/loginized-1.3.5.zip) | 	 4e964f0a8206bac4bbeb3698b3669acbd835258d | Distro dependant
+Arch based   | [loginized-1.3.6.pacman](https://github.com/juhaku/loginized/releases/download/1.3.6/loginized-1.3.6.pacman) | 	 713a6c2cdd8798a77cd6123da325c0cac2c5f88a | glib2, xdg-utils
+RPM based    | [loginized-1.3.6.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.3.6/loginized-1.3.6.x86_64.rpm) | 	 22dd49cac5c25c9bac6abf1ef20e21f5f5ab00be | glib2-devel, xdg-utils (Open SUSE, Fedora)
+Debian based | [loginized_1.3.6_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.3.6/loginized_1.3.6_amd64.deb) | 27ba6202d6e23ffb3fdf41c07290073a885503ee | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
+All          | [Loginized.1.3.6.AppImage](https://github.com/juhaku/loginized/releases/download/1.3.6/Loginized.1.3.6.AppImage) | 	 1cf0cc6ec2c6cd2bb49bdb761819a700c96e9746 | Distro dependant
+All          | [loginized-1.3.6.zip](https://github.com/juhaku/loginized/releases/download/1.3.6/loginized-1.3.6.zip) | 	 c6058cc51ada812fb65ef5e686b434d7f0a08b84 | Distro dependant
 
 ### Tested on
 * Ubuntu 16.10 ->
