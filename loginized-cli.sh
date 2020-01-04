@@ -86,7 +86,7 @@ Examples.
  loginized-cli.sh set user-list false
     This will set user list disabled in login screen.
     
-Copyright (C) 2019 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
+Copyright (C) 2020 Juha Kukkonen - Licensed under <https://www.gnu.org/licenses/gpl-3.0.txt>
 This program is provided AS IS and comes with ABSOLUTELY NO WARRANTY"
 }
 
@@ -132,12 +132,13 @@ function extract {
         location=/usr/share/themes/$theme/gnome-shell
     fi
     gsl=$location/$gs
-      
-    #generate the theme complete folder structure
-    cd $location
-    find . -type d -exec mkdir -p $workDir/theme/{} \;
-    cd $OLDPWD
+
     for r in $(gresource list $gsl); do
+        # correctly generate necessary folder structure from actual resource
+        rDir=$(echo ${r%/*})
+        rDir=$(echo ${rDir#\/org\/gnome\/shell})
+        test ! -d "$workDir""$rDir" && mkdir -p "$workDir""$rDir"
+        # extract the resource to the folder
         gresource extract $gsl $r > $workDir${r/#\/org\/gnome\/shell}
     done
 

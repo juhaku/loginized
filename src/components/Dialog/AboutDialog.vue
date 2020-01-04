@@ -8,7 +8,7 @@
                 <h2>Loginized</h2>
             </div>
             <p>
-                &copy; 2019 Juha Kukkonen
+                &copy; 2020 Juha Kukkonen
             </p>
             <p>
                 v {{version}}
