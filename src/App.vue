@@ -72,7 +72,6 @@ import AdvancedSettings from './components/Dialog/AdvancedSettings.vue';
 import Button from '@/components/Button/Button.vue';
 import { ActionKeys } from '@/store/action-keys';
 
-
 @Component({
   components: {
     FluidGrid,
@@ -127,7 +126,6 @@ export default class App extends Vue {
         this.$cliExec('--gui start').then((configLocation) => {
             this.setConfigLocation(Constants.IS_DEBUG
                 ? `${configLocation.replace('\n', '')}/_test` : configLocation.replace('\n', ''));
-            const config = `${this.configLocation}/config.json`;
 
             this.$cliExec('list').then((themes) =>
                 (this.setThemes([...themes.split(/\s/).filter((item: string) => item !== '')])));

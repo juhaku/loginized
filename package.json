@@ -19,26 +19,26 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "luxon": "1.12.1",
-    "rxjs": "6.5.1",
-    "vue": "2.6.10",
-    "vue-class-component": "7.0.2",
-    "vue-property-decorator": "8.1.0",
-    "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "luxon": "1.21.3",
+    "rxjs": "6.5.4",
+    "vue": "2.6.11",
+    "vue-class-component": "7.1.0",
+    "vue-property-decorator": "8.3.0",
+    "vue-router": "3.1.3",
+    "vuex": "3.1.2"
   },
   "devDependencies": {
-    "@types/luxon": "1.12.0",
+    "@types/luxon": "1.21.0",
     "@types/node": "11.13.8",
-    "@vue/cli-plugin-typescript": "3.7.0",
-    "@vue/cli-service": "3.7.0",
-    "electron": "^4.0.0",
-    "electron-builder": "20.43.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
+    "@vue/cli-plugin-typescript": "4.1.2",
+    "@vue/cli-service": "4.1.2",
+    "electron": "4.2.12",
+    "electron-builder": "21.2.0",
+    "stylus": "0.54.7",
+    "stylus-loader": "3.0.2",
     "typescript": "3.4.5",
-    "vue-cli-plugin-electron-builder": "1.3.0",
-    "vue-template-compiler": "2.6.10",
+    "vue-cli-plugin-electron-builder": "1.4.4",
+    "vue-template-compiler": "2.6.11",
     "vuex-class": "0.3.2"
   },
   "postcss": {
