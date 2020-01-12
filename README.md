@@ -40,7 +40,7 @@ Distribution | DL | Sha1 | Required packages
 Arch based   | [loginized-1.4.0.pacman](https://github.com/juhaku/loginized/releases/download/1.4.0/loginized-1.4.0.pacman) | 	 efff5d37f3728dbc16832219ac346ef77af3c613 | glib2, xdg-utils
 RPM based    | [loginized-1.4.0.x86_64.rpm](https://github.com/juhaku/loginized/releases/download/1.4.0/loginized-1.4.0.x86_64.rpm) | 	 b4e7cd93e8d765671f9bd03df1b29e7370ada60c | glib2-devel, xdg-utils (Open SUSE, Fedora)
 Debian based | [loginized_1.4.0_amd64.deb](https://github.com/juhaku/loginized/releases/download/1.4.0/loginized_1.4.0_amd64.deb) | 3df077659cf0ed3cf5cd55d9cd87f0242e12ca7d | libglib2.0-bin, libglib2.0-dev-bin, xdg-utils (Ubuntu)
-All          | [Loginized.1.4.0.AppImage](https://github.com/juhaku/loginized/releases/download/1.4.0/Loginized.1.4.0.AppImage) | 	 e78e2f8eb2344adfeab25ed9f13bbae6a57502d2 | Distro dependant
+All          | [Loginized.1.4.0.AppImage](https://github.com/juhaku/loginized/releases/download/1.4.0/Loginized-1.4.0.AppImage) | 	 e78e2f8eb2344adfeab25ed9f13bbae6a57502d2 | Distro dependant
 All          | [loginized-1.4.0.zip](https://github.com/juhaku/loginized/releases/download/1.4.0/loginized-1.4.0.zip) | 	 f778e73ae761e2b131b6e0020c028f9577957ba2 | Distro dependant
 
 ### Tested on
