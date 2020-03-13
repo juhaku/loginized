@@ -1,6 +1,10 @@
 # Loginized
 Gnome GDM Login Theme Manager. Easy and Fast Login Theme Manipulation.
 
+### Disclaimer
+
+As from __Gnome 3.36__ onwards (https://help.gnome.org/misc/release-notes/3.36/) this app might have become obsolete and will not function they way expected due the major changes they introduced with the new release. So be cautious when using the app.
+
 ### Features
 * Change login wallpaper
 * Change login theme (global system theme) from themes located in __/usr/share/themes__
