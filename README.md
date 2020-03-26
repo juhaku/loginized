@@ -4,6 +4,8 @@ Gnome GDM Login Theme Manager. Easy and Fast Login Theme Manipulation.
 ### Disclaimer
 
 As from __Gnome 3.36__ onwards (https://help.gnome.org/misc/release-notes/3.36/) this app might have become obsolete and most likely will not function the way expected due the major changes they introduced with the new release. So be cautious when using the app.
+ * Tested with Manjaro 19.0.2 version having all updates from upstream using gnome-shell version 3.36. 
+   * Background image changing does work as by tests.
 
 ### Features
 * Change login wallpaper
