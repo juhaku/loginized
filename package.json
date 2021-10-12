@@ -32,7 +32,7 @@
     "@types/node": "11.13.8",
     "@vue/cli-plugin-typescript": "4.1.2",
     "@vue/cli-service": "4.1.2",
-    "electron": "4.2.12",
+    "electron": "11.5.0",
     "electron-builder": "21.2.0",
     "stylus": "0.54.7",
     "stylus-loader": "3.0.2",
