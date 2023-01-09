@@ -19,7 +19,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "luxon": "1.21.3",
+    "luxon": "1.28.1",
     "rxjs": "6.5.4",
     "vue": "2.6.11",
     "vue-class-component": "7.1.0",
